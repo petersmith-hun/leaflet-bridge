@@ -1,6 +1,8 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
 /**
+ * Wrapper exception for communication errors.
+ *
  * @author Peter Smith
  */
 public class CommunicationFailureException extends Exception {

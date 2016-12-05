@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
+ * Implementation of {@link UserBridgeService}.
+ *
  * @author Peter Smith
  */
 @Service
@@ -27,6 +29,7 @@ public class UserBridgeServiceImpl implements UserBridgeService {
         RESTRequest restRequest = new RESTRequest.Builder()
                 .method(RequestMethod.GET)
                 .path(Path.USERS)
+                .authenticated()
                 .build();
 
         return bridgeClient.call(restRequest);

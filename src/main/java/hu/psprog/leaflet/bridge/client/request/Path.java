@@ -1,6 +1,8 @@
 package hu.psprog.leaflet.bridge.client.request;
 
 /**
+ * Enumeration of available paths.
+ *
  * @author Peter Smith
  */
 public enum Path {

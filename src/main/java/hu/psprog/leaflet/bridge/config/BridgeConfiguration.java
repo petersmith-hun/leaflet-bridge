@@ -3,7 +3,6 @@ package hu.psprog.leaflet.bridge.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -14,10 +13,12 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 /**
+ * Base configuration for BridgeClient.
+ * Package 'hu.psprog.leaflet.bridge' must be component scanned in frontend application.
+ *
  * @author Peter Smith
  */
 @Configuration
-@ComponentScan(basePackages = "hu.psprog.leaflet.bridge")
 public class BridgeConfiguration {
 
     private static final String BRIDGE_CONFIG_PROPERTIES = "bridge-config.properties";

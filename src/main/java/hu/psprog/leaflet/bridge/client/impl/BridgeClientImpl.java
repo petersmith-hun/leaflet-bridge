@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
+import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +18,18 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
+ * Implementation of {@link BridgeClient}.
+ *
  * @author Peter Smith
  */
 @Component
 public class BridgeClientImpl implements BridgeClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientImpl.class);
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_AUTHORIZATION_SCHEMA = "Bearer {0}";
 
     @Autowired
     private Client bridgeClient;
@@ -40,6 +39,9 @@ public class BridgeClientImpl implements BridgeClient {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private RequestAuthentication requestAuthentication;
 
     @Override
     public Map<String, Object> call(RESTRequest request) throws CommunicationFailureException {
@@ -59,10 +61,7 @@ public class BridgeClientImpl implements BridgeClient {
 
         String response = null;
         Invocation.Builder builder = target.request();
-
-        if (Objects.nonNull(request.getAuthorizationToken())) {
-            builder.header(AUTHORIZATION_HEADER, MessageFormat.format(BEARER_AUTHORIZATION_SCHEMA, request.getAuthorizationToken()));
-        }
+        authenticate(builder, request);
 
         switch (request.getMethod()) {
             case GET:
@@ -80,6 +79,14 @@ public class BridgeClientImpl implements BridgeClient {
         }
 
         return objectMapper.readValue(response, new TypeReference<HashMap<String, Object>>() {});
+    }
+
+    private void authenticate(Invocation.Builder builder, RESTRequest request) {
+
+        if (request.isAuthenticationRequired()) {
+            requestAuthentication.getAuthenticationHeader().entrySet()
+                    .forEach(entry -> builder.header(entry.getKey(), entry.getValue()));
+        }
     }
 
     private Entity createEntity(RESTRequest request) throws JsonProcessingException {
