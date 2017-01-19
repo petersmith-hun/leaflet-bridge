@@ -1,6 +1,7 @@
 package hu.psprog.leaflet.bridge.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,10 @@ public class BridgeConfiguration {
 
     @Bean
     public Client bridgeClient() {
-        return ClientBuilder.newClient();
+
+        return ClientBuilder.newBuilder()
+                .register(new JacksonJsonProvider())
+                .build();
     }
 
     @Bean

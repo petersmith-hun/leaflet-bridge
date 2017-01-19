@@ -1,8 +1,11 @@
 package hu.psprog.leaflet.bridge.service.impl;
 
 import hu.psprog.leaflet.api.rest.request.user.LoginRequestModel;
+import hu.psprog.leaflet.api.rest.response.user.LoginResponseDataModel;
+import hu.psprog.leaflet.api.rest.response.user.UserListDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
+import hu.psprog.leaflet.bridge.client.model.BodyWrapperModel;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
@@ -10,7 +13,7 @@ import hu.psprog.leaflet.bridge.service.UserBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Implementation of {@link UserBridgeService}.
@@ -24,7 +27,7 @@ public class UserBridgeServiceImpl implements UserBridgeService {
     private BridgeClient bridgeClient;
 
     @Override
-    public Map<String, Object> getAllUsers() throws CommunicationFailureException {
+    public UserListDataModel getAllUsers() throws CommunicationFailureException {
 
         RESTRequest restRequest = new RESTRequest.Builder()
                 .method(RequestMethod.GET)
@@ -32,11 +35,13 @@ public class UserBridgeServiceImpl implements UserBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest);
+        return bridgeClient
+                .call(restRequest, new GenericType<BodyWrapperModel<UserListDataModel>>() {})
+                .getBody();
     }
 
     @Override
-    public Map<String, Object> claimToken(LoginRequestModel loginRequestModel) throws CommunicationFailureException {
+    public LoginResponseDataModel claimToken(LoginRequestModel loginRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = new RESTRequest.Builder()
                 .method(RequestMethod.POST)
@@ -44,6 +49,8 @@ public class UserBridgeServiceImpl implements UserBridgeService {
                 .requestBody(loginRequestModel)
                 .build();
 
-        return bridgeClient.call(restRequest);
+        return bridgeClient
+                .call(restRequest, new GenericType<BodyWrapperModel<LoginResponseDataModel>>() {})
+                .getBody();
     }
 }

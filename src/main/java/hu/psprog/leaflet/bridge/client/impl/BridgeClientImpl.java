@@ -1,7 +1,6 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
@@ -16,9 +15,10 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,41 +44,41 @@ public class BridgeClientImpl implements BridgeClient {
     private RequestAuthentication requestAuthentication;
 
     @Override
-    public Map<String, Object> call(RESTRequest request) throws CommunicationFailureException {
-
-        WebTarget currentTarget = webTarget.path(resolvePath(request));
-        fillRequestParameters(currentTarget, request);
+    public <T> T call(RESTRequest request, GenericType<T> responseType) throws CommunicationFailureException {
 
         try {
-            return doCall(currentTarget, request);
+            return doCall(request, responseType);
         } catch (IOException e) {
             LOGGER.error("Bridge failed to process request [{}]", request);
             throw new CommunicationFailureException(e);
         }
     }
 
-    private Map<String, Object> doCall(WebTarget target, RESTRequest request) throws IOException {
+    private <T> T doCall(RESTRequest request, GenericType<T> responseType) throws IOException {
 
-        String response = null;
-        Invocation.Builder builder = target.request();
+        WebTarget target = webTarget.path(resolvePath(request));
+        fillRequestParameters(target, request);
+
+        Invocation.Builder builder = target.request(MediaType.APPLICATION_JSON_TYPE);
         authenticate(builder, request);
 
+        Response response = null;
         switch (request.getMethod()) {
             case GET:
-                response = builder.get(String.class);
+                response = builder.get();
                 break;
             case POST:
-                response = builder.post(createEntity(request), String.class);
+                response = builder.post(createEntity(request));
                 break;
             case PUT:
-                response = builder.put(createEntity(request), String.class);
+                response = builder.put(createEntity(request));
                 break;
             case DELETE:
-                response = builder.delete(String.class);
+                response = builder.delete();
                 break;
         }
 
-        return objectMapper.readValue(response, new TypeReference<HashMap<String, Object>>() {});
+        return response.readEntity(responseType);
     }
 
     private void authenticate(Invocation.Builder builder, RESTRequest request) {
@@ -91,9 +91,7 @@ public class BridgeClientImpl implements BridgeClient {
 
     private Entity createEntity(RESTRequest request) throws JsonProcessingException {
 
-        String requestBodyAsJSON = objectMapper.writeValueAsString(request.getRequestBody());
-
-        return Entity.entity(requestBodyAsJSON, MediaType.APPLICATION_JSON_TYPE);
+        return Entity.entity(request.getRequestBody(), MediaType.APPLICATION_JSON_TYPE);
     }
 
     private String resolvePath(RESTRequest request) {
