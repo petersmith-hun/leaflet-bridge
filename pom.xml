@@ -6,7 +6,7 @@
 
     <groupId>hu.psprog.leaflet</groupId>
     <artifactId>leaflet-bridge</artifactId>
-    <version>0.2</version>
+    <version>0.2.1</version>
 
     <properties>
 

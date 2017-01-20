@@ -6,6 +6,8 @@ import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
+import hu.psprog.leaflet.bridge.client.request.RequestMethod;
+import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +46,9 @@ public class BridgeClientImpl implements BridgeClient {
     @Autowired
     private RequestAuthentication requestAuthentication;
 
+    @Autowired
+    private List<CallStrategy> callStrategies;
+
     @Override
     public <T> T call(RESTRequest request, GenericType<T> responseType) throws CommunicationFailureException {
 
@@ -54,7 +60,7 @@ public class BridgeClientImpl implements BridgeClient {
         }
     }
 
-    private <T> T doCall(RESTRequest request, GenericType<T> responseType) throws IOException {
+    private <T> T doCall(RESTRequest request, GenericType<T> responseType) throws IOException, CommunicationFailureException {
 
         WebTarget target = webTarget.path(resolvePath(request));
         fillRequestParameters(target, request);
@@ -62,21 +68,8 @@ public class BridgeClientImpl implements BridgeClient {
         Invocation.Builder builder = target.request(MediaType.APPLICATION_JSON_TYPE);
         authenticate(builder, request);
 
-        Response response = null;
-        switch (request.getMethod()) {
-            case GET:
-                response = builder.get();
-                break;
-            case POST:
-                response = builder.post(createEntity(request));
-                break;
-            case PUT:
-                response = builder.put(createEntity(request));
-                break;
-            case DELETE:
-                response = builder.delete();
-                break;
-        }
+        Response response = getStrategy(request.getMethod())
+                .call(builder, request);
 
         return response.readEntity(responseType);
     }
@@ -112,5 +105,13 @@ public class BridgeClientImpl implements BridgeClient {
     private String fillPathVariablePlaceholder(Map.Entry<String, String> entry, String path) {
 
         return path.replace("{" + entry.getKey() + "}", entry.getValue());
+    }
+
+    private CallStrategy getStrategy(RequestMethod requestMethod) throws CommunicationFailureException {
+
+        return callStrategies.stream()
+                .filter(callStrategy -> callStrategy.forMethod() == requestMethod)
+                .findFirst()
+                .orElseThrow(() -> new CommunicationFailureException(String.format("Unsupported request method %s", requestMethod)));
     }
 }
