@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -20,6 +21,7 @@ import javax.ws.rs.client.WebTarget;
  * @author Peter Smith
  */
 @Configuration
+@ComponentScan(basePackages = "hu.psprog.leaflet.bridge")
 public class BridgeConfiguration {
 
     private static final String BRIDGE_CONFIG_PROPERTIES = "bridge-config.properties";

@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Peter Smith
  */
-public abstract class AbstractCallStrategy implements CallStrategy {
+abstract class AbstractCallStrategy implements CallStrategy {
 
     /**
      * Wraps a request body into JaxWS compatible {@link Entity}.
@@ -21,7 +21,7 @@ public abstract class AbstractCallStrategy implements CallStrategy {
      * @return Entity object
      * @throws JsonProcessingException on JSON processing failure
      */
-    protected Entity createEntity(RESTRequest request) throws JsonProcessingException {
+    Entity createEntity(RESTRequest request) throws JsonProcessingException {
 
         return Entity.entity(request.getRequestBody(), MediaType.APPLICATION_JSON_TYPE);
     }

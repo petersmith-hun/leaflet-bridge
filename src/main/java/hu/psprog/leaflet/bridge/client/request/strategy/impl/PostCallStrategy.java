@@ -6,7 +6,6 @@ import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
 
 /**
  * Call strategy for POST requests.
@@ -17,8 +16,8 @@ import javax.ws.rs.core.Response;
 public class PostCallStrategy extends AbstractCallStrategy {
 
     @Override
-    public Response call(Invocation.Builder builder, RESTRequest request) throws JsonProcessingException {
-        return builder.post(createEntity(request));
+    public Invocation prepareInvocation(Invocation.Builder builder, RESTRequest request) throws JsonProcessingException {
+        return builder.buildPost(createEntity(request));
     }
 
     @Override

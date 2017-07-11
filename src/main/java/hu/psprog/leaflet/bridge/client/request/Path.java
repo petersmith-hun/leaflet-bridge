@@ -10,9 +10,16 @@ public enum Path {
     // user related paths
     USERS("/users"),
     USERS_CLAIM("/users/claim"),
+    USERS_ID("/users/{id}"),
+    USERD_ROLE("/users/{id}/role"),
+    USERD_PROFILE("/users/{id}/profile"),
+    USERD_PASSWORD("/users/{id}/password"),
+    USERS_INIT("/users/init"),
+    USERS_REGISTER("/users/register"),
 
     // entry related paths
-    ENTRIES("/entries");
+    ENTRIES("/entries"),
+    ENTRY_BY_LINK("/entries/link/{link}");
 
     private String uri;
 
@@ -20,7 +27,7 @@ public enum Path {
         this.uri = uri;
     }
 
-    public String getUri() {
+    public String getURI() {
         return uri;
     }
 }
