@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
  * @author Peter Smith
  */
 @Service
-public class UserBridgeServiceImpl implements UserBridgeService {
+class UserBridgeServiceImpl implements UserBridgeService {
+
+    private static final String ID = "id";
 
     private BridgeClient bridgeClient;
 
@@ -42,43 +44,100 @@ public class UserBridgeServiceImpl implements UserBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient
-                .call(restRequest, UserListDataModel.class);
+        return bridgeClient.call(restRequest, UserListDataModel.class);
     }
 
     @Override
     public ExtendedUserDataModel createUser(UserCreateRequestModel userCreateRequestModel) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.POST)
+                .path(Path.USERS)
+                .authenticated()
+                .requestBody(userCreateRequestModel)
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 
     @Override
     public ExtendedUserDataModel initUserDatabase(UserInitializeRequestModel userInitializeRequestModel) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.POST)
+                .path(Path.USERS_INIT)
+                .requestBody(userInitializeRequestModel)
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 
     @Override
     public ExtendedUserDataModel getUserByID(Long userID) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.USERS_ID)
+                .authenticated()
+                .addPathParameter(ID, String.valueOf(userID))
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 
     @Override
     public void deleteUser(Long userID) throws CommunicationFailureException {
 
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.DELETE)
+                .path(Path.USERS_ID)
+                .authenticated()
+                .addPathParameter(ID, String.valueOf(userID))
+                .build();
+
+        bridgeClient.call(restRequest);
     }
 
     @Override
     public ExtendedUserDataModel updateRole(Long userID, UpdateRoleRequestModel updateRoleRequestModel) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.USERS_ROLE)
+                .authenticated()
+                .addPathParameter(ID, String.valueOf(userID))
+                .requestBody(updateRoleRequestModel)
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 
     @Override
     public ExtendedUserDataModel updateProfile(Long userID, UpdateProfileRequestModel updateProfileRequestModel) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.USERS_PROFILE)
+                .authenticated()
+                .addPathParameter(ID, String.valueOf(userID))
+                .requestBody(updateProfileRequestModel)
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 
     @Override
     public ExtendedUserDataModel updatePassword(Long userID, UserPasswordRequestModel userPasswordRequestModel) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.USERS_PASSWORD)
+                .authenticated()
+                .addPathParameter(ID, String.valueOf(userID))
+                .requestBody(userPasswordRequestModel)
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 
     @Override
@@ -90,12 +149,18 @@ public class UserBridgeServiceImpl implements UserBridgeService {
                 .requestBody(loginRequestModel)
                 .build();
 
-        return bridgeClient
-                .call(restRequest, LoginResponseDataModel.class);
+        return bridgeClient.call(restRequest, LoginResponseDataModel.class);
     }
 
     @Override
     public ExtendedUserDataModel signUp(UserInitializeRequestModel userInitializeRequestModel) throws CommunicationFailureException {
-        return null;
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.POST)
+                .path(Path.USERS_REGISTER)
+                .requestBody(userInitializeRequestModel)
+                .build();
+
+        return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
 }

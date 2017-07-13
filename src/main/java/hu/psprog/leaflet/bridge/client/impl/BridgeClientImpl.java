@@ -45,7 +45,13 @@ class BridgeClientImpl implements BridgeClient {
         return responseReader.read(response, new GenericType<>(responseType));
     }
 
-    private <T extends BaseBodyDataModel> Response doCall(RESTRequest request) throws CommunicationFailureException {
+    @Override
+    public void call(RESTRequest request) throws CommunicationFailureException {
+        Response response = doCall(request);
+        responseReader.read(response);
+    }
+
+    private Response doCall(RESTRequest request) throws CommunicationFailureException {
         try {
             return invocationFactory
                     .getInvocationFor(request)

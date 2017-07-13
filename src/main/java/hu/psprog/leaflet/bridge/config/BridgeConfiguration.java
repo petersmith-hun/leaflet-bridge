@@ -49,9 +49,9 @@ public class BridgeConfiguration {
 
     @Bean
     @DependsOn("bridgeClient")
-    public WebTarget webTarget() {
+    public WebTarget webTarget(Client bridgeClient) {
 
-        return bridgeClient().target(baseUrl);
+        return bridgeClient.target(baseUrl);
     }
 
     @Bean

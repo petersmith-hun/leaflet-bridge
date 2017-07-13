@@ -25,13 +25,24 @@ class ResponseReader {
      * @return response payload as T
      */
     <T> T read(Response response, GenericType<T> responseType) {
+        checkResponse(response);
+        return response.readEntity(responseType);
+    }
 
+    /**
+     * Reads given void response.
+     *
+     * @param response raw {@link Response} of Jersey client
+     */
+    void read(Response response) {
+        checkResponse(response);
+    }
+
+    private void checkResponse(Response response) {
         Response.Status status = Response.Status.fromStatusCode(response.getStatus());
         if (status != Response.Status.OK) {
             raiseException(status, response);
         }
-
-        return response.readEntity(responseType);
     }
 
     private void raiseException(Response.Status status, Response response) {
