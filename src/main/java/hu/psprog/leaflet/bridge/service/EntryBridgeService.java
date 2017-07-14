@@ -29,7 +29,7 @@ public interface EntryBridgeService {
      *
      * @param page page number (page indexing starts at 1)
      * @param limit number of entries on one page
-     * @param orderBy order by {@link OrderBy} options
+     * @param orderBy order by {@link OrderBy.Entry} options
      * @param orderDirection order direction (ASC|DESC)
      * @return page of public entries
      * @throws CommunicationFailureException if client fails to reach backend application

@@ -26,6 +26,24 @@ public class OrderBy {
         }
     }
 
+    /**
+     * Available ordering options for comments.
+     */
+    public enum Comment {
+        ID("id"),
+        CREATED("created");
+
+        private String field;
+
+        Comment(String field) {
+            this.field = field;
+        }
+
+        public String getField() {
+            return field;
+        }
+    }
+
     private OrderBy() {
     }
 }

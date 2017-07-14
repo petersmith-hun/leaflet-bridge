@@ -14,7 +14,6 @@ public class RESTRequest {
     private RequestMethod method;
     private Path path;
     private boolean authenticationRequired;
-    private boolean wrapped;
     private Serializable requestBody;
     private Map<String, Object> pathParameters = new HashMap<>();
     private Map<String, Object> requestParameters = new HashMap<>();
@@ -33,10 +32,6 @@ public class RESTRequest {
 
     public boolean isAuthenticationRequired() {
         return authenticationRequired;
-    }
-
-    public boolean isWrapped() {
-        return wrapped;
     }
 
     public Serializable getRequestBody() {
@@ -98,17 +93,6 @@ public class RESTRequest {
          */
         public RESTRequestBuilder authenticated() {
             restRequest.authenticationRequired = true;
-            return this;
-        }
-
-        /**
-         * _Optional_
-         * Flag to notify BridgeClient that the response is wrapped into {@link hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel}.
-         *
-         * @return Builder instance
-         */
-        public RESTRequestBuilder wrapped() {
-            restRequest.wrapped = true;
             return this;
         }
 

@@ -35,7 +35,7 @@ public interface BridgeClient {
      * @return answer mapped to given T type
      * @throws CommunicationFailureException when request could not be fulfilled because of a technical error
      */
-    <T extends BaseBodyDataModel> T call(RESTRequest request, Class<T> responseType) throws CommunicationFailureException;
+    <T> T call(RESTRequest request, Class<T> responseType) throws CommunicationFailureException;
 
     /**
      * Sends a request to the Leaflet backend application.
