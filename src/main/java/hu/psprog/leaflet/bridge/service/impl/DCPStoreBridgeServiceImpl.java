@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 class DCPStoreBridgeServiceImpl implements DCPStoreBridgeService {
 
+    private static final String KEY = "key";
+
     private BridgeClient bridgeClient;
 
     @Autowired
@@ -65,12 +67,12 @@ class DCPStoreBridgeServiceImpl implements DCPStoreBridgeService {
     }
 
     @Override
-    public void removeDCPEntry(DCPRequestModel dcpRequestModel) throws CommunicationFailureException {
+    public void removeDCPEntry(String dcpKey) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
-                .path(Path.DCP)
-                .requestBody(dcpRequestModel)
+                .path(Path.DCP_BY_KEY)
+                .addPathParameter(KEY, dcpKey)
                 .authenticated()
                 .build();
 

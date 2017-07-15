@@ -69,7 +69,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
     }
 
     @Override
-    public WrapperBodyDataModel<EntryListDataModel> getPageOfPublicEntriesByCategory(int categoryID, int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
+    public WrapperBodyDataModel<EntryListDataModel> getPageOfPublicEntriesByCategory(Long categoryID, int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
             throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -129,6 +129,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
                 .path(Path.ENTRIES_BY_ID)
+                .addPathParameter(ID, String.valueOf(entryID))
                 .requestBody(entryUpdateRequestModel)
                 .authenticated()
                 .build();
@@ -142,6 +143,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
                 .path(Path.ENTRIES_STATUS)
+                .addPathParameter(ID, String.valueOf(entryID))
                 .authenticated()
                 .build();
 
@@ -154,6 +156,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
                 .path(Path.ENTRIES_BY_ID)
+                .addPathParameter(ID, String.valueOf(entryID))
                 .authenticated()
                 .build();
 

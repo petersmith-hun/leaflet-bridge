@@ -26,6 +26,7 @@ public enum Path {
 
     // DCP related paths
     DCP("/dcp"),
+    DCP_BY_KEY("/dcp/{key}"),
 
     // document related paths
     DOCUMENTS("/documents"),

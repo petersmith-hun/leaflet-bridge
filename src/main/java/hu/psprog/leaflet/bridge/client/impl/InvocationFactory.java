@@ -46,7 +46,7 @@ class InvocationFactory {
         WebTarget target = webTarget
                 .path(restRequest.getPath().getURI())
                 .resolveTemplates(restRequest.getPathParameters());
-        fillRequestParameters(target, restRequest);
+        target = fillRequestParameters(target, restRequest);
         Invocation.Builder builder = target.request(MediaType.APPLICATION_JSON_TYPE);
         authenticate(builder, restRequest);
 
@@ -55,9 +55,14 @@ class InvocationFactory {
                 .prepareInvocation(builder, restRequest);
     }
 
-    private void fillRequestParameters(WebTarget webTarget, RESTRequest request) {
-        request.getRequestParameters()
-                .forEach(webTarget::queryParam);
+    private WebTarget fillRequestParameters(WebTarget webTarget, RESTRequest request) {
+
+        WebTarget targetWithParameters = webTarget;
+        for (Map.Entry entry : request.getRequestParameters().entrySet()) {
+            targetWithParameters = targetWithParameters.queryParam(entry.getKey().toString(), entry.getValue());
+        }
+
+        return targetWithParameters;
     }
 
     private void authenticate(Invocation.Builder builder, RESTRequest request) {

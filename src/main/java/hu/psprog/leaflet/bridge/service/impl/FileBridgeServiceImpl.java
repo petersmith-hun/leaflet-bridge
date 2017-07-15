@@ -81,6 +81,7 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .path(Path.FILES_BY_ID)
                 .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
                 .addPathParameter(STORED_FILENAME, storedFilename)
+                .authenticated()
                 .build();
 
         bridgeClient.call(restRequest);

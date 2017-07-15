@@ -39,14 +39,13 @@ class ResponseReader {
     }
 
     private void checkResponse(Response response) {
-        Response.Status status = Response.Status.fromStatusCode(response.getStatus());
-        if (status != Response.Status.OK) {
-            raiseException(status, response);
+        if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+            raiseException(response);
         }
     }
 
-    private void raiseException(Response.Status status, Response response) {
-        switch (status) {
+    private void raiseException(Response response) {
+        switch (Response.Status.fromStatusCode(response.getStatus())) {
             case BAD_REQUEST:
                 throw new ValidationFailureException(response.readEntity(String.class));
             case NOT_FOUND:

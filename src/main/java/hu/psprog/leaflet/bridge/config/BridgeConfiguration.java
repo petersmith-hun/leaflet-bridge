@@ -40,7 +40,7 @@ public class BridgeConfiguration {
     private String baseUrl;
 
     @Bean
-    public Client bridgeClient() {
+    public Client jacksonClient() {
 
         return ClientBuilder.newBuilder()
                 .register(new JacksonJsonProvider())
@@ -48,7 +48,7 @@ public class BridgeConfiguration {
     }
 
     @Bean
-    @DependsOn("bridgeClient")
+    @DependsOn("jacksonClient")
     public WebTarget webTarget(Client bridgeClient) {
 
         return bridgeClient.target(baseUrl);

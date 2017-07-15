@@ -48,7 +48,7 @@ public interface EntryBridgeService {
      * @return page of public entries under given category
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    WrapperBodyDataModel<EntryListDataModel> getPageOfPublicEntriesByCategory(int categoryID, int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
+    WrapperBodyDataModel<EntryListDataModel> getPageOfPublicEntriesByCategory(Long categoryID, int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
             throws CommunicationFailureException;
 
     /**

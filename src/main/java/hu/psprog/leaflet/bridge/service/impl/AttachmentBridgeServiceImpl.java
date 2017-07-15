@@ -42,7 +42,7 @@ class AttachmentBridgeServiceImpl implements AttachmentBridgeService {
     public void detach(AttachmentRequestModel attachmentRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
-                .method(RequestMethod.DELETE)
+                .method(RequestMethod.PUT)
                 .path(Path.ATTACHMENTS)
                 .requestBody(attachmentRequestModel)
                 .authenticated()

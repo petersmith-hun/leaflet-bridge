@@ -38,8 +38,8 @@ public interface DCPStoreBridgeService {
     /**
      * Deletes an existing DCP Store entry.
      *
-     * @param dcpRequestModel {@link DCPRequestModel} object holding entry data (only the key is required)
+     * @param dcpKey key of DCP entry to remove
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    void removeDCPEntry(DCPRequestModel dcpRequestModel) throws CommunicationFailureException;
+    void removeDCPEntry(String dcpKey) throws CommunicationFailureException;
 }

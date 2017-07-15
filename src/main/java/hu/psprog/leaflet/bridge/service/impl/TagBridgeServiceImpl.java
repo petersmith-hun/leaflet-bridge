@@ -126,7 +126,7 @@ class TagBridgeServiceImpl implements TagBridgeService {
     public void detachTag(TagAssignmentRequestModel tagAssignmentRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
-                .method(RequestMethod.DELETE)
+                .method(RequestMethod.PUT)
                 .path(Path.TAGS_ASSIGN)
                 .requestBody(tagAssignmentRequestModel)
                 .authenticated()

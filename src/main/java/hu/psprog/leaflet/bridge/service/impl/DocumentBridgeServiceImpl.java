@@ -90,7 +90,7 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
-                .path(Path.DOCUMENTS)
+                .path(Path.DOCUMENTS_BY_ID)
                 .addPathParameter(ID, String.valueOf(documentID))
                 .requestBody(documentUpdateRequestModel)
                 .authenticated()
@@ -104,7 +104,7 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
-                .path(Path.DOCUMENTS)
+                .path(Path.DOCUMENTS_BY_ID)
                 .addPathParameter(ID, String.valueOf(documentID))
                 .authenticated()
                 .build();
