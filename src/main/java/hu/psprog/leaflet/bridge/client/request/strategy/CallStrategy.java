@@ -5,7 +5,6 @@ import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
 
 /**
  * Call strategy based on request method.
@@ -15,13 +14,14 @@ import javax.ws.rs.core.Response;
 public interface CallStrategy {
 
     /**
-     * Sends given request for the leaflet backend.
+     * Prepares invocation for given request for the leaflet backend.
      *
+     * @param builder {@link Invocation.Builder} object
      * @param request {@link RESTRequest} object containing request parameters
-     * @return response of type {@link Response}
+     * @return Invocation object
      * @throws JsonProcessingException on JSON processing failure
      */
-    Response call(Invocation.Builder builder, RESTRequest request) throws JsonProcessingException;
+    Invocation prepareInvocation(Invocation.Builder builder, RESTRequest request) throws JsonProcessingException;
 
     /**
      * Returns method to use strategy for.

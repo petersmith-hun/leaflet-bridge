@@ -15,8 +15,8 @@ public class RESTRequest {
     private Path path;
     private boolean authenticationRequired;
     private Serializable requestBody;
-    private Map<String, String> pathParameters = new HashMap<>();
-    private Map<String, String> requestParameters = new HashMap<>();
+    private Map<String, Object> pathParameters = new HashMap<>();
+    private Map<String, Object> requestParameters = new HashMap<>();
 
     private RESTRequest() {
         // prevent direct initialization
@@ -38,22 +38,26 @@ public class RESTRequest {
         return requestBody;
     }
 
-    public Map<String, String> getPathParameters() {
+    public Map<String, Object> getPathParameters() {
         return pathParameters;
     }
 
-    public Map<String, String> getRequestParameters() {
+    public Map<String, Object> getRequestParameters() {
         return requestParameters;
+    }
+
+    public static RESTRequestBuilder getBuilder() {
+        return new RESTRequestBuilder();
     }
 
     /**
      * Builder for {@link RESTRequest} object.
      */
-    public static class Builder {
+    public static class RESTRequestBuilder {
 
         private RESTRequest restRequest;
 
-        public Builder() {
+        private RESTRequestBuilder() {
             restRequest = new RESTRequest();
         }
 
@@ -64,7 +68,7 @@ public class RESTRequest {
          * @param method an available request method from {@link RequestMethod} enumeration
          * @return Builder instance
          */
-        public Builder method(RequestMethod method) {
+        public RESTRequestBuilder method(RequestMethod method) {
             restRequest.method = method;
             return this;
         }
@@ -76,7 +80,7 @@ public class RESTRequest {
          * @param path an available path from {@link Path} enumeration
          * @return Builder instance
          */
-        public Builder path(Path path) {
+        public RESTRequestBuilder path(Path path) {
             restRequest.path = path;
             return this;
         }
@@ -87,7 +91,7 @@ public class RESTRequest {
          *
          * @return Builder instance
          */
-        public Builder authenticated() {
+        public RESTRequestBuilder authenticated() {
             restRequest.authenticationRequired = true;
             return this;
         }
@@ -99,7 +103,7 @@ public class RESTRequest {
          * @param requestBody content of any type that is available in leaflet-rest-api module
          * @return Builder instance
          */
-        public Builder requestBody(Serializable requestBody) {
+        public RESTRequestBuilder requestBody(Serializable requestBody) {
             restRequest.requestBody = requestBody;
             return this;
         }
@@ -116,7 +120,7 @@ public class RESTRequest {
          * @param value concrete value of the path parameter
          * @return Builder instance
          */
-        public Builder addPathParameter(String key, String value) {
+        public RESTRequestBuilder addPathParameter(String key, String value) {
             restRequest.pathParameters.put(key, value);
             return this;
         }
@@ -129,7 +133,7 @@ public class RESTRequest {
          * @param value concrete value of the GET parameter
          * @return Builder instance
          */
-        public Builder addRequestParameters(String key, String value) {
+        public RESTRequestBuilder addRequestParameters(String key, String value) {
             restRequest.requestParameters.put(key, value);
             return this;
         }
