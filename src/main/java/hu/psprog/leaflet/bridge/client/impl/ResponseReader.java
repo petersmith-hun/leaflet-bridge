@@ -3,10 +3,14 @@ package hu.psprog.leaflet.bridge.client.impl;
 import hu.psprog.leaflet.bridge.client.exception.RequestProcessingFailureException;
 import hu.psprog.leaflet.bridge.client.exception.ResourceNotFoundException;
 import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+
+import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.AUTH_TOKEN_HEADER;
 
 /**
  * Handles Jersey's response.
@@ -15,6 +19,13 @@ import javax.ws.rs.core.Response;
  */
 @Component
 class ResponseReader {
+
+    private final HttpServletResponse httpServletResponse;
+
+    @Autowired
+    public ResponseReader(HttpServletResponse httpServletResponse) {
+        this.httpServletResponse = httpServletResponse;
+    }
 
     /**
      * Reads given response and parses it to the given response type of {@link GenericType}
@@ -26,6 +37,7 @@ class ResponseReader {
      */
     <T> T read(Response response, GenericType<T> responseType) {
         checkResponse(response);
+        extractToken(response);
         return response.readEntity(responseType);
     }
 
@@ -36,6 +48,11 @@ class ResponseReader {
      */
     void read(Response response) {
         checkResponse(response);
+        extractToken(response);
+    }
+
+    private void extractToken(Response response) {
+        httpServletResponse.setHeader(AUTH_TOKEN_HEADER, response.getHeaderString(AUTH_TOKEN_HEADER));
     }
 
     private void checkResponse(Response response) {
