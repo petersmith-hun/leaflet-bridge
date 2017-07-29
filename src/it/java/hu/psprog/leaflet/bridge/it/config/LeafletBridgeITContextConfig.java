@@ -2,12 +2,15 @@ package hu.psprog.leaflet.bridge.it.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
@@ -49,5 +52,15 @@ public class LeafletBridgeITContextConfig {
     @Bean
     public RequestAuthentication requestAuthenticationStub() {
         return requestAuthentication;
+    }
+
+    @Bean
+    public HttpServletRequest httpServletRequestStub() {
+        return Mockito.mock(HttpServletRequest.class);
+    }
+
+    @Bean
+    public HttpServletResponse httpServletResponse() {
+        return Mockito.mock(HttpServletResponse.class);
     }
 }

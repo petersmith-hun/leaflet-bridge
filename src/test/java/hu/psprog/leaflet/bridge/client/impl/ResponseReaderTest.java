@@ -12,9 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.AUTH_TOKEN_HEADER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -28,8 +30,13 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class ResponseReaderTest {
 
+    private static final String TOKEN_VALUE = "token";
+
     @Mock
     private Response response;
+
+    @Mock
+    private HttpServletResponse httpServletResponse;
 
     @InjectMocks
     private ResponseReader responseReader;
@@ -40,6 +47,7 @@ public class ResponseReaderTest {
     @Before
     public void setup() {
         given(response.readEntity(genericType)).willReturn(baseBodyDataModel);
+        given(response.getHeaderString(AUTH_TOKEN_HEADER)).willReturn(TOKEN_VALUE);
     }
 
     @Test
@@ -54,6 +62,7 @@ public class ResponseReaderTest {
         // then
         assertThat(result, equalTo(baseBodyDataModel));
         verify(response).readEntity(genericType);
+        verify(httpServletResponse).setHeader(AUTH_TOKEN_HEADER, TOKEN_VALUE);
     }
 
     @Test
@@ -64,6 +73,9 @@ public class ResponseReaderTest {
 
         // when
         responseReader.read(response);
+
+        // then
+        verify(httpServletResponse).setHeader(AUTH_TOKEN_HEADER, TOKEN_VALUE);
     }
 
     @Test(expected = ValidationFailureException.class)

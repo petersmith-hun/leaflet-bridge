@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.util.ReflectionUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -30,7 +31,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.DEVICE_ID_HEADER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -61,19 +64,24 @@ public class InvocationFactoryTest {
     private static final String TEST_ENTRIES_1 = "/test/entries/id/1";
     private static final String PUT = "PUT";
     private static final String TARGET = "http://localhost:10000/test";
+    private static final String DEVICE_ID = UUID.randomUUID().toString();
 
     @Mock
     private RequestAuthentication requestAuthentication;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     private InvocationFactory invocationFactory;
 
     @Before
     public void setup() {
+        given(httpServletRequest.getAttribute(DEVICE_ID_HEADER)).willReturn(DEVICE_ID);
         List<CallStrategy> callStrategyList = Arrays.asList(new PostCallStrategy(), new PutCallStrategy(), new GetCallStrategy(), new DeleteCallStrategy());
         WebTarget webTarget = ClientBuilder.newBuilder()
                 .build()
                 .target(TARGET);
-        invocationFactory = new InvocationFactory(webTarget, requestAuthentication, callStrategyList);
+        invocationFactory = new InvocationFactory(webTarget, requestAuthentication, callStrategyList, httpServletRequest);
         Map<String, String> auth = new HashMap<>();
         auth.put(AUTHORIZATION, BEARER_TOKEN);
         given(requestAuthentication.getAuthenticationHeader()).willReturn(auth);
@@ -104,6 +112,7 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
         assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
         assertThat(clientRequest.getUri().getQuery(), equalTo(QUERY_STRING));
+        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
         assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
     }
 
@@ -125,6 +134,7 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES));
         assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
         assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
     }
 
     @Test
@@ -150,6 +160,7 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
         assertThat(clientRequest.getEntity(), equalTo(entryCreateRequestModel));
         assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
+        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
     }
 
     @Test
@@ -173,6 +184,7 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
         assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
         assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
+        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
     }
 
     @Test
@@ -199,6 +211,7 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
         assertThat(clientRequest.getEntity(), equalTo(entryCreateRequestModel));
         assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
+        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
     }
 
     private ClientRequest getClientRequest(Invocation result) {

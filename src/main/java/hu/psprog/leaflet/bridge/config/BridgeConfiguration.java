@@ -24,6 +24,9 @@ import javax.ws.rs.client.WebTarget;
 @ComponentScan(basePackages = "hu.psprog.leaflet.bridge")
 public class BridgeConfiguration {
 
+    public static final String DEVICE_ID_HEADER = "X-Device-ID";
+    public static final String AUTH_TOKEN_HEADER = "X-Auth-Token";
+
     private static final String BRIDGE_CONFIG_PROPERTIES = "bridge-config.properties";
     private static final String BRIDGE_BASE_URL = "${bridge.baseUrl}";
 
