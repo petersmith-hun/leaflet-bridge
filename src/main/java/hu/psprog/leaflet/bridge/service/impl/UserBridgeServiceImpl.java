@@ -163,4 +163,16 @@ class UserBridgeServiceImpl implements UserBridgeService {
 
         return bridgeClient.call(restRequest, ExtendedUserDataModel.class);
     }
+
+    @Override
+    public void revokeToken() throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.POST)
+                .path(Path.USERS_REVOKE)
+                .authenticated()
+                .build();
+
+        bridgeClient.call(restRequest);
+    }
 }
