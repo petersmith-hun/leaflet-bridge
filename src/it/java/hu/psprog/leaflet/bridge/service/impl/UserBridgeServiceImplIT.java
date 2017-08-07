@@ -26,6 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Locale;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -254,6 +255,21 @@ public class UserBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(extendedUserDataModel));
         verify(postRequestedFor(urlEqualTo(Path.USERS_REGISTER.getURI()))
                 .withRequestBody(requestBody));
+    }
+
+    @Test
+    public void shouldRevokeToken() throws CommunicationFailureException {
+
+        // given
+        givenThat(post(Path.USERS_REVOKE.getURI())
+                .willReturn(aResponse().withStatus(204)));
+
+        // when
+        userBridgeService.revokeToken();
+
+        // then
+        verify(postRequestedFor(urlEqualTo(Path.USERS_REVOKE.getURI()))
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }
 
     private LoginRequestModel prepareLoginRequestModel() {

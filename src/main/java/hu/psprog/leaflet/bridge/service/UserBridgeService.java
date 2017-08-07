@@ -108,4 +108,11 @@ public interface UserBridgeService {
      * @throws CommunicationFailureException if client fails to reach backend application
      */
     ExtendedUserDataModel signUp(UserInitializeRequestModel userInitializeRequestModel) throws CommunicationFailureException;
+
+    /**
+     * Logout (token revoke).
+     *
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    void revokeToken() throws CommunicationFailureException;
 }
