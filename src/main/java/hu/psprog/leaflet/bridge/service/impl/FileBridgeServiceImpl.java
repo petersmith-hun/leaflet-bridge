@@ -12,9 +12,12 @@ import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.FileBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -57,7 +60,9 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .addPathParameter(STORED_FILENAME, storedFilename)
                 .build();
 
-        return bridgeClient.call(restRequest, Resource.class);
+        InputStream response = bridgeClient.call(restRequest, InputStream.class);
+
+        return convertInputStreamToByteArrayResource(response);
     }
 
     @Override
@@ -114,5 +119,19 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .build();
 
         bridgeClient.call(restRequest);
+    }
+
+    private ByteArrayResource convertInputStreamToByteArrayResource(InputStream inputStream) {
+
+        try {
+            byte[] inputStreamByteArray = new byte[inputStream.available()];
+            if (inputStream.read(inputStreamByteArray) <= 0 ) {
+                throw new IllegalStateException("Empty InputStream received.");
+            }
+
+            return new ByteArrayResource(inputStreamByteArray);
+        } catch (IOException e) {
+            throw new IllegalStateException("Retrieved InputStream could not be read up.", e);
+        }
     }
 }
