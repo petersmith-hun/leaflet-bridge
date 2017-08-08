@@ -15,10 +15,13 @@ import hu.psprog.leaflet.bridge.service.FileBridgeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
@@ -27,7 +30,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
-import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
@@ -68,20 +70,22 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
     }
 
     @Test
-    public void shouldDownloadFile() throws CommunicationFailureException {
+    public void shouldDownloadFile() throws CommunicationFailureException, IOException {
 
         // given
         UUID fileIdentifier = UUID.randomUUID();
         String filename = "filename";
         String uri = prepareURI(Path.FILES_BY_ID.getURI(), fileIdentifier, filename);
+        String responseBody = "responseBody";
         givenThat(get(uri)
-                .willReturn(ok()));
+                .willReturn(ResponseDefinitionBuilder.responseDefinition().withBody(responseBody.getBytes())));
 
         // when
-        fileBridgeService.downloadFile(fileIdentifier, filename);
+        Resource result = fileBridgeService.downloadFile(fileIdentifier, filename);
 
         // then
         verify(getRequestedFor(urlEqualTo(uri)));
+        assertThat(new String(((ByteArrayResource) result).getByteArray()), equalTo(responseBody));
     }
 
     @Test
