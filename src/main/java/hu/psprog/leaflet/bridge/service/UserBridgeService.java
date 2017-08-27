@@ -1,6 +1,7 @@
 package hu.psprog.leaflet.bridge.service;
 
 import hu.psprog.leaflet.api.rest.request.user.LoginRequestModel;
+import hu.psprog.leaflet.api.rest.request.user.PasswordResetDemandRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UpdateProfileRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UpdateRoleRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UserCreateRequestModel;
@@ -115,4 +116,20 @@ public interface UserBridgeService {
      * @throws CommunicationFailureException if client fails to reach backend application
      */
     void revokeToken() throws CommunicationFailureException;
+
+    /**
+     * Starts password reset process.
+     *
+     * @param passwordResetDemandRequestModel user's email address wrapped in {@link PasswordResetDemandRequestModel} to request password reset for
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    void demandPasswordReset(PasswordResetDemandRequestModel passwordResetDemandRequestModel) throws CommunicationFailureException;
+
+    /**
+     * Confirms password reset request by providing the new password.
+     *
+     * @param userPasswordRequestModel {@link UserPasswordRequestModel} holding the new password and its confirmation
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    void confirmPasswordReset(UserPasswordRequestModel userPasswordRequestModel) throws CommunicationFailureException;
 }

@@ -1,6 +1,7 @@
 package hu.psprog.leaflet.bridge.service.impl;
 
 import hu.psprog.leaflet.api.rest.request.user.LoginRequestModel;
+import hu.psprog.leaflet.api.rest.request.user.PasswordResetDemandRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UpdateProfileRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UpdateRoleRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UserCreateRequestModel;
@@ -170,6 +171,31 @@ class UserBridgeServiceImpl implements UserBridgeService {
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.POST)
                 .path(Path.USERS_REVOKE)
+                .authenticated()
+                .build();
+
+        bridgeClient.call(restRequest);
+    }
+
+    @Override
+    public void demandPasswordReset(PasswordResetDemandRequestModel passwordResetDemandRequestModel) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.POST)
+                .path(Path.USERS_RECLAIM)
+                .requestBody(passwordResetDemandRequestModel)
+                .build();
+
+        bridgeClient.call(restRequest);
+    }
+
+    @Override
+    public void confirmPasswordReset(UserPasswordRequestModel userPasswordRequestModel) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.USERS_RECLAIM)
+                .requestBody(userPasswordRequestModel)
                 .authenticated()
                 .build();
 
