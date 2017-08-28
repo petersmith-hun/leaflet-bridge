@@ -60,7 +60,7 @@ public class LeafletBridgeITContextConfig {
     }
 
     @Bean
-    public HttpServletResponse httpServletResponse() {
+    public HttpServletResponse httpServletResponseStub() {
         return Mockito.mock(HttpServletResponse.class);
     }
 }

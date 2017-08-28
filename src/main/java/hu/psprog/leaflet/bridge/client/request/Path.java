@@ -62,7 +62,8 @@ public enum Path {
     USERS_PASSWORD("/users/{id}/password"),
     USERS_INIT("/users/init"),
     USERS_REGISTER("/users/register"),
-    USERS_REVOKE("/users/revoke");
+    USERS_REVOKE("/users/revoke"),
+    USERS_RECLAIM("/users/reclaim");
 
     private String uri;
 

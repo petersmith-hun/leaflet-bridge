@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import hu.psprog.leaflet.api.rest.request.user.LoginRequestModel;
+import hu.psprog.leaflet.api.rest.request.user.PasswordResetDemandRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UpdateProfileRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UpdateRoleRequestModel;
 import hu.psprog.leaflet.api.rest.request.user.UserCreateRequestModel;
@@ -272,6 +273,43 @@ public class UserBridgeServiceImplIT extends WireMockBaseTest {
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }
 
+    @Test
+    public void shouldDemandPasswordReset() throws JsonProcessingException, CommunicationFailureException {
+
+        // given
+        PasswordResetDemandRequestModel passwordResetDemandRequestModel = preparePasswordResetDemandRequestModel();
+        StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(passwordResetDemandRequestModel));
+        givenThat(post(Path.USERS_RECLAIM.getURI())
+                .withRequestBody(requestBody)
+                .willReturn(aResponse().withStatus(201)));
+
+        // when
+        userBridgeService.demandPasswordReset(passwordResetDemandRequestModel);
+
+        // then
+        verify(postRequestedFor(urlEqualTo(Path.USERS_RECLAIM.getURI()))
+                .withRequestBody(requestBody));
+    }
+
+    @Test
+    public void shouldConfirmPasswordReset() throws JsonProcessingException, CommunicationFailureException {
+
+        // given
+        UserPasswordRequestModel userPasswordRequestModel = prepareUserPasswordRequestModel();
+        StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(userPasswordRequestModel));
+        givenThat(put(Path.USERS_RECLAIM.getURI())
+                .withRequestBody(requestBody)
+                .willReturn(aResponse().withStatus(201)));
+
+        // when
+        userBridgeService.confirmPasswordReset(userPasswordRequestModel);
+
+        // then
+        verify(putRequestedFor(urlEqualTo(Path.USERS_RECLAIM.getURI()))
+                .withRequestBody(requestBody)
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
+    }
+
     private LoginRequestModel prepareLoginRequestModel() {
         LoginRequestModel loginRequestModel = new LoginRequestModel();
         loginRequestModel.setEmail("user@it.dev");
@@ -342,5 +380,11 @@ public class UserBridgeServiceImplIT extends WireMockBaseTest {
                 .withId(userID)
                 .withUsername("User #" + userID)
                 .build();
+    }
+
+    private PasswordResetDemandRequestModel preparePasswordResetDemandRequestModel() {
+        PasswordResetDemandRequestModel passwordResetDemandRequestModel = new PasswordResetDemandRequestModel();
+        passwordResetDemandRequestModel.setEmail("user1@it.dev");
+        return passwordResetDemandRequestModel;
     }
 }
