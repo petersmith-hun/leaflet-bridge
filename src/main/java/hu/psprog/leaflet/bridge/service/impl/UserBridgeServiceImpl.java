@@ -201,4 +201,16 @@ class UserBridgeServiceImpl implements UserBridgeService {
 
         bridgeClient.call(restRequest);
     }
+
+    @Override
+    public LoginResponseDataModel renewToken() throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.USERS_RENEW)
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, LoginResponseDataModel.class);
+    }
 }
