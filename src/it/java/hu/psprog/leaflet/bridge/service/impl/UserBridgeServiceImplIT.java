@@ -310,6 +310,22 @@ public class UserBridgeServiceImplIT extends WireMockBaseTest {
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }
 
+    @Test
+    public void shouldRenewToken() throws JsonProcessingException, CommunicationFailureException {
+
+        // given
+        LoginResponseDataModel loginResponseDataModel = prepareLoginResponseDataModel();
+        givenThat(put(Path.USERS_RENEW.getURI())
+                .willReturn(ResponseDefinitionBuilder.okForJson(loginResponseDataModel)));
+
+        // when
+        LoginResponseDataModel result = userBridgeService.renewToken();
+
+        // then
+        assertThat(result, equalTo(loginResponseDataModel));
+        verify(putRequestedFor(urlEqualTo(Path.USERS_RENEW.getURI())));
+    }
+
     private LoginRequestModel prepareLoginRequestModel() {
         LoginRequestModel loginRequestModel = new LoginRequestModel();
         loginRequestModel.setEmail("user@it.dev");

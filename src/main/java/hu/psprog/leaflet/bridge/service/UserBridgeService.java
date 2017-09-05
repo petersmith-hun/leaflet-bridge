@@ -132,4 +132,12 @@ public interface UserBridgeService {
      * @throws CommunicationFailureException if client fails to reach backend application
      */
     void confirmPasswordReset(UserPasswordRequestModel userPasswordRequestModel) throws CommunicationFailureException;
+
+    /**
+     * Claims "session extension" - replaces given token with a new one.
+     *
+     * @return response mapped to {@link LoginResponseDataModel}
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    LoginResponseDataModel renewToken() throws CommunicationFailureException;
 }
