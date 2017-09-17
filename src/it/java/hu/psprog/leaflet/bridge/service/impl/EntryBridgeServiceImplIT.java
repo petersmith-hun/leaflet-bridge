@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import hu.psprog.leaflet.api.rest.request.entry.EntryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
+import hu.psprog.leaflet.api.rest.response.entry.EditEntryDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.EntryDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.EntryListDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.ExtendedEntryDataModel;
@@ -163,14 +164,14 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = prepareEntryCreateRequestModel();
-        ExtendedEntryDataModel extendedEntryDataModel = prepareExtendedEntryDataModel(1L);
+        EditEntryDataModel extendedEntryDataModel = prepareEditEntryDataModel(1L);
         StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(entryCreateRequestModel));
         givenThat(post(Path.ENTRIES.getURI())
                 .withRequestBody(requestBody)
                 .willReturn(ResponseDefinitionBuilder.okForJson(extendedEntryDataModel)));
 
         // when
-        ExtendedEntryDataModel result = entryBridgeService.createEntry(entryCreateRequestModel);
+        EditEntryDataModel result = entryBridgeService.createEntry(entryCreateRequestModel);
 
         // then
         assertThat(result, equalTo(extendedEntryDataModel));
@@ -183,7 +184,7 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = prepareEntryCreateRequestModel();
-        ExtendedEntryDataModel extendedEntryDataModel = prepareExtendedEntryDataModel(1L);
+        EditEntryDataModel extendedEntryDataModel = prepareEditEntryDataModel(1L);
         StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(entryCreateRequestModel));
         Long entryID = 1L;
         String uri = prepareURI(Path.ENTRIES_BY_ID.getURI(), entryID);
@@ -192,7 +193,7 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
                 .willReturn(ResponseDefinitionBuilder.okForJson(extendedEntryDataModel)));
 
         // when
-        ExtendedEntryDataModel result = entryBridgeService.updateEntry(entryID, entryCreateRequestModel);
+        EditEntryDataModel result = entryBridgeService.updateEntry(entryID, entryCreateRequestModel);
 
         // then
         assertThat(result, equalTo(extendedEntryDataModel));
@@ -204,14 +205,14 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
     public void shouldChangeStatus() throws CommunicationFailureException {
 
         // given
-        ExtendedEntryDataModel extendedEntryDataModel = prepareExtendedEntryDataModel(1L);
+        EditEntryDataModel extendedEntryDataModel = prepareEditEntryDataModel(1L);
         Long entryID = 1L;
         String uri = prepareURI(Path.ENTRIES_STATUS.getURI(), entryID);
         givenThat(put(uri)
                 .willReturn(ResponseDefinitionBuilder.okForJson(extendedEntryDataModel)));
 
         // when
-        ExtendedEntryDataModel result = entryBridgeService.changeStatus(entryID);
+        EditEntryDataModel result = entryBridgeService.changeStatus(entryID);
 
         // then
         assertThat(result, equalTo(extendedEntryDataModel));
@@ -261,6 +262,15 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
                 .withId(entryID)
                 .withLink("entry-" + entryID)
                 .withTitle("Entry #" + entryID)
+                .build();
+    }
+
+    private EditEntryDataModel prepareEditEntryDataModel(Long entryID) {
+        return EditEntryDataModel.getExtendedBuilder()
+                .withId(entryID)
+                .withLink("entry-" + entryID)
+                .withTitle("Entry #" + entryID)
+                .withRawContent("raw-content" + entryID)
                 .build();
     }
 }
