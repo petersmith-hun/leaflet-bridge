@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.service.impl;
 import hu.psprog.leaflet.api.rest.request.entry.EntryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.request.entry.EntryUpdateRequestModel;
 import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
+import hu.psprog.leaflet.api.rest.response.entry.EditEntryDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.EntryListDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.ExtendedEntryDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
@@ -111,7 +112,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
     }
 
     @Override
-    public ExtendedEntryDataModel createEntry(EntryCreateRequestModel entryCreateRequestModel) throws CommunicationFailureException {
+    public EditEntryDataModel createEntry(EntryCreateRequestModel entryCreateRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.POST)
@@ -120,11 +121,11 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedEntryDataModel.class);
+        return bridgeClient.call(restRequest, EditEntryDataModel.class);
     }
 
     @Override
-    public ExtendedEntryDataModel updateEntry(Long entryID, EntryUpdateRequestModel entryUpdateRequestModel) throws CommunicationFailureException {
+    public EditEntryDataModel updateEntry(Long entryID, EntryUpdateRequestModel entryUpdateRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
@@ -134,11 +135,11 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedEntryDataModel.class);
+        return bridgeClient.call(restRequest, EditEntryDataModel.class);
     }
 
     @Override
-    public ExtendedEntryDataModel changeStatus(Long entryID) throws CommunicationFailureException {
+    public EditEntryDataModel changeStatus(Long entryID) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
@@ -147,7 +148,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedEntryDataModel.class);
+        return bridgeClient.call(restRequest, EditEntryDataModel.class);
     }
 
     @Override

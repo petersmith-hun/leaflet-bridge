@@ -61,7 +61,7 @@ public class InvocationFactoryTest {
     private static final String GET = "GET";
     private static final String TEST_ENTRIES = "/test/entries";
     private static final String DELETE = "DELETE";
-    private static final String TEST_ENTRIES_1 = "/test/entries/id/1";
+    private static final String TEST_ENTRIES_1 = "/test/entries/1";
     private static final String PUT = "PUT";
     private static final String TARGET = "http://localhost:10000/test";
     private static final String DEVICE_ID = UUID.randomUUID().toString();

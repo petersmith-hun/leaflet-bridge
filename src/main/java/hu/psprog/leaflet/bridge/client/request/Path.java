@@ -38,7 +38,7 @@ public enum Path {
     ENTRIES_PAGE("/entries/page/{page}"),
     ENTRIES_CATEGORY_PAGE("/entries/{id}/page/{page}"),
     ENTRIES_BY_LINK("/entries/link/{link}"),
-    ENTRIES_BY_ID("/entries/id/{id}"),
+    ENTRIES_BY_ID("/entries/{id}"),
     ENTRIES_STATUS("/entries/{id}/status"),
 
     // file related paths

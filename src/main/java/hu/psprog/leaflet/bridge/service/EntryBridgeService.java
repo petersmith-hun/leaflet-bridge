@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.service;
 import hu.psprog.leaflet.api.rest.request.entry.EntryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.request.entry.EntryUpdateRequestModel;
 import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
+import hu.psprog.leaflet.api.rest.response.entry.EditEntryDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.EntryListDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.ExtendedEntryDataModel;
 import hu.psprog.leaflet.bridge.client.domain.OrderBy;
@@ -76,7 +77,7 @@ public interface EntryBridgeService {
      * @return created entry data
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedEntryDataModel createEntry(EntryCreateRequestModel entryCreateRequestModel) throws CommunicationFailureException;
+    EditEntryDataModel createEntry(EntryCreateRequestModel entryCreateRequestModel) throws CommunicationFailureException;
 
     /**
      * Updates an existing entry.
@@ -86,7 +87,7 @@ public interface EntryBridgeService {
      * @return updated entry data
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedEntryDataModel updateEntry(Long entryID, EntryUpdateRequestModel entryUpdateRequestModel) throws CommunicationFailureException;
+    EditEntryDataModel updateEntry(Long entryID, EntryUpdateRequestModel entryUpdateRequestModel) throws CommunicationFailureException;
 
     /**
      * Changes status of an existing entry.
@@ -95,7 +96,7 @@ public interface EntryBridgeService {
      * @return updated entry data
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedEntryDataModel changeStatus(Long entryID) throws CommunicationFailureException;
+    EditEntryDataModel changeStatus(Long entryID) throws CommunicationFailureException;
 
     /**
      * Deletes an existing entry.
