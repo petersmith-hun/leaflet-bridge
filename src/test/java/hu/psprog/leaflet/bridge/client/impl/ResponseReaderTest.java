@@ -90,7 +90,6 @@ public class ResponseReaderTest {
 
         // then
         // expected exception
-        verify(response).readEntity(String.class);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -105,7 +104,6 @@ public class ResponseReaderTest {
 
         // then
         // expected exception
-        verify(response).readEntity(String.class);
     }
 
     @Test(expected = RequestProcessingFailureException.class)
@@ -120,7 +118,6 @@ public class ResponseReaderTest {
 
         // then
         // expected exception
-        verify(response).readEntity(String.class);
     }
 
     @Test(expected = ValidationFailureException.class)
@@ -135,7 +132,6 @@ public class ResponseReaderTest {
 
         // then
         // expected exception
-        verify(response).readEntity(String.class);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -150,7 +146,6 @@ public class ResponseReaderTest {
 
         // then
         // expected exception
-        verify(response).readEntity(String.class);
     }
 
     @Test(expected = RequestProcessingFailureException.class)
@@ -165,6 +160,5 @@ public class ResponseReaderTest {
 
         // then
         // expected exception
-        verify(response).readEntity(String.class);
     }
 }

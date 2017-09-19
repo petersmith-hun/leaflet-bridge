@@ -1,8 +1,6 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
-import hu.psprog.leaflet.bridge.client.exception.RequestProcessingFailureException;
-import hu.psprog.leaflet.bridge.client.exception.ResourceNotFoundException;
-import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
+import hu.psprog.leaflet.bridge.client.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -63,12 +61,18 @@ class ResponseReader {
 
     private void raiseException(Response response) {
         switch (Response.Status.fromStatusCode(response.getStatus())) {
+            case UNAUTHORIZED:
+                throw new UnauthorizedAccessException(response);
+            case FORBIDDEN:
+                throw new ForbiddenOperationException(response);
             case BAD_REQUEST:
-                throw new ValidationFailureException(response.readEntity(String.class));
+                throw new ValidationFailureException(response);
             case NOT_FOUND:
-                throw new ResourceNotFoundException(response.readEntity(String.class));
+                throw new ResourceNotFoundException(response);
+            case CONFLICT:
+                throw new ConflictingRequestException(response);
             default:
-                throw new RequestProcessingFailureException(response.readEntity(String.class));
+                throw new RequestProcessingFailureException(response);
         }
     }
 }
