@@ -99,7 +99,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
     }
 
     @Override
-    public WrapperBodyDataModel<ExtendedEntryDataModel> getEntryByID(Long entryID) throws CommunicationFailureException {
+    public WrapperBodyDataModel<EditEntryDataModel> getEntryByID(Long entryID) throws CommunicationFailureException {
 
         RESTRequest request = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
@@ -108,7 +108,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(request, new GenericType<WrapperBodyDataModel<ExtendedEntryDataModel>>() {});
+        return bridgeClient.call(request, new GenericType<WrapperBodyDataModel<EditEntryDataModel>>() {});
     }
 
     @Override

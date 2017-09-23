@@ -68,7 +68,7 @@ public interface EntryBridgeService {
      * @return identified entry
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    WrapperBodyDataModel<ExtendedEntryDataModel> getEntryByID(Long entryID) throws CommunicationFailureException;
+    WrapperBodyDataModel<EditEntryDataModel> getEntryByID(Long entryID) throws CommunicationFailureException;
 
     /**
      * Creates a new entry.
