@@ -143,15 +143,15 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
     public void shouldGetEntryByID() throws CommunicationFailureException {
 
         // given
-        ExtendedEntryDataModel extendedEntryDataModel = prepareExtendedEntryDataModel(1L);
-        WrapperBodyDataModel<ExtendedEntryDataModel> wrappedEntryDataModel = prepareWrappedListDataModel(extendedEntryDataModel);
+        EditEntryDataModel extendedEntryDataModel = prepareEditEntryDataModel(1L);
+        WrapperBodyDataModel<EditEntryDataModel> wrappedEntryDataModel = prepareWrappedListDataModel(extendedEntryDataModel);
         Long entryID = 1L;
         String uri = prepareURI(Path.ENTRIES_BY_ID.getURI(), entryID);
         givenThat(get(uri)
                 .willReturn(ResponseDefinitionBuilder.okForJson(wrappedEntryDataModel)));
 
         // when
-        WrapperBodyDataModel<ExtendedEntryDataModel> result = entryBridgeService.getEntryByID(entryID);
+        WrapperBodyDataModel<EditEntryDataModel> result = entryBridgeService.getEntryByID(entryID);
 
         // then
         assertThat(result, equalTo(wrappedEntryDataModel));
