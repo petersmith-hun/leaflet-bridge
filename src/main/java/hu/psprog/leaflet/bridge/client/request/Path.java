@@ -36,6 +36,7 @@ public enum Path {
     // entry related paths
     ENTRIES("/entries"),
     ENTRIES_PAGE("/entries/page/{page}"),
+    ENTRIES_PAGE_ALL("/entries/page/{page}/all"),
     ENTRIES_CATEGORY_PAGE("/entries/{id}/page/{page}"),
     ENTRIES_BY_LINK("/entries/link/{link}"),
     ENTRIES_BY_ID("/entries/{id}"),

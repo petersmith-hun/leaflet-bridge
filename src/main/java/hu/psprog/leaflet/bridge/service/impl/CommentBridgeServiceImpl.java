@@ -50,7 +50,7 @@ class CommentBridgeServiceImpl implements CommentBridgeService {
                 .addPathParameter(ID, String.valueOf(entryID))
                 .addPathParameter(PAGE, String.valueOf(page))
                 .addRequestParameters(LIMIT, String.valueOf(limit))
-                .addRequestParameters(ORDER_BY, orderBy.getField())
+                .addRequestParameters(ORDER_BY, orderBy.name())
                 .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
                 .build();
 
@@ -67,7 +67,7 @@ class CommentBridgeServiceImpl implements CommentBridgeService {
                 .addPathParameter(ID, String.valueOf(entryID))
                 .addPathParameter(PAGE, String.valueOf(page))
                 .addRequestParameters(LIMIT, String.valueOf(limit))
-                .addRequestParameters(ORDER_BY, orderBy.getField())
+                .addRequestParameters(ORDER_BY, orderBy.name())
                 .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
                 .authenticated()
                 .build();

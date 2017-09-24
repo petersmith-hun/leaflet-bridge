@@ -90,8 +90,34 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(wrappedEntryListDataModel));
         verify(getRequestedFor(urlPathEqualTo(uri))
                 .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
-                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.getField()))
+                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
                 .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection))));
+    }
+
+    @Test
+    public void shouldGetPageOfEntries() throws CommunicationFailureException {
+
+        // given
+        EntryListDataModel entryListDataModel = prepareEntryListDataModel();
+        WrapperBodyDataModel<EntryListDataModel> wrappedEntryListDataModel = prepareWrappedListDataModel(entryListDataModel);
+        int page = 1;
+        int limit = 10;
+        OrderBy.Entry orderBy = OrderBy.Entry.CREATED;
+        OrderDirection orderDirection = OrderDirection.ASC;
+        String uri = prepareURI(Path.ENTRIES_PAGE_ALL.getURI(), page);
+        givenThat(get(urlPathEqualTo(uri))
+                .willReturn(ResponseDefinitionBuilder.okForJson(wrappedEntryListDataModel)));
+
+        // when
+        WrapperBodyDataModel<EntryListDataModel> result = entryBridgeService.getPageOfEntries(page, limit, orderBy, orderDirection);
+
+        // then
+        assertThat(result, equalTo(wrappedEntryListDataModel));
+        verify(getRequestedFor(urlPathEqualTo(uri))
+                .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
+                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
+                .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection)))
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }
 
     @Test
@@ -116,7 +142,7 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(wrappedEntryListDataModel));
         verify(getRequestedFor(urlPathEqualTo(uri))
                 .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
-                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.getField()))
+                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
                 .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection))));
     }
 
