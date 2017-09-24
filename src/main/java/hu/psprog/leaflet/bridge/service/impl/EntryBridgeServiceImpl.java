@@ -80,6 +80,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .addRequestParameters(LIMIT, String.valueOf(limit))
                 .addRequestParameters(ORDER_BY, orderBy.name())
                 .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
+                .authenticated()
                 .build();
 
         return bridgeClient.call(restRequest, new GenericType<WrapperBodyDataModel<EntryListDataModel>>() {});

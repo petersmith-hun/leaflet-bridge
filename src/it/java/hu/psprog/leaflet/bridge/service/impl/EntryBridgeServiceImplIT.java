@@ -116,7 +116,8 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
         verify(getRequestedFor(urlPathEqualTo(uri))
                 .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
                 .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
-                .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection))));
+                .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection)))
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }
 
     @Test
