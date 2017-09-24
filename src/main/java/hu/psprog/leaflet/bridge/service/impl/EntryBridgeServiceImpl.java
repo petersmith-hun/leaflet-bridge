@@ -62,7 +62,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .path(Path.ENTRIES_PAGE)
                 .addPathParameter(PAGE, String.valueOf(page))
                 .addRequestParameters(LIMIT, String.valueOf(limit))
-                .addRequestParameters(ORDER_BY, orderBy.getField())
+                .addRequestParameters(ORDER_BY, orderBy.name())
                 .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
                 .build();
 
@@ -78,7 +78,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .path(Path.ENTRIES_PAGE_ALL)
                 .addPathParameter(PAGE, String.valueOf(page))
                 .addRequestParameters(LIMIT, String.valueOf(limit))
-                .addRequestParameters(ORDER_BY, orderBy.getField())
+                .addRequestParameters(ORDER_BY, orderBy.name())
                 .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
                 .build();
 
@@ -95,7 +95,7 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
                 .addPathParameter(ID, String.valueOf(categoryID))
                 .addPathParameter(PAGE, String.valueOf(page))
                 .addRequestParameters(LIMIT, String.valueOf(limit))
-                .addRequestParameters(ORDER_BY, orderBy.getField())
+                .addRequestParameters(ORDER_BY, orderBy.name())
                 .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
                 .build();
 

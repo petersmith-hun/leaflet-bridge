@@ -90,7 +90,7 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(wrappedEntryListDataModel));
         verify(getRequestedFor(urlPathEqualTo(uri))
                 .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
-                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.getField()))
+                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
                 .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection))));
     }
 
@@ -115,7 +115,7 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(wrappedEntryListDataModel));
         verify(getRequestedFor(urlPathEqualTo(uri))
                 .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
-                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.getField()))
+                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
                 .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection))));
     }
 
@@ -141,7 +141,7 @@ public class EntryBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(wrappedEntryListDataModel));
         verify(getRequestedFor(urlPathEqualTo(uri))
                 .withQueryParam(LIMIT, WireMock.equalTo(String.valueOf(limit)))
-                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.getField()))
+                .withQueryParam(ORDER_BY, WireMock.equalTo(orderBy.name()))
                 .withQueryParam(ORDER_DIRECTION, WireMock.equalTo(String.valueOf(orderDirection))));
     }
 

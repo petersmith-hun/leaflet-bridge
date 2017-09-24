@@ -53,7 +53,7 @@ public class InvocationFactoryTest {
     private static final String ID = "id";
     private static final String BEARER_TOKEN = "Bearer token";
     private static final String AUTHORIZATION = "Authorization";
-    private static final String QUERY_STRING = "limit=10&orderBy=created&orderDirection=ASC";
+    private static final String QUERY_STRING = "limit=10&orderBy=CREATED&orderDirection=ASC";
     private static final String LOCALHOST = "localhost";
     private static final int PORT = 10000;
     private static final String POST = "POST";
@@ -97,7 +97,7 @@ public class InvocationFactoryTest {
                 .addPathParameter(ID, String.valueOf(2L))
                 .addPathParameter(PAGE, String.valueOf(1))
                 .addRequestParameters(LIMIT, String.valueOf(10))
-                .addRequestParameters(ORDER_BY, OrderBy.Entry.CREATED.getField())
+                .addRequestParameters(ORDER_BY, OrderBy.Entry.CREATED.name())
                 .addRequestParameters(ORDER_DIRECTION, OrderDirection.ASC.name())
                 .authenticated()
                 .build();
