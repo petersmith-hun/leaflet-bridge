@@ -39,6 +39,19 @@ public interface EntryBridgeService {
             throws CommunicationFailureException;
 
     /**
+     * Returns basic information of given page of (public and non-public) entries.
+     *
+     * @param page page number (page indexing starts at 1)
+     * @param limit number of entries on one page
+     * @param orderBy order by {@link OrderBy.Entry} options
+     * @param orderDirection order direction (ASC|DESC)
+     * @return page of entries
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    WrapperBodyDataModel<EntryListDataModel> getPageOfEntries(int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
+            throws CommunicationFailureException;
+
+    /**
      * Returns basic information of given page of public entries filtered by given category ID.
      *
      * @param categoryID category ID to filter by

@@ -70,6 +70,22 @@ class EntryBridgeServiceImpl implements EntryBridgeService {
     }
 
     @Override
+    public WrapperBodyDataModel<EntryListDataModel> getPageOfEntries(int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
+            throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.ENTRIES_PAGE_ALL)
+                .addPathParameter(PAGE, String.valueOf(page))
+                .addRequestParameters(LIMIT, String.valueOf(limit))
+                .addRequestParameters(ORDER_BY, orderBy.getField())
+                .addRequestParameters(ORDER_DIRECTION, orderDirection.name())
+                .build();
+
+        return bridgeClient.call(restRequest, new GenericType<WrapperBodyDataModel<EntryListDataModel>>() {});
+    }
+
+    @Override
     public WrapperBodyDataModel<EntryListDataModel> getPageOfPublicEntriesByCategory(Long categoryID, int page, int limit, OrderBy.Entry orderBy, OrderDirection orderDirection)
             throws CommunicationFailureException {
 
