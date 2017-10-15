@@ -378,8 +378,8 @@ public class UserBridgeServiceImplIT extends WireMockBaseTest {
 
     private UserListDataModel prepareUserListDataModel() {
         return UserListDataModel.getBuilder()
-                .withItem(prepareUserDataModel(1L))
-                .withItem(prepareUserDataModel(2L))
+                .withItem(prepareExtendedUserDataModel(1L))
+                .withItem(prepareExtendedUserDataModel(2L))
                 .build();
     }
 
@@ -388,13 +388,6 @@ public class UserBridgeServiceImplIT extends WireMockBaseTest {
                 .withId(userID)
                 .withUsername("User #" + userID)
                 .withEmail("user" + userID + "@it.dev")
-                .build();
-    }
-
-    private UserDataModel prepareUserDataModel(Long userID) {
-        return UserDataModel.getBuilder()
-                .withId(userID)
-                .withUsername("User #" + userID)
                 .build();
     }
 
