@@ -69,16 +69,17 @@ public class DocumentBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         EditDocumentDataModel editDocumentDataModel = prepareEditDocumentDataModel(1L);
+        WrapperBodyDataModel<EditDocumentDataModel> wrappedEditDocumentDataModel = prepareWrappedListDataModel(editDocumentDataModel);
         Long documentID = 1L;
         String uri = prepareURI(Path.DOCUMENTS_BY_ID.getURI(), documentID);
         givenThat(get(uri)
-                .willReturn(ResponseDefinitionBuilder.okForJson(editDocumentDataModel)));
+                .willReturn(ResponseDefinitionBuilder.okForJson(wrappedEditDocumentDataModel)));
 
         // when
-        EditDocumentDataModel result = documentBridgeService.getDocumentByID(documentID);
+        WrapperBodyDataModel<EditDocumentDataModel> result = documentBridgeService.getDocumentByID(documentID);
 
         // then
-        assertThat(result, equalTo(editDocumentDataModel));
+        assertThat(result, equalTo(wrappedEditDocumentDataModel));
         verify(getRequestedFor(urlEqualTo(uri))
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }

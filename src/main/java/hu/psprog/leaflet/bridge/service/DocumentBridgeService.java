@@ -30,7 +30,7 @@ public interface DocumentBridgeService {
      * @return identified document
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    EditDocumentDataModel getDocumentByID(Long documentID) throws CommunicationFailureException;
+    WrapperBodyDataModel<EditDocumentDataModel> getDocumentByID(Long documentID) throws CommunicationFailureException;
 
     /**
      * Returns details detailed information of document identified by given link (for visitors).
