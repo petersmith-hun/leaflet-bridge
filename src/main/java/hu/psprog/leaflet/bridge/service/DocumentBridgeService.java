@@ -30,7 +30,7 @@ public interface DocumentBridgeService {
      * @return identified document
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    EditDocumentDataModel getDocumentByID(Long documentID) throws CommunicationFailureException;
+    WrapperBodyDataModel<EditDocumentDataModel> getDocumentByID(Long documentID) throws CommunicationFailureException;
 
     /**
      * Returns details detailed information of document identified by given link (for visitors).
@@ -59,6 +59,15 @@ public interface DocumentBridgeService {
      * @throws CommunicationFailureException if client fails to reach backend application
      */
     EditDocumentDataModel updateDocument(Long documentID, DocumentUpdateRequestModel documentUpdateRequestModel) throws CommunicationFailureException;
+
+    /**
+     * Changes status of an existing document.
+     *
+     * @param documentID ID of the document to update status of
+     * @return updated document data
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    EditDocumentDataModel changeStatus(Long documentID) throws CommunicationFailureException;
 
     /**
      * Deletes an existing document.

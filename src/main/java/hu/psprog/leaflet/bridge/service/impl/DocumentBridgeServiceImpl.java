@@ -48,7 +48,7 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
     }
 
     @Override
-    public EditDocumentDataModel getDocumentByID(Long documentID) throws CommunicationFailureException {
+    public WrapperBodyDataModel<EditDocumentDataModel> getDocumentByID(Long documentID) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
@@ -57,7 +57,7 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, EditDocumentDataModel.class);
+        return bridgeClient.call(restRequest, new GenericType<WrapperBodyDataModel<EditDocumentDataModel>>() {});
     }
 
     @Override
@@ -93,6 +93,19 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
                 .path(Path.DOCUMENTS_BY_ID)
                 .addPathParameter(ID, String.valueOf(documentID))
                 .requestBody(documentUpdateRequestModel)
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, EditDocumentDataModel.class);
+    }
+
+    @Override
+    public EditDocumentDataModel changeStatus(Long documentID) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.DOCUMENTS_STATUS)
+                .addPathParameter(ID, String.valueOf(documentID))
                 .authenticated()
                 .build();
 
