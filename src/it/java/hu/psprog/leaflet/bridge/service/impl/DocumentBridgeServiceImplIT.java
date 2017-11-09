@@ -148,6 +148,25 @@ public class DocumentBridgeServiceImplIT extends WireMockBaseTest {
     }
 
     @Test
+    public void shouldChangeDocumentStatus() throws CommunicationFailureException {
+
+        // given
+        Long documentID = 1L;
+        String uri = prepareURI(Path.DOCUMENTS_STATUS.getURI(), documentID);
+        EditDocumentDataModel editDocumentDataModel = prepareEditDocumentDataModel(1L);
+        givenThat(put(uri)
+                .willReturn(ResponseDefinitionBuilder.okForJson(editDocumentDataModel)));
+
+        // when
+        EditDocumentDataModel result = documentBridgeService.changeStatus(documentID);
+
+        // then
+        assertThat(result, equalTo(editDocumentDataModel));
+        verify(putRequestedFor(urlEqualTo(uri))
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
+    }
+
+    @Test
     public void shouldDeleteDocument() throws CommunicationFailureException {
 
         // given

@@ -100,6 +100,19 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
     }
 
     @Override
+    public EditDocumentDataModel changeStatus(Long documentID) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.PUT)
+                .path(Path.DOCUMENTS_STATUS)
+                .addPathParameter(ID, String.valueOf(documentID))
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, EditDocumentDataModel.class);
+    }
+
+    @Override
     public void deleteDocument(Long documentID) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()

@@ -32,6 +32,7 @@ public enum Path {
     DOCUMENTS("/documents"),
     DOCUMENTS_BY_ID("/documents/{id}"),
     DOCUMENTS_BY_LINK("/documents/link/{link}"),
+    DOCUMENTS_STATUS("/documents/{id}/status"),
 
     // entry related paths
     ENTRIES("/entries"),

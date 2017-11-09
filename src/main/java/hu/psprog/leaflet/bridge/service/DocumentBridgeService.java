@@ -61,6 +61,15 @@ public interface DocumentBridgeService {
     EditDocumentDataModel updateDocument(Long documentID, DocumentUpdateRequestModel documentUpdateRequestModel) throws CommunicationFailureException;
 
     /**
+     * Changes status of an existing document.
+     *
+     * @param documentID ID of the document to update status of
+     * @return updated document data
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    EditDocumentDataModel changeStatus(Long documentID) throws CommunicationFailureException;
+
+    /**
      * Deletes an existing document.
      *
      * @param documentID ID of an existing document
