@@ -6,7 +6,6 @@ import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import hu.psprog.leaflet.api.rest.request.category.CategoryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
-import hu.psprog.leaflet.api.rest.response.category.ExtendedCategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
@@ -89,40 +88,40 @@ public class CategoryBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         Long categoryID = 1L;
-        ExtendedCategoryDataModel extendedCategoryDataModel = prepareExtendedCategoryDataModel(categoryID);
+        CategoryDataModel categoryDataModel = prepareCategoryDataModel(categoryID);
         String uri = prepareURI(Path.CATEGORIES_BY_ID.getURI(), categoryID);
         givenThat(get(uri)
-                .willReturn(ResponseDefinitionBuilder.okForJson(extendedCategoryDataModel)));
+                .willReturn(ResponseDefinitionBuilder.okForJson(categoryDataModel)));
 
         // when
-        ExtendedCategoryDataModel result = categoryBridgeService.getCategory(categoryID);
+        CategoryDataModel result = categoryBridgeService.getCategory(categoryID);
 
         // then
         verify(getRequestedFor(urlEqualTo(uri))
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
-        assertThat(result, equalTo(extendedCategoryDataModel));
+        assertThat(result, equalTo(categoryDataModel));
     }
 
     @Test
     public void shouldCreateCategory() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        ExtendedCategoryDataModel extendedCategoryDataModel = prepareExtendedCategoryDataModel(1L);
+        CategoryDataModel categoryDataModel = prepareCategoryDataModel(1L);
         CategoryCreateRequestModel categoryCreateRequestModel = prepareCategoryCreateRequestModel();
         StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(categoryCreateRequestModel));
         givenThat(post(Path.CATEGORIES.getURI())
                 .withRequestBody(requestBody)
                 .willReturn(ResponseDefinitionBuilder.like(ResponseDefinitionBuilder
-                        .jsonResponse(extendedCategoryDataModel, 201))));
+                        .jsonResponse(categoryDataModel, 201))));
 
         // when
-        ExtendedCategoryDataModel result = categoryBridgeService.createCategory(categoryCreateRequestModel);
+        CategoryDataModel result = categoryBridgeService.createCategory(categoryCreateRequestModel);
 
         // then
         verify(postRequestedFor(urlEqualTo(Path.CATEGORIES.getURI()))
                 .withRequestBody(requestBody)
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
-        assertThat(result, equalTo(extendedCategoryDataModel));
+        assertThat(result, equalTo(categoryDataModel));
     }
 
     @Test
@@ -130,23 +129,23 @@ public class CategoryBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         Long categoryID = 1L;
-        ExtendedCategoryDataModel extendedCategoryDataModel = prepareExtendedCategoryDataModel(1L);
+        CategoryDataModel categoryDataModel = prepareCategoryDataModel(1L);
         CategoryCreateRequestModel categoryCreateRequestModel = prepareCategoryCreateRequestModel();
         StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(categoryCreateRequestModel));
         String uri = prepareURI(Path.CATEGORIES_BY_ID.getURI(), categoryID);
         givenThat(put(uri)
                 .withRequestBody(requestBody)
                 .willReturn(ResponseDefinitionBuilder.like(ResponseDefinitionBuilder
-                        .jsonResponse(extendedCategoryDataModel, 201))));
+                        .jsonResponse(categoryDataModel, 201))));
 
         // when
-        ExtendedCategoryDataModel result = categoryBridgeService.updateCategory(categoryID, categoryCreateRequestModel);
+        CategoryDataModel result = categoryBridgeService.updateCategory(categoryID, categoryCreateRequestModel);
 
         // then
         verify(putRequestedFor(urlEqualTo(uri))
                 .withRequestBody(requestBody)
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
-        assertThat(result, equalTo(extendedCategoryDataModel));
+        assertThat(result, equalTo(categoryDataModel));
     }
 
     @Test
@@ -155,18 +154,18 @@ public class CategoryBridgeServiceImplIT extends WireMockBaseTest {
         // given
         Long categoryID = 1L;
         String uri = prepareURI(Path.CATEGORIES_STATUS.getURI(), categoryID);
-        ExtendedCategoryDataModel extendedCategoryDataModel = prepareExtendedCategoryDataModel(1L);
+        CategoryDataModel categoryDataModel = prepareCategoryDataModel(1L);
         givenThat(put(uri)
                 .willReturn(ResponseDefinitionBuilder.like(ResponseDefinitionBuilder
-                        .jsonResponse(extendedCategoryDataModel, 201))));
+                        .jsonResponse(categoryDataModel, 201))));
 
         // when
-        ExtendedCategoryDataModel result = categoryBridgeService.changeStatus(categoryID);
+        CategoryDataModel result = categoryBridgeService.changeStatus(categoryID);
 
         // then
         verify(putRequestedFor(urlEqualTo(uri))
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
-        assertThat(result, equalTo(extendedCategoryDataModel));
+        assertThat(result, equalTo(categoryDataModel));
     }
 
     @Test
@@ -202,13 +201,6 @@ public class CategoryBridgeServiceImplIT extends WireMockBaseTest {
     private CategoryDataModel prepareCategoryDataModel(Long categoryID) {
         return CategoryDataModel.getBuilder()
                 .withID(categoryID)
-                .withTitle("Category #" + categoryID.toString())
-                .build();
-    }
-
-    private ExtendedCategoryDataModel prepareExtendedCategoryDataModel(Long categoryID) {
-        return ExtendedCategoryDataModel.getExtendedBuilder()
-                .withId(categoryID)
                 .withTitle("Category #" + categoryID.toString())
                 .withDescription("Description for category")
                 .withCreated("Creation date")

@@ -2,7 +2,7 @@ package hu.psprog.leaflet.bridge.service.impl;
 
 import hu.psprog.leaflet.api.rest.request.category.CategoryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
-import hu.psprog.leaflet.api.rest.response.category.ExtendedCategoryDataModel;
+import hu.psprog.leaflet.api.rest.response.category.CategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
@@ -56,7 +56,7 @@ class CategoryBridgeServiceImpl implements CategoryBridgeService {
     }
 
     @Override
-    public ExtendedCategoryDataModel getCategory(Long categoryID) throws CommunicationFailureException {
+    public CategoryDataModel getCategory(Long categoryID) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
@@ -65,11 +65,11 @@ class CategoryBridgeServiceImpl implements CategoryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedCategoryDataModel.class);
+        return bridgeClient.call(restRequest, CategoryDataModel.class);
     }
 
     @Override
-    public ExtendedCategoryDataModel createCategory(CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException {
+    public CategoryDataModel createCategory(CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.POST)
@@ -78,11 +78,11 @@ class CategoryBridgeServiceImpl implements CategoryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedCategoryDataModel.class);
+        return bridgeClient.call(restRequest, CategoryDataModel.class);
     }
 
     @Override
-    public ExtendedCategoryDataModel updateCategory(Long categoryID, CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException {
+    public CategoryDataModel updateCategory(Long categoryID, CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
@@ -92,11 +92,11 @@ class CategoryBridgeServiceImpl implements CategoryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedCategoryDataModel.class);
+        return bridgeClient.call(restRequest, CategoryDataModel.class);
     }
 
     @Override
-    public ExtendedCategoryDataModel changeStatus(Long categoryID) throws CommunicationFailureException {
+    public CategoryDataModel changeStatus(Long categoryID) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
@@ -105,7 +105,7 @@ class CategoryBridgeServiceImpl implements CategoryBridgeService {
                 .authenticated()
                 .build();
 
-        return bridgeClient.call(restRequest, ExtendedCategoryDataModel.class);
+        return bridgeClient.call(restRequest, CategoryDataModel.class);
     }
 
     @Override

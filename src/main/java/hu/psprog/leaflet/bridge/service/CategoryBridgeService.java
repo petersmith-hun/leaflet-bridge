@@ -1,8 +1,8 @@
 package hu.psprog.leaflet.bridge.service;
 
 import hu.psprog.leaflet.api.rest.request.category.CategoryCreateRequestModel;
+import hu.psprog.leaflet.api.rest.response.category.CategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
-import hu.psprog.leaflet.api.rest.response.category.ExtendedCategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 
@@ -36,7 +36,7 @@ public interface CategoryBridgeService {
      * @return category data if requested category exists
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedCategoryDataModel getCategory(Long categoryID) throws CommunicationFailureException;
+    CategoryDataModel getCategory(Long categoryID) throws CommunicationFailureException;
 
     /**
      * Creates a new category.
@@ -45,7 +45,7 @@ public interface CategoryBridgeService {
      * @return created category data
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedCategoryDataModel createCategory(CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException;
+    CategoryDataModel createCategory(CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException;
 
     /**
      * Updates an existing category.
@@ -55,7 +55,7 @@ public interface CategoryBridgeService {
      * @return updated category data
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedCategoryDataModel updateCategory(Long categoryID, CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException;
+    CategoryDataModel updateCategory(Long categoryID, CategoryCreateRequestModel categoryCreateRequestModel) throws CommunicationFailureException;
 
     /**
      * Changes status of an existing category.
@@ -64,7 +64,7 @@ public interface CategoryBridgeService {
      * @return updated category data
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    ExtendedCategoryDataModel changeStatus(Long categoryID) throws CommunicationFailureException;
+    CategoryDataModel changeStatus(Long categoryID) throws CommunicationFailureException;
 
     /**
      * Deletes an existing category.
