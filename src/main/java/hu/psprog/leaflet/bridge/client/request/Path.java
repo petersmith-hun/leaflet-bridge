@@ -21,7 +21,7 @@ public enum Path {
     COMMENTS_PUBLIC_PAGE_BY_ENTRY("/comments/entry/{id}/{page}"),
     COMMENTS_ALL_PAGE_BY_ENTRY("/comments/entry/{id}/{page}/all"),
     COMMENTS_BY_ID("/comments/{id}"),
-    COMMENTS_STATUS("/comment/{id}/status"),
+    COMMENTS_STATUS("/comments/{id}/status"),
     COMMENTS_DELETE_PERMANENT("/comments/{id}/permanent"),
 
     // DCP related paths
