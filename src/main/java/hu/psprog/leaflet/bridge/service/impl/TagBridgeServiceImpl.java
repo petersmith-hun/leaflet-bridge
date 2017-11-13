@@ -57,6 +57,19 @@ class TagBridgeServiceImpl implements TagBridgeService {
     }
 
     @Override
+    public TagDataModel getTag(Long tagID) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.TAGS_BY_ID)
+                .addPathParameter(ID, String.valueOf(tagID))
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, TagDataModel.class);
+    }
+
+    @Override
     public TagDataModel createTag(TagCreateRequestModel tagCreateRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()

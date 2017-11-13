@@ -82,6 +82,25 @@ public class TagBridgeServiceImplIT extends WireMockBaseTest {
     }
 
     @Test
+    public void shouldGetTag() throws CommunicationFailureException {
+
+        // given
+        TagDataModel tagDataModel = prepareTagDataModel(1L);
+        Long tagID = 1L;
+        String uri = prepareURI(Path.TAGS_BY_ID.getURI(), tagID);
+        givenThat(get(uri)
+                .willReturn(ResponseDefinitionBuilder.okForJson(tagDataModel)));
+
+        // when
+        TagDataModel result = tagBridgeService.getTag(tagID);
+
+        // then
+        assertThat(result, equalTo(tagDataModel));
+        verify(getRequestedFor(urlEqualTo(uri))
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
+    }
+
+    @Test
     public void shouldCreateTag() throws JsonProcessingException, CommunicationFailureException {
 
         // given
