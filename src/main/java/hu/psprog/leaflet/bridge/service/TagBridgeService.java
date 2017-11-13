@@ -31,6 +31,15 @@ public interface TagBridgeService {
     WrapperBodyDataModel<TagListDataModel> getAllPublicTags() throws CommunicationFailureException;
 
     /**
+     * Retrieves tag identified by given ID.
+     *
+     * @param tagID ID of the tag to retrieve
+     * @return tag data as {@link TagDataModel}
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    TagDataModel getTag(Long tagID) throws CommunicationFailureException;
+
+    /**
      * Creates a new tag.
      *
      * @param tagCreateRequestModel tag data as {@link TagCreateRequestModel}.
