@@ -88,13 +88,12 @@ class FileBridgeServiceImpl implements FileBridgeService {
     }
 
     @Override
-    public void deleteFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException {
+    public void deleteFile(UUID fileIdentifier) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
-                .path(Path.FILES_BY_ID)
+                .path(Path.FILES_ONLY_UUID)
                 .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
-                .addPathParameter(STORED_FILENAME, storedFilename)
                 .authenticated()
                 .build();
 
@@ -115,15 +114,14 @@ class FileBridgeServiceImpl implements FileBridgeService {
     }
 
     @Override
-    public void updateFileMetaInfo(UUID fileIdentifier, String storedFilename, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
+    public void updateFileMetaInfo(UUID fileIdentifier, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
             throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
-                .path(Path.FILES_BY_ID)
+                .path(Path.FILES_ONLY_UUID)
                 .requestBody(updateFileMetaInfoRequestModel)
                 .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
-                .addPathParameter(STORED_FILENAME, storedFilename)
                 .authenticated()
                 .build();
 

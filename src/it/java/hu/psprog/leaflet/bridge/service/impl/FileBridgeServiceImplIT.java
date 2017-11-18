@@ -126,12 +126,11 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         UUID fileIdentifier = UUID.randomUUID();
-        String filename = "filename";
-        String uri = prepareURI(Path.FILES_BY_ID.getURI(), fileIdentifier, filename);
+        String uri = prepareURI(Path.FILES_ONLY_UUID.getURI(), fileIdentifier);
         givenThat(delete(uri));
 
         // when
-        fileBridgeService.deleteFile(fileIdentifier, filename);
+        fileBridgeService.deleteFile(fileIdentifier);
 
         // then
         verify(deleteRequestedFor(urlEqualTo(uri))
@@ -161,15 +160,14 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
 
         // given
         UUID fileIdentifier = UUID.randomUUID();
-        String filename = "filename";
-        String uri = prepareURI(Path.FILES_BY_ID.getURI(), fileIdentifier, filename);
+        String uri = prepareURI(Path.FILES_ONLY_UUID.getURI(), fileIdentifier);
         UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel = prepareUpdateFileMetaInfoRequestModel();
         StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(updateFileMetaInfoRequestModel));
         givenThat(put(uri)
                 .withRequestBody(requestBody));
 
         // when
-        fileBridgeService.updateFileMetaInfo(fileIdentifier, filename, updateFileMetaInfoRequestModel);
+        fileBridgeService.updateFileMetaInfo(fileIdentifier, updateFileMetaInfoRequestModel);
 
         // then
         verify(putRequestedFor(urlEqualTo(uri))

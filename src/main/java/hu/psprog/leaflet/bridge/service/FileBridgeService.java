@@ -58,10 +58,9 @@ public interface FileBridgeService {
      * Deletes an existing file.
      *
      * @param fileIdentifier UUID of the uploaded file
-     * @param storedFilename stored filename of the uploaded file (currently only the fileIdentifier is used for identification)
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    void deleteFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
+    void deleteFile(UUID fileIdentifier) throws CommunicationFailureException;
 
     /**
      * Creates a new directory under given parent directory.
@@ -75,12 +74,10 @@ public interface FileBridgeService {
      * Updates given file's meta information.
      *
      * @param fileIdentifier UUID of the uploaded file
-     * @param storedFilename stored filename of the uploaded file (currently only the fileIdentifier is used for identification)
      * @param updateFileMetaInfoRequestModel updated meta information
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    void updateFileMetaInfo(UUID fileIdentifier, String storedFilename, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
-            throws CommunicationFailureException;
+    void updateFileMetaInfo(UUID fileIdentifier, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel) throws CommunicationFailureException;
 
     /**
      * Retrieves existing acceptor root directories and their children directories.
