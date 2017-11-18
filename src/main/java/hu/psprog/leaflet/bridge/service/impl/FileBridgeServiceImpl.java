@@ -67,6 +67,19 @@ class FileBridgeServiceImpl implements FileBridgeService {
     }
 
     @Override
+    public FileDataModel getFileDetails(UUID fileIdentifier) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.FILES_ONLY_UUID)
+                .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, FileDataModel.class);
+    }
+
+    @Override
     public FileDataModel uploadFile(FileUploadRequestModel fileUploadRequestModel) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()

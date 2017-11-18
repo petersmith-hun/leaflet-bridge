@@ -45,6 +45,7 @@ public enum Path {
 
     // file related paths
     FILES("/files"),
+    FILES_ONLY_UUID("/files/{fileIdentifier}"),
     FILES_BY_ID("/files/{fileIdentifier}/{storedFilename}"),
     FILES_DIRECTORIES("/files/directories"),
 

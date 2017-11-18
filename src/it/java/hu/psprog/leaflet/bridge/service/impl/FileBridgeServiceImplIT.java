@@ -59,6 +59,25 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
     }
 
     @Test
+    public void shouldGetFileDetails() throws CommunicationFailureException {
+
+        // given
+        FileDataModel fileDataModel = prepareFileDataModel();
+        UUID fileIdentifier = UUID.randomUUID();
+        String uri = prepareURI(Path.FILES_ONLY_UUID.getURI(), fileIdentifier);
+        givenThat(get(uri)
+                .willReturn(ResponseDefinitionBuilder.okForJson(fileDataModel)));
+
+        // when
+        FileDataModel result = fileBridgeService.getFileDetails(fileIdentifier);
+
+        // then
+        assertThat(result, equalTo(fileDataModel));
+        verify(getRequestedFor(urlEqualTo(uri))
+                .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
+    }
+
+    @Test
     public void shouldUploadFile() throws CommunicationFailureException, JsonProcessingException {
 
         // given

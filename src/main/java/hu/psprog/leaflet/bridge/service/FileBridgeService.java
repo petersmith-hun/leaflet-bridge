@@ -37,6 +37,15 @@ public interface FileBridgeService {
     Resource downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
 
     /**
+     * Retrieves detailed file information.
+     *
+     * @param fileIdentifier UUID of the uploaded file
+     * @return file meta information as {@link FileDataModel}
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    FileDataModel getFileDetails(UUID fileIdentifier) throws CommunicationFailureException;
+
+    /**
      * Uploads a new file.
      *
      * @param fileUploadRequestModel file to upload and additional data wrapped as {@link FileUploadRequestModel}
