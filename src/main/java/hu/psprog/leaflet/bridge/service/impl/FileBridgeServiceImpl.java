@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.service.impl;
 import hu.psprog.leaflet.api.rest.request.file.DirectoryCreationRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.FileUploadRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.UpdateFileMetaInfoRequestModel;
+import hu.psprog.leaflet.api.rest.response.file.DirectoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileListDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
@@ -97,7 +98,7 @@ class FileBridgeServiceImpl implements FileBridgeService {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.POST)
-                .path(Path.FILES_DIRECTORY)
+                .path(Path.FILES_DIRECTORIES)
                 .requestBody(directoryCreationRequestModel)
                 .authenticated()
                 .build();
@@ -119,6 +120,18 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .build();
 
         bridgeClient.call(restRequest);
+    }
+
+    @Override
+    public DirectoryListDataModel getDirectories() throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.FILES_DIRECTORIES)
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, DirectoryListDataModel.class);
     }
 
     private ByteArrayResource convertInputStreamToByteArrayResource(InputStream inputStream) {

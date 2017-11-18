@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.service;
 import hu.psprog.leaflet.api.rest.request.file.DirectoryCreationRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.FileUploadRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.UpdateFileMetaInfoRequestModel;
+import hu.psprog.leaflet.api.rest.response.file.DirectoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileListDataModel;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
@@ -71,4 +72,12 @@ public interface FileBridgeService {
      */
     void updateFileMetaInfo(UUID fileIdentifier, String storedFilename, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
             throws CommunicationFailureException;
+
+    /**
+     * Retrieves existing acceptor root directories and their children directories.
+     *
+     * @return directory structure information as {@link DirectoryListDataModel}
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    DirectoryListDataModel getDirectories() throws CommunicationFailureException;
 }

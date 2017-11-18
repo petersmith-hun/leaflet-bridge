@@ -46,7 +46,7 @@ public enum Path {
     // file related paths
     FILES("/files"),
     FILES_BY_ID("/files/{fileIdentifier}/{storedFilename}"),
-    FILES_DIRECTORY("/files/directory"),
+    FILES_DIRECTORIES("/files/directories"),
 
     // tag related paths
     TAGS("/tags"),
