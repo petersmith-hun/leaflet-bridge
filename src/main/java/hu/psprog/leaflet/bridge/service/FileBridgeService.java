@@ -7,8 +7,8 @@ import hu.psprog.leaflet.api.rest.response.file.DirectoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileListDataModel;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
-import org.springframework.core.io.Resource;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -34,7 +34,7 @@ public interface FileBridgeService {
      * @return file as resource
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    Resource downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
+    InputStream downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
 
     /**
      * Retrieves detailed file information.

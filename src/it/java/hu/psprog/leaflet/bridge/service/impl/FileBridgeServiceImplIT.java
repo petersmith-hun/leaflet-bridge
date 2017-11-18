@@ -14,13 +14,18 @@ import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.it.config.LeafletBridgeITContextConfig;
 import hu.psprog.leaflet.bridge.service.FileBridgeService;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -56,6 +61,25 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
         assertThat(result, equalTo(fileListDataModel));
         verify(getRequestedFor(urlEqualTo(Path.FILES.getURI()))
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
+    }
+
+    @Test
+    public void shouldDownloadFile() throws CommunicationFailureException, IOException {
+
+        // given
+        UUID fileIdentifier = UUID.randomUUID();
+        String filename = "filename";
+        String uri = prepareURI(Path.FILES_BY_ID.getURI(), fileIdentifier, filename);
+        String responseBody = "responseBody";
+        givenThat(get(uri)
+                .willReturn(ResponseDefinitionBuilder.responseDefinition().withBody(responseBody.getBytes())));
+
+        // when
+        InputStream result = fileBridgeService.downloadFile(fileIdentifier, filename);
+
+        // then
+        verify(getRequestedFor(urlEqualTo(uri)));
+        assertThat(new String(IOUtils.toByteArray(result)), equalTo(responseBody));
     }
 
     @Test
