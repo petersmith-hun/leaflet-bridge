@@ -2,6 +2,7 @@ package hu.psprog.leaflet.bridge.it.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -44,7 +45,8 @@ public class LeafletBridgeITContextConfig {
     @Primary
     public WebTarget webTargetStub() {
         return ClientBuilder.newBuilder()
-                .register(new JacksonJsonProvider())
+                .register(JacksonJsonProvider.class)
+                .register(MultiPartFeature.class)
                 .build()
                 .target(WIRE_MOCK_SERVER_ADDRESS);
     }

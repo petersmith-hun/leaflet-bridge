@@ -1,5 +1,7 @@
 package hu.psprog.leaflet.bridge.client.request;
 
+import hu.psprog.leaflet.bridge.adapter.RequestBodyAdapter;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +19,8 @@ public class RESTRequest {
     private Serializable requestBody;
     private Map<String, Object> pathParameters = new HashMap<>();
     private Map<String, Object> requestParameters = new HashMap<>();
+    private boolean multipart;
+    private RequestBodyAdapter adapter;
 
     private RESTRequest() {
         // prevent direct initialization
@@ -44,6 +48,14 @@ public class RESTRequest {
 
     public Map<String, Object> getRequestParameters() {
         return requestParameters;
+    }
+
+    public boolean isMultipart() {
+        return multipart;
+    }
+
+    public RequestBodyAdapter getAdapter() {
+        return adapter;
     }
 
     public static RESTRequestBuilder getBuilder() {
@@ -105,6 +117,30 @@ public class RESTRequest {
          */
         public RESTRequestBuilder requestBody(Serializable requestBody) {
             restRequest.requestBody = requestBody;
+            return this;
+        }
+
+        /**
+         * _Optional_
+         * Marks request as multipart/form-data request.
+         *
+         * @return Builder instance
+         */
+        public RESTRequestBuilder multipart() {
+            restRequest.multipart = true;
+            return this;
+        }
+
+        /**
+         * _Optional_
+         * Adds {@link RequestBodyAdapter} to the request.
+         * Given request body will be converted with the provided adapter.
+         *
+         * @param adapter {@link RequestBodyAdapter} instance
+         * @return Builder instance
+         */
+        public RESTRequestBuilder adapter(RequestBodyAdapter adapter) {
+            restRequest.adapter = adapter;
             return this;
         }
 

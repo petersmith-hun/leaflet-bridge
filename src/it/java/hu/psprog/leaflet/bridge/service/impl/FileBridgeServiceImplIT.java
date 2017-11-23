@@ -15,6 +15,7 @@ import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.it.config.LeafletBridgeITContextConfig;
 import hu.psprog.leaflet.bridge.service.FileBridgeService;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +108,6 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
         // given
         FileUploadRequestModel fileUploadRequestModel = prepareFileUploadRequestModel();
         FileDataModel fileDataModel = prepareFileDataModel();
-        StringValuePattern requestBody = equalToJson(OBJECT_MAPPER.writeValueAsString(fileUploadRequestModel));
         givenThat(post(Path.FILES.getURI())
                 .willReturn(ResponseDefinitionBuilder.okForJson(fileDataModel)));
 
@@ -117,7 +117,6 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
         // then
         assertThat(result, equalTo(fileDataModel));
         verify(postRequestedFor(urlEqualTo(Path.FILES.getURI()))
-                .withRequestBody(requestBody)
                 .withHeader(AUTHORIZATION_HEADER, VALUE_PATTERN_BEARER_TOKEN));
     }
 
@@ -210,6 +209,7 @@ public class FileBridgeServiceImplIT extends WireMockBaseTest {
     private FileUploadRequestModel prepareFileUploadRequestModel() {
         FileUploadRequestModel fileUploadRequestModel = new FileUploadRequestModel();
         fileUploadRequestModel.setDescription("file");
+        fileUploadRequestModel.setSubFolder(StringUtils.EMPTY);
         return fileUploadRequestModel;
     }
 

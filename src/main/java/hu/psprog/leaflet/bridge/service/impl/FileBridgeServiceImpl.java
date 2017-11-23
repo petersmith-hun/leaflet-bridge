@@ -6,6 +6,7 @@ import hu.psprog.leaflet.api.rest.request.file.UpdateFileMetaInfoRequestModel;
 import hu.psprog.leaflet.api.rest.response.file.DirectoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileListDataModel;
+import hu.psprog.leaflet.bridge.adapter.impl.FileUploadMultipartRequestBodyAdapter;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
@@ -30,10 +31,12 @@ class FileBridgeServiceImpl implements FileBridgeService {
     private static final String STORED_FILENAME = "storedFilename";
 
     private BridgeClient bridgeClient;
+    private FileUploadMultipartRequestBodyAdapter multipartAdapter;
 
     @Autowired
-    public FileBridgeServiceImpl(BridgeClient bridgeClient) {
+    public FileBridgeServiceImpl(BridgeClient bridgeClient, FileUploadMultipartRequestBodyAdapter multipartAdapter) {
         this.bridgeClient = bridgeClient;
+        this.multipartAdapter = multipartAdapter;
     }
 
     @Override
@@ -81,6 +84,8 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .method(RequestMethod.POST)
                 .path(Path.FILES)
                 .requestBody(fileUploadRequestModel)
+                .multipart()
+                .adapter(multipartAdapter)
                 .authenticated()
                 .build();
 
