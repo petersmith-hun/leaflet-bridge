@@ -3,8 +3,10 @@ package hu.psprog.leaflet.bridge.service.impl;
 import hu.psprog.leaflet.api.rest.request.file.DirectoryCreationRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.FileUploadRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.UpdateFileMetaInfoRequestModel;
+import hu.psprog.leaflet.api.rest.response.file.DirectoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileListDataModel;
+import hu.psprog.leaflet.bridge.adapter.impl.FileUploadMultipartRequestBodyAdapter;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
@@ -12,11 +14,8 @@ import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.FileBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -32,10 +31,12 @@ class FileBridgeServiceImpl implements FileBridgeService {
     private static final String STORED_FILENAME = "storedFilename";
 
     private BridgeClient bridgeClient;
+    private FileUploadMultipartRequestBodyAdapter multipartAdapter;
 
     @Autowired
-    public FileBridgeServiceImpl(BridgeClient bridgeClient) {
+    public FileBridgeServiceImpl(BridgeClient bridgeClient, FileUploadMultipartRequestBodyAdapter multipartAdapter) {
         this.bridgeClient = bridgeClient;
+        this.multipartAdapter = multipartAdapter;
     }
 
     @Override
@@ -51,7 +52,7 @@ class FileBridgeServiceImpl implements FileBridgeService {
     }
 
     @Override
-    public Resource downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException {
+    public InputStream downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
@@ -60,9 +61,20 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .addPathParameter(STORED_FILENAME, storedFilename)
                 .build();
 
-        InputStream response = bridgeClient.call(restRequest, InputStream.class);
+        return bridgeClient.call(restRequest, InputStream.class);
+    }
 
-        return convertInputStreamToByteArrayResource(response);
+    @Override
+    public FileDataModel getFileDetails(UUID fileIdentifier) throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.FILES_ONLY_UUID)
+                .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
+                .authenticated()
+                .build();
+
+        return bridgeClient.call(restRequest, FileDataModel.class);
     }
 
     @Override
@@ -72,6 +84,8 @@ class FileBridgeServiceImpl implements FileBridgeService {
                 .method(RequestMethod.POST)
                 .path(Path.FILES)
                 .requestBody(fileUploadRequestModel)
+                .multipart()
+                .adapter(multipartAdapter)
                 .authenticated()
                 .build();
 
@@ -79,13 +93,12 @@ class FileBridgeServiceImpl implements FileBridgeService {
     }
 
     @Override
-    public void deleteFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException {
+    public void deleteFile(UUID fileIdentifier) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
-                .path(Path.FILES_BY_ID)
+                .path(Path.FILES_ONLY_UUID)
                 .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
-                .addPathParameter(STORED_FILENAME, storedFilename)
                 .authenticated()
                 .build();
 
@@ -97,7 +110,7 @@ class FileBridgeServiceImpl implements FileBridgeService {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.POST)
-                .path(Path.FILES_DIRECTORY)
+                .path(Path.FILES_DIRECTORIES)
                 .requestBody(directoryCreationRequestModel)
                 .authenticated()
                 .build();
@@ -106,32 +119,29 @@ class FileBridgeServiceImpl implements FileBridgeService {
     }
 
     @Override
-    public void updateFileMetaInfo(UUID fileIdentifier, String storedFilename, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
+    public void updateFileMetaInfo(UUID fileIdentifier, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
             throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
-                .path(Path.FILES_BY_ID)
+                .path(Path.FILES_ONLY_UUID)
                 .requestBody(updateFileMetaInfoRequestModel)
                 .addPathParameter(FILE_IDENTIFIER, fileIdentifier.toString())
-                .addPathParameter(STORED_FILENAME, storedFilename)
                 .authenticated()
                 .build();
 
         bridgeClient.call(restRequest);
     }
 
-    private ByteArrayResource convertInputStreamToByteArrayResource(InputStream inputStream) {
+    @Override
+    public DirectoryListDataModel getDirectories() throws CommunicationFailureException {
 
-        try {
-            byte[] inputStreamByteArray = new byte[inputStream.available()];
-            if (inputStream.read(inputStreamByteArray) <= 0 ) {
-                throw new IllegalStateException("Empty InputStream received.");
-            }
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.FILES_DIRECTORIES)
+                .authenticated()
+                .build();
 
-            return new ByteArrayResource(inputStreamByteArray);
-        } catch (IOException e) {
-            throw new IllegalStateException("Retrieved InputStream could not be read up.", e);
-        }
+        return bridgeClient.call(restRequest, DirectoryListDataModel.class);
     }
 }

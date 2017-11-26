@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import java.io.Serializable;
 import java.util.Optional;
 
 /**
@@ -25,12 +24,20 @@ abstract class AbstractCallStrategy implements CallStrategy {
      * @throws JsonProcessingException on JSON processing failure
      */
     Entity createEntity(RESTRequest request) throws JsonProcessingException {
-
-        return Entity.entity(extractBody(request), MediaType.APPLICATION_JSON_TYPE);
+        return Entity.entity(extractBody(request), extractMediaType(request));
     }
 
-    private Serializable extractBody(RESTRequest request) {
+    private MediaType extractMediaType(RESTRequest request) {
+        return request.isMultipart()
+                ? MediaType.MULTIPART_FORM_DATA_TYPE
+                : MediaType.APPLICATION_JSON_TYPE;
+    }
+
+    private Object extractBody(RESTRequest request) {
         return Optional.ofNullable(request.getRequestBody())
+                .map(requestBody -> Optional.ofNullable(request.getAdapter())
+                        .map(adapter -> adapter.adapt(requestBody))
+                        .orElse(requestBody))
                 .orElse(StringUtils.EMPTY);
     }
 }

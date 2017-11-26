@@ -3,11 +3,12 @@ package hu.psprog.leaflet.bridge.service;
 import hu.psprog.leaflet.api.rest.request.file.DirectoryCreationRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.FileUploadRequestModel;
 import hu.psprog.leaflet.api.rest.request.file.UpdateFileMetaInfoRequestModel;
+import hu.psprog.leaflet.api.rest.response.file.DirectoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileDataModel;
 import hu.psprog.leaflet.api.rest.response.file.FileListDataModel;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
-import org.springframework.core.io.Resource;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -33,7 +34,16 @@ public interface FileBridgeService {
      * @return file as resource
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    Resource downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
+    InputStream downloadFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
+
+    /**
+     * Retrieves detailed file information.
+     *
+     * @param fileIdentifier UUID of the uploaded file
+     * @return file meta information as {@link FileDataModel}
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    FileDataModel getFileDetails(UUID fileIdentifier) throws CommunicationFailureException;
 
     /**
      * Uploads a new file.
@@ -48,10 +58,9 @@ public interface FileBridgeService {
      * Deletes an existing file.
      *
      * @param fileIdentifier UUID of the uploaded file
-     * @param storedFilename stored filename of the uploaded file (currently only the fileIdentifier is used for identification)
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    void deleteFile(UUID fileIdentifier, String storedFilename) throws CommunicationFailureException;
+    void deleteFile(UUID fileIdentifier) throws CommunicationFailureException;
 
     /**
      * Creates a new directory under given parent directory.
@@ -65,10 +74,16 @@ public interface FileBridgeService {
      * Updates given file's meta information.
      *
      * @param fileIdentifier UUID of the uploaded file
-     * @param storedFilename stored filename of the uploaded file (currently only the fileIdentifier is used for identification)
      * @param updateFileMetaInfoRequestModel updated meta information
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    void updateFileMetaInfo(UUID fileIdentifier, String storedFilename, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel)
-            throws CommunicationFailureException;
+    void updateFileMetaInfo(UUID fileIdentifier, UpdateFileMetaInfoRequestModel updateFileMetaInfoRequestModel) throws CommunicationFailureException;
+
+    /**
+     * Retrieves existing acceptor root directories and their children directories.
+     *
+     * @return directory structure information as {@link DirectoryListDataModel}
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    DirectoryListDataModel getDirectories() throws CommunicationFailureException;
 }
