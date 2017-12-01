@@ -24,6 +24,14 @@ public interface DocumentBridgeService {
     DocumentListDataModel getAllDocuments() throws CommunicationFailureException;
 
     /**
+     * Returns basic information of existing public documents.
+     *
+     * @return list of public documents
+     * @throws CommunicationFailureException if client fails to reach backend application
+     */
+    DocumentListDataModel getPublicDocuments() throws CommunicationFailureException;
+
+    /**
      * Returns detailed information of document identified by given ID (for admin usage).
      *
      * @param documentID ID of an existing document
