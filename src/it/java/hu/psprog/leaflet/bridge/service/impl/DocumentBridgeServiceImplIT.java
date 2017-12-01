@@ -65,6 +65,22 @@ public class DocumentBridgeServiceImplIT extends WireMockBaseTest {
     }
 
     @Test
+    public void shouldGetPublicDocuments() throws CommunicationFailureException {
+
+        // given
+        DocumentListDataModel documentListDataModel = prepareDocumentListDataModel();
+        givenThat(get(Path.DOCUMENTS_PUBLIC.getURI())
+                .willReturn(ResponseDefinitionBuilder.okForJson(documentListDataModel)));
+
+        // when
+        DocumentListDataModel result = documentBridgeService.getPublicDocuments();
+
+        // then
+        assertThat(result, equalTo(documentListDataModel));
+        verify(getRequestedFor(urlEqualTo(Path.DOCUMENTS_PUBLIC.getURI())));
+    }
+
+    @Test
     public void shouldGetDocumentByID() throws CommunicationFailureException {
 
         // given

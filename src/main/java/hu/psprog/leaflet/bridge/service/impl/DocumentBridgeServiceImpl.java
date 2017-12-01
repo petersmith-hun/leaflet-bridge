@@ -48,6 +48,17 @@ class DocumentBridgeServiceImpl implements DocumentBridgeService {
     }
 
     @Override
+    public DocumentListDataModel getPublicDocuments() throws CommunicationFailureException {
+
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(Path.DOCUMENTS_PUBLIC)
+                .build();
+
+        return bridgeClient.call(restRequest, DocumentListDataModel.class);
+    }
+
+    @Override
     public WrapperBodyDataModel<EditDocumentDataModel> getDocumentByID(Long documentID) throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
