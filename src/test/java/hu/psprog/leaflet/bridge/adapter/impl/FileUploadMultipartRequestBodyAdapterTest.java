@@ -2,11 +2,15 @@ package hu.psprog.leaflet.bridge.adapter.impl;
 
 import hu.psprog.leaflet.api.rest.request.file.FileUploadRequestModel;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -33,6 +37,11 @@ public class FileUploadMultipartRequestBodyAdapterTest {
 
     @InjectMocks
     private FileUploadMultipartRequestBodyAdapter adapter;
+
+    @Before
+    public void setup() throws IllegalAccessException {
+        setBaseDirectory();
+    }
 
     @Test
     public void shouldAdaptFileUploadRequest() {
@@ -65,6 +74,12 @@ public class FileUploadMultipartRequestBodyAdapterTest {
         assertThat(result.getBodyParts().size(), equalTo(2));
         assertThat(result.getField(FIELD_DESCRIPTION).getValue(), equalTo(DESCRIPTION));
         assertThat(result.getField(FIELD_SUB_FOLDER).getValue(), equalTo(SUB_FOLDER));
+    }
+
+    private void setBaseDirectory() throws IllegalAccessException {
+        Field baseDirectoryField = ReflectionUtils.findField(FileUploadMultipartRequestBodyAdapter.class, "baseDirectory");
+        baseDirectoryField.setAccessible(true);
+        baseDirectoryField.set(adapter, System.getProperty("java.io.tmpdir"));
     }
 
     private FileUploadRequestModel prepareFileUploadRequestModel(boolean withFile) {
