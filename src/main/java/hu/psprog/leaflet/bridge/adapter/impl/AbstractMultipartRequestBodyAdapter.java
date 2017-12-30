@@ -7,6 +7,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.core.MediaType;
@@ -27,6 +28,9 @@ abstract class AbstractMultipartRequestBodyAdapter<S extends Serializable> imple
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMultipartRequestBodyAdapter.class);
     private static final String EXTENSION_SEPARATOR = ".";
+
+    @Value("${java.io.tmpdir}")
+    private String baseDirectory;
 
     /**
      * Returns a {@link FormBuilder} instance, that can be used to build the multipart form.
@@ -101,13 +105,17 @@ abstract class AbstractMultipartRequestBodyAdapter<S extends Serializable> imple
 
             File tempFile = null;
             try {
-                tempFile = File.createTempFile(getBaseName(multipartFile), getExtension(multipartFile));
+                tempFile = new File(baseDirectory, getFilename(multipartFile));
                 multipartFile.transferTo(tempFile);
             } catch (IOException e) {
                 LOGGER.warn("Failed to create temporary file for [{}]. Returning null instance.", multipartFile.getOriginalFilename());
             }
 
             return tempFile;
+        }
+
+        private String getFilename(MultipartFile multipartFile) {
+            return getBaseName(multipartFile) + getExtension(multipartFile);
         }
 
         private String getBaseName(MultipartFile multipartFile) {
