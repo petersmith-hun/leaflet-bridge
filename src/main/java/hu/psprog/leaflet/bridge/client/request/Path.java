@@ -50,6 +50,11 @@ public enum Path {
     FILES_BY_ID("/files/{fileIdentifier}/{storedFilename}"),
     FILES_DIRECTORIES("/files/directories"),
 
+    // front-end route support related paths
+    ROUTES("/routes"),
+    ROUTES_BY_ID("/routes/{id}"),
+    ROUTES_STATUS("/routes/{id}/status"),
+
     // tag related paths
     TAGS("/tags"),
     TAGS_PUBLIC("/tags/public"),
