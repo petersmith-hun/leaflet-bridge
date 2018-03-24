@@ -69,17 +69,16 @@ public class CategoryBridgeServiceImplIT extends WireMockBaseTest {
     public void shouldGetPublicCategories() throws CommunicationFailureException {
 
         // given
-        WrapperBodyDataModel<CategoryListDataModel> wrapperBodyDataModel =
-                prepareWrappedListDataModel(prepareCategoryListDataModel());
+        CategoryListDataModel categoryListDataModel = prepareCategoryListDataModel();
         givenThat(get(Path.CATEGORIES_PUBLIC.getURI())
-                .willReturn(ResponseDefinitionBuilder.okForJson(wrapperBodyDataModel)));
+                .willReturn(ResponseDefinitionBuilder.okForJson(categoryListDataModel)));
 
         // when
-        WrapperBodyDataModel<CategoryListDataModel> result = categoryBridgeService.getPublicCategories();
+        CategoryListDataModel result = categoryBridgeService.getPublicCategories();
 
         // then
         verify(getRequestedFor(urlEqualTo(Path.CATEGORIES_PUBLIC.getURI())));
-        assertThat(result, equalTo(wrapperBodyDataModel));
+        assertThat(result, equalTo(categoryListDataModel));
 
     }
 

@@ -3,7 +3,6 @@ package hu.psprog.leaflet.bridge.service;
 import hu.psprog.leaflet.api.rest.request.category.CategoryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
-import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 
 /**
@@ -27,7 +26,7 @@ public interface CategoryBridgeService {
      * @return list of public categories
      * @throws CommunicationFailureException if client fails to reach backend application
      */
-    WrapperBodyDataModel<CategoryListDataModel> getPublicCategories() throws CommunicationFailureException;
+    CategoryListDataModel getPublicCategories() throws CommunicationFailureException;
 
     /**
      * Returns category identified by given ID.
