@@ -1,9 +1,8 @@
 package hu.psprog.leaflet.bridge.service.impl;
 
 import hu.psprog.leaflet.api.rest.request.category.CategoryCreateRequestModel;
-import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryDataModel;
-import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
+import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
@@ -12,8 +11,6 @@ import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.CategoryBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.ws.rs.core.GenericType;
 
 /**
  * Implementation of {@link CategoryBridgeService}.
@@ -45,14 +42,14 @@ class CategoryBridgeServiceImpl implements CategoryBridgeService {
     }
 
     @Override
-    public WrapperBodyDataModel<CategoryListDataModel> getPublicCategories() throws CommunicationFailureException {
+    public CategoryListDataModel getPublicCategories() throws CommunicationFailureException {
 
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
                 .path(Path.CATEGORIES_PUBLIC)
                 .build();
 
-        return bridgeClient.call(restRequest, new GenericType<WrapperBodyDataModel<CategoryListDataModel>>() {});
+        return bridgeClient.call(restRequest, CategoryListDataModel.class);
     }
 
     @Override
