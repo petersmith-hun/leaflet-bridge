@@ -2,20 +2,20 @@ package hu.psprog.leaflet.bridge.service.impl;
 
 import hu.psprog.leaflet.api.rest.request.attachment.AttachmentRequestModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeService;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.AttachmentBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link AttachmentBridgeService}.
  *
  * @author Peter Smith
  */
-@Service
+@BridgeService(client = "leaflet")
 class AttachmentBridgeServiceImpl implements AttachmentBridgeService {
 
     private BridgeClient bridgeClient;

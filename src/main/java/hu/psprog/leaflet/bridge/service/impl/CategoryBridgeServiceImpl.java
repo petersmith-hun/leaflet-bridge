@@ -4,20 +4,20 @@ import hu.psprog.leaflet.api.rest.request.category.CategoryCreateRequestModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryDataModel;
 import hu.psprog.leaflet.api.rest.response.category.CategoryListDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeService;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.CategoryBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link CategoryBridgeService}.
  *
  * @author Peter Smith
  */
-@Service
+@BridgeService(client = "leaflet")
 class CategoryBridgeServiceImpl implements CategoryBridgeService {
 
     private static final String ID = "id";

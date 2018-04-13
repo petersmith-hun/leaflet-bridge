@@ -7,13 +7,13 @@ import hu.psprog.leaflet.api.rest.response.document.DocumentDataModel;
 import hu.psprog.leaflet.api.rest.response.document.DocumentListDataModel;
 import hu.psprog.leaflet.api.rest.response.document.EditDocumentDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeService;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.DocumentBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.GenericType;
 
@@ -22,7 +22,7 @@ import javax.ws.rs.core.GenericType;
  *
  * @author Peter Smith
  */
-@Service
+@BridgeService(client = "leaflet")
 class DocumentBridgeServiceImpl implements DocumentBridgeService {
 
     private static final String ID = "id";

@@ -6,13 +6,13 @@ import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.api.rest.response.tag.TagDataModel;
 import hu.psprog.leaflet.api.rest.response.tag.TagListDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeService;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.TagBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.GenericType;
 
@@ -21,7 +21,7 @@ import javax.ws.rs.core.GenericType;
  *
  * @author Peter Smith
  */
-@Service
+@BridgeService(client = "leaflet")
 class TagBridgeServiceImpl implements TagBridgeService {
 
     private static final String ID = "id";

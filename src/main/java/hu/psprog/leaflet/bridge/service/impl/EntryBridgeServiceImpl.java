@@ -7,6 +7,7 @@ import hu.psprog.leaflet.api.rest.response.entry.EditEntryDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.EntryListDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.ExtendedEntryDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeService;
 import hu.psprog.leaflet.bridge.client.domain.OrderBy;
 import hu.psprog.leaflet.bridge.client.domain.OrderDirection;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
@@ -15,7 +16,7 @@ import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.EntryBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.ws.rs.core.GenericType;
 
@@ -24,7 +25,7 @@ import javax.ws.rs.core.GenericType;
  *
  * @author Peter Smith
  */
-@Service
+@BridgeService(client = "leaflet")
 class EntryBridgeServiceImpl implements EntryBridgeService {
 
     private static final String PAGE = "page";

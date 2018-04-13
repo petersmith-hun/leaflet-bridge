@@ -27,14 +27,12 @@ import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.DEVICE_ID_HEAD
 @Component
 class InvocationFactory {
 
-    private final WebTarget webTarget;
     private final RequestAuthentication requestAuthentication;
     private final Map<RequestMethod, CallStrategy> callStrategyMap;
     private final HttpServletRequest httpServletRequest;
 
     @Autowired
-    InvocationFactory(WebTarget webTarget, RequestAuthentication requestAuthentication, List<CallStrategy> callStrategyList, HttpServletRequest httpServletRequest) {
-        this.webTarget = webTarget;
+    InvocationFactory(RequestAuthentication requestAuthentication, List<CallStrategy> callStrategyList, HttpServletRequest httpServletRequest) {
         this.requestAuthentication = requestAuthentication;
         this.callStrategyMap = callStrategyList.stream()
                 .collect(Collectors.toMap(CallStrategy::forMethod, Function.identity()));
@@ -44,10 +42,11 @@ class InvocationFactory {
     /**
      * Creates an {@link Invocation} for given {@link RESTRequest}.
      *
+     * @param webTarget initial {@link WebTarget} to send request via
      * @param restRequest {@link RESTRequest} to build {@link Invocation} for
      * @return built {@link Invocation}
      */
-    Invocation getInvocationFor(RESTRequest restRequest) throws JsonProcessingException {
+    Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) throws JsonProcessingException {
         WebTarget target = webTarget
                 .path(restRequest.getPath().getURI())
                 .resolveTemplates(restRequest.getPathParameters());

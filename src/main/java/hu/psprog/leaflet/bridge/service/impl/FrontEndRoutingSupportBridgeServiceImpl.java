@@ -4,20 +4,20 @@ import hu.psprog.leaflet.api.rest.request.routing.FrontEndRouteUpdateRequestMode
 import hu.psprog.leaflet.api.rest.response.routing.ExtendedFrontEndRouteDataModel;
 import hu.psprog.leaflet.api.rest.response.routing.ExtendedFrontEndRouteListDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeService;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.service.FrontEndRoutingSupportBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link FrontEndRoutingSupportBridgeService}.
  *
  * @author Peter Smith
  */
-@Service
+@BridgeService(client = "leaflet")
 public class FrontEndRoutingSupportBridgeServiceImpl implements FrontEndRoutingSupportBridgeService {
 
     private static final String ID = "id";
