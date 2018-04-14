@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import hu.psprog.leaflet.api.rest.response.common.ErrorMessageDataModel;
+import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
 
 import javax.ws.rs.core.Response;
 import java.util.Optional;
@@ -26,8 +26,8 @@ public abstract class DefaultNonSuccessfulResponseException extends RuntimeExcep
     }
 
     private static String readErrorResponse(Response response) {
-        return Optional.ofNullable(response.readEntity(ErrorMessageDataModel.class))
-                .map(ErrorMessageDataModel::getMessage)
+        return Optional.ofNullable(response.readEntity(ErrorMessageResponse.class))
+                .map(ErrorMessageResponse::getMessage)
                 .orElse(UNKNOWN_ERROR_OCCURRED);
     }
 }

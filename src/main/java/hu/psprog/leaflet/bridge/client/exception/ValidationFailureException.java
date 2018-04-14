@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import hu.psprog.leaflet.api.rest.response.common.ValidationErrorMessageListDataModel;
+import hu.psprog.leaflet.bridge.client.domain.error.ValidationErrorMessageListResponse;
 
 import javax.ws.rs.core.Response;
 
@@ -13,18 +13,18 @@ public class ValidationFailureException extends RuntimeException {
 
     private static final String VALIDATION_FAILURE = "Validation failure.";
 
-    private ValidationErrorMessageListDataModel errorMessageList;
+    private ValidationErrorMessageListResponse errorMessageList;
 
     public ValidationFailureException(Response response) {
         super(VALIDATION_FAILURE);
         this.errorMessageList = readErrorResponse(response);
     }
 
-    public ValidationErrorMessageListDataModel getErrorMessage() {
+    public ValidationErrorMessageListResponse getErrorMessage() {
         return errorMessageList;
     }
 
-    private ValidationErrorMessageListDataModel readErrorResponse(Response response) {
-        return response.readEntity(ValidationErrorMessageListDataModel.class);
+    private ValidationErrorMessageListResponse readErrorResponse(Response response) {
+        return response.readEntity(ValidationErrorMessageListResponse.class);
     }
 }
