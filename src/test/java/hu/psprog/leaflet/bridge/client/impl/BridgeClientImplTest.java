@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
@@ -44,6 +45,9 @@ public class BridgeClientImplTest {
     @Mock
     private Invocation invocation;
 
+    @Mock
+    private WebTarget webTarget;
+
     @InjectMocks
     private BridgeClientImpl bridgeClient;
 
@@ -57,7 +61,7 @@ public class BridgeClientImplTest {
 
         // given
         GenericType<WrapperBodyDataModel<BaseBodyDataModel>> genericType = new GenericType<WrapperBodyDataModel<BaseBodyDataModel>>() {};
-        given(invocationFactory.getInvocationFor(any(RESTRequest.class))).willReturn(invocation);
+        given(invocationFactory.getInvocationFor(eq(webTarget), any(RESTRequest.class))).willReturn(invocation);
 
         // when
         bridgeClient.call(REST_REQUEST, genericType);
@@ -71,7 +75,7 @@ public class BridgeClientImplTest {
 
         // given
         GenericType<WrapperBodyDataModel<BaseBodyDataModel>> genericType = new GenericType<WrapperBodyDataModel<BaseBodyDataModel>>() {};
-        doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(any(RESTRequest.class));
+        doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(eq(webTarget), any(RESTRequest.class));
 
         // when
         bridgeClient.call(REST_REQUEST, genericType);
@@ -84,7 +88,7 @@ public class BridgeClientImplTest {
     public void shouldCallForNonWrappedResponse() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        given(invocationFactory.getInvocationFor(any(RESTRequest.class))).willReturn(invocation);
+        given(invocationFactory.getInvocationFor(eq(webTarget), any(RESTRequest.class))).willReturn(invocation);
 
         // when
         bridgeClient.call(REST_REQUEST, BaseBodyDataModel.class);
@@ -97,7 +101,7 @@ public class BridgeClientImplTest {
     public void shouldThrowCommunicationFailureExceptionOnCallForNonWrappedResponse() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(any(RESTRequest.class));
+        doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(eq(webTarget), any(RESTRequest.class));
 
         // when
         bridgeClient.call(REST_REQUEST, BaseBodyDataModel.class);
@@ -110,7 +114,7 @@ public class BridgeClientImplTest {
     public void shouldCallForEmptyResponse() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        given(invocationFactory.getInvocationFor(any(RESTRequest.class))).willReturn(invocation);
+        given(invocationFactory.getInvocationFor(eq(webTarget), any(RESTRequest.class))).willReturn(invocation);
 
         // when
         bridgeClient.call(REST_REQUEST);
@@ -123,7 +127,7 @@ public class BridgeClientImplTest {
     public void shouldThrowCommunicationFailureExceptionOnCallForEmptyResponse() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(any(RESTRequest.class));
+        doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(eq(webTarget), any(RESTRequest.class));
 
         // when
         bridgeClient.call(REST_REQUEST);

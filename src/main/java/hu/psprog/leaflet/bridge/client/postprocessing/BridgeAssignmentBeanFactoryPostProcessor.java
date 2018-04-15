@@ -14,6 +14,14 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 /**
+ * {@link BeanFactoryPostProcessor} implementation to handle BridgeClient instance assignments to client implementations.
+ * Steps made by the processor:
+ * - Selects every bean definition that is annotated by {@link BridgeService} annotation.
+ * - Extracts the BridgeClient instance qualifier (client name) from the annotation.
+ *   This value must be the same as the one set in the Bridge configuration.
+ *   Ex.: bridge.client.leaflet.host-url -> client name must be "leaflet"
+ * - Finds the BridgeClient parameter in the constructor and sets a qualifier for the framework to be able to properly autowire the client.
+ *
  * @author Peter Smith
  */
 @Component
@@ -49,12 +57,12 @@ public class BridgeAssignmentBeanFactoryPostProcessor implements BeanFactoryPost
 
         Constructor<?>[] constructors = classToInspect.getConstructors();
         if (constructors.length > 1) {
-            throw new IllegalArgumentException(String.format(TOO_MANY_CONSTRUCTORS, classToInspect.getName()));
+            raiseException(String.format(TOO_MANY_CONSTRUCTORS, classToInspect.getName()));
         }
 
         int index = getBridgeClientParameter(constructors[0]);
         if (index == -1) {
-            throw new IllegalArgumentException(String.format(BRIDGE_CLIENT_PARAMETER_NOT_FOUND, classToInspect.getName()));
+            raiseException(String.format(BRIDGE_CLIENT_PARAMETER_NOT_FOUND, classToInspect.getName()));
         }
 
         return index;
@@ -62,5 +70,10 @@ public class BridgeAssignmentBeanFactoryPostProcessor implements BeanFactoryPost
 
     private int getBridgeClientParameter(Constructor<?> constructorToInspect) {
         return Arrays.asList(constructorToInspect.getParameterTypes()).indexOf(BridgeClient.class);
+    }
+
+    private void raiseException(String message) {
+        LOGGER.error(message);
+        throw new IllegalArgumentException(message);
     }
 }

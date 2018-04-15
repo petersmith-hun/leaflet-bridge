@@ -9,6 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marker annotation for client implementations that rely on Bridge.
+ *
  * @author Peter Smith
  */
 @Target({ElementType.TYPE})
@@ -17,5 +19,11 @@ import java.lang.annotation.Target;
 @DependsOn("bridgeClientRegistration")
 public @interface BridgeService {
 
+    /**
+     * Sets BridgeClient instance qualifier.
+     * Mandatory parameter.
+     *
+     * @return qualifier
+     */
     String client();
 }

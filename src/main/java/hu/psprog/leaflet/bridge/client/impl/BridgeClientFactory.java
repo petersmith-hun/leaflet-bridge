@@ -10,6 +10,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 
 /**
+ * Factory to properly build BridgeClient instances.
+ *
  * @author Peter Smith
  */
 @Component
@@ -26,6 +28,12 @@ class BridgeClientFactory {
         this.responseReader = responseReader;
     }
 
+    /**
+     * Creates a BridgeClient instance based on given settings.
+     *
+     * @param bridgeSettings settings to use for the instance
+     * @return BridgeClient instance
+     */
     public BridgeClient createBridgeClient(BridgeSettings bridgeSettings) {
 
         Assert.hasLength(bridgeSettings.getHostUrl(), "Remote service host must be specified!");

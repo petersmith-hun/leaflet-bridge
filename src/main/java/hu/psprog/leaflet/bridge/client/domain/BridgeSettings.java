@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
+ * Configuration wrapper for BridgeClient instance settings.
+ *
  * @author Peter Smith
  */
 public class BridgeSettings {
