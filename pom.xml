@@ -6,7 +6,7 @@
 
     <groupId>hu.psprog.leaflet</groupId>
     <artifactId>leaflet-bridge</artifactId>
-    <version>1.8.0</version>
+    <version>2.0.0</version>
 
     <properties>
 
@@ -19,8 +19,8 @@
         <skip.it>false</skip.it>
 
         <!-- dependency versions -->
-        <leaflet.rest-api.version>1.3.0</leaflet.rest-api.version>
         <spring.framework.version>4.3.9.RELEASE</spring.framework.version>
+        <spring.boot.version>1.5.4.RELEASE</spring.boot.version>
         <jersey.version>2.24.1</jersey.version>
         <jackson.version>2.8.9</jackson.version>
         <logback.version>1.2.3</logback.version>
@@ -34,21 +34,22 @@
         <mockito-all.version>1.10.19</mockito-all.version>
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <wiremock.version>2.6.0</wiremock.version>
-        <maven-failsafe-plugin.version>2.20</maven-failsafe-plugin.version>
         <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+        <leaflet.rest-api.version>1.3.0</leaflet.rest-api.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>hu.psprog.leaflet</groupId>
-            <artifactId>leaflet-rest-api</artifactId>
-            <version>${leaflet.rest-api.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
@@ -137,6 +138,12 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>
+        <dependency>
+            <groupId>hu.psprog.leaflet</groupId>
+            <artifactId>leaflet-rest-api</artifactId>
+            <version>${leaflet.rest-api.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -146,57 +153,39 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
+                    <argLine>${argLine.surefire}</argLine>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven-failsafe-plugin.version}</version>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/domain/**</exclude>
+                        <exclude>**/config/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>integration-tests</id>
+                        <id>ut-pre</id>
                         <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
+                            <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
-                            <skipTests>${skip.it}</skipTests>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.12</version>
-                <executions>
-                    <execution>
-                        <id>add-integration-test-source-as-test-sources</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/it/java</source>
-                            </sources>
+                            <destFile>${project.build.directory}/coverage/jacoco-ut.exec</destFile>
+                            <propertyName>argLine.surefire</propertyName>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>add-integration-test-resources</id>
-                        <phase>generate-test-resources</phase>
+                        <id>ut-post</id>
+                        <phase>test</phase>
                         <goals>
-                            <goal>add-test-resource</goal>
+                            <goal>report</goal>
                         </goals>
                         <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>src/it/resources</directory>
-                                </resource>
-                            </resources>
+                            <dataFile>${project.build.directory}/coverage/jacoco-ut.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

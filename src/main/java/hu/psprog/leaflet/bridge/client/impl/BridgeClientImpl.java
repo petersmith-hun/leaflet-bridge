@@ -1,15 +1,12 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
-import hu.psprog.leaflet.api.rest.response.common.BaseBodyDataModel;
-import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -19,22 +16,22 @@ import java.io.IOException;
  *
  * @author Peter Smith
  */
-@Component
 class BridgeClientImpl implements BridgeClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientImpl.class);
 
+    private final WebTarget webTarget;
     private final InvocationFactory invocationFactory;
     private final ResponseReader responseReader;
 
-    @Autowired
-    public BridgeClientImpl(InvocationFactory invocationFactory, ResponseReader responseReader) {
+    public BridgeClientImpl(WebTarget webTarget, InvocationFactory invocationFactory, ResponseReader responseReader) {
+        this.webTarget = webTarget;
         this.invocationFactory = invocationFactory;
         this.responseReader = responseReader;
     }
 
     @Override
-    public <T extends BaseBodyDataModel> WrapperBodyDataModel<T> call(RESTRequest request, GenericType<WrapperBodyDataModel<T>> responseType) throws CommunicationFailureException {
+    public <T> T call(RESTRequest request, GenericType<T> responseType) throws CommunicationFailureException {
         Response response = doCall(request);
         return responseReader.read(response, responseType);
     }
@@ -54,7 +51,7 @@ class BridgeClientImpl implements BridgeClient {
     private Response doCall(RESTRequest request) throws CommunicationFailureException {
         try {
             return invocationFactory
-                    .getInvocationFor(request)
+                    .getInvocationFor(webTarget, request)
                     .invoke();
         } catch (IOException e) {
             LOGGER.error("Bridge failed to process request [{}]", request);

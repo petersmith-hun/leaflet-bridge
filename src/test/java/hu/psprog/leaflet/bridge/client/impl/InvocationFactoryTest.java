@@ -65,6 +65,12 @@ public class InvocationFactoryTest {
     private static final String PUT = "PUT";
     private static final String TARGET = "http://localhost:10000/test";
     private static final String DEVICE_ID = UUID.randomUUID().toString();
+    private static final String PARAMETER_LIST = "parameterList";
+    private static final List<String> VALUE_LIST = Arrays.asList("param1", "param2", "param3");
+    private static final String GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST = "parameterList=param1,param2,param3";
+    private static final WebTarget WEB_TARGET = ClientBuilder.newBuilder()
+            .build()
+            .target(TARGET);
 
     @Mock
     private RequestAuthentication requestAuthentication;
@@ -78,10 +84,7 @@ public class InvocationFactoryTest {
     public void setup() {
         given(httpServletRequest.getAttribute(DEVICE_ID_HEADER)).willReturn(DEVICE_ID);
         List<CallStrategy> callStrategyList = Arrays.asList(new PostCallStrategy(), new PutCallStrategy(), new GetCallStrategy(), new DeleteCallStrategy());
-        WebTarget webTarget = ClientBuilder.newBuilder()
-                .build()
-                .target(TARGET);
-        invocationFactory = new InvocationFactory(webTarget, requestAuthentication, callStrategyList, httpServletRequest);
+        invocationFactory = new InvocationFactory(requestAuthentication, callStrategyList, httpServletRequest);
         Map<String, String> auth = new HashMap<>();
         auth.put(AUTHORIZATION, BEARER_TOKEN);
         given(requestAuthentication.getAuthenticationHeader()).willReturn(auth);
@@ -93,7 +96,7 @@ public class InvocationFactoryTest {
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
-                .path(Path.ENTRIES_CATEGORY_PAGE)
+                .path(TestPath.ENTRIES_CATEGORY_PAGE)
                 .addPathParameter(ID, String.valueOf(2L))
                 .addPathParameter(PAGE, String.valueOf(1))
                 .addRequestParameters(LIMIT, String.valueOf(10))
@@ -103,7 +106,7 @@ public class InvocationFactoryTest {
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(restRequest);
+        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
 
         // then
         ClientRequest clientRequest = getClientRequest(result);
@@ -122,11 +125,11 @@ public class InvocationFactoryTest {
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
-                .path(Path.ENTRIES)
+                .path(TestPath.ENTRIES)
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(restRequest);
+        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
 
         // then
         ClientRequest clientRequest = getClientRequest(result);
@@ -144,13 +147,13 @@ public class InvocationFactoryTest {
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.POST)
-                .path(Path.ENTRIES)
+                .path(TestPath.ENTRIES)
                 .requestBody(entryCreateRequestModel)
                 .authenticated()
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(restRequest);
+        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
 
         // then
         ClientRequest clientRequest = getClientRequest(result);
@@ -169,13 +172,13 @@ public class InvocationFactoryTest {
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
-                .path(Path.ENTRIES_BY_ID)
+                .path(TestPath.ENTRIES_BY_ID)
                 .addPathParameter(ID, String.valueOf(1L))
                 .authenticated()
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(restRequest);
+        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
 
         // then
         ClientRequest clientRequest = getClientRequest(result);
@@ -194,14 +197,14 @@ public class InvocationFactoryTest {
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.PUT)
-                .path(Path.ENTRIES_BY_ID)
+                .path(TestPath.ENTRIES_BY_ID)
                 .addPathParameter(ID, String.valueOf(1L))
                 .requestBody(entryCreateRequestModel)
                 .authenticated()
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(restRequest);
+        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
 
         // then
         ClientRequest clientRequest = getClientRequest(result);
@@ -214,6 +217,29 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
     }
 
+    @Test
+    public void shouldGetInvocationForSimpleGetWithQueryParameterList() throws JsonProcessingException {
+
+        // given
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.GET)
+                .path(TestPath.ENTRIES)
+                .addRequestParameters(PARAMETER_LIST, VALUE_LIST)
+                .build();
+
+        // when
+        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+
+        // then
+        ClientRequest clientRequest = getClientRequest(result);
+        assertThat(clientRequest.getMethod(), equalTo(GET));
+        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES));
+        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
+        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(clientRequest.getUri().getQuery(), equalTo(GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST));
+        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+    }
+
     private ClientRequest getClientRequest(Invocation result) {
         try {
             Field requestContext = JerseyInvocation.class.getDeclaredField("requestContext");
@@ -221,6 +247,24 @@ public class InvocationFactoryTest {
             return (ClientRequest) ReflectionUtils.getField(requestContext, result);
         } catch (NoSuchFieldException e) {
             throw new IllegalStateException("Failed to access requestContext field", e);
+        }
+    }
+
+    private enum TestPath implements Path {
+
+        ENTRIES_CATEGORY_PAGE("/entries/{id}/page/{page}"),
+        ENTRIES("/entries"),
+        ENTRIES_BY_ID("/entries/{id}");
+
+        private String uri;
+
+        TestPath(String uri) {
+            this.uri = uri;
+        }
+
+        @Override
+        public String getURI() {
+            return uri;
         }
     }
 }

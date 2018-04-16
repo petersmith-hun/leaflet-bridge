@@ -4,7 +4,9 @@ import hu.psprog.leaflet.bridge.adapter.RequestBodyAdapter;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Model object containing all necessary information of a request.
@@ -156,7 +158,7 @@ public class RESTRequest {
          * @param value concrete value of the path parameter
          * @return Builder instance
          */
-        public RESTRequestBuilder addPathParameter(String key, String value) {
+        public RESTRequestBuilder addPathParameter(String key, Object value) {
             restRequest.pathParameters.put(key, value);
             return this;
         }
@@ -171,6 +173,20 @@ public class RESTRequest {
          */
         public RESTRequestBuilder addRequestParameters(String key, String value) {
             restRequest.requestParameters.put(key, value);
+            return this;
+        }
+
+        /**
+         * _Optional_
+         * Adds list of GET parameters to the request.
+         *
+         * @param key key of the GET parameter
+         * @param valueList value list of the GET parameter - will be joined with ','
+         * @return Builder instance
+         */
+        public RESTRequestBuilder addRequestParameters(String key, List<String> valueList) {
+            addRequestParameters(key, valueList.stream()
+                    .collect(Collectors.joining(",")));
             return this;
         }
 
