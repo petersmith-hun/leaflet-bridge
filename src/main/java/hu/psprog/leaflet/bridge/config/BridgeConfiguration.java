@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.config;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import javax.ws.rs.client.Client;
@@ -14,6 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
  * @author Peter Smith
  */
 @Configuration
+@ComponentScan("hu.psprog.leaflet.bridge")
 public class BridgeConfiguration {
 
     public static final String DEVICE_ID_HEADER = "X-Device-ID";
