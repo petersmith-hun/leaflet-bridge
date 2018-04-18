@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Unit tests for {@link ResponseReader}.
@@ -93,6 +94,20 @@ public class ResponseReaderTest {
 
         // then
         verify(httpServletResponse).setHeader(AUTH_TOKEN_HEADER, TOKEN_VALUE);
+    }
+
+    @Test
+    public void shouldNotSetToken() {
+
+        // given
+        given(response.getHeaderString(AUTH_TOKEN_HEADER)).willReturn(null);
+        given(response.getStatusInfo()).willReturn(Response.Status.OK);
+
+        // when
+        responseReader.read(response);
+
+        // then
+        verifyZeroInteractions(httpServletResponse);
     }
 
     @Test(expected = ValidationFailureException.class)
