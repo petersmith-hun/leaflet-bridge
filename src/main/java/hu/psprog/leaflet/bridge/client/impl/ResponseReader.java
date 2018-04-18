@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import java.util.Objects;
+
 import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.AUTH_TOKEN_HEADER;
 
 /**
@@ -50,7 +52,10 @@ class ResponseReader {
     }
 
     private void extractToken(Response response) {
-        httpServletResponse.setHeader(AUTH_TOKEN_HEADER, response.getHeaderString(AUTH_TOKEN_HEADER));
+        String token = response.getHeaderString(AUTH_TOKEN_HEADER);
+        if (Objects.nonNull(token)) {
+            httpServletResponse.setHeader(AUTH_TOKEN_HEADER, token);
+        }
     }
 
     private void checkResponse(Response response) {
