@@ -1,5 +1,6 @@
 package hu.psprog.leaflet.bridge.client.domain.error;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @author Peter Smith
  */
+@JsonDeserialize(builder = ValidationErrorMessageListResponse.ValidationErrorMessageListResponseBuilder.class)
 public class ValidationErrorMessageListResponse {
 
     private List<ValidationErrorMessageResponse> validation;

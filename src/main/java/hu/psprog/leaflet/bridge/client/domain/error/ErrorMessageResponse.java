@@ -1,5 +1,7 @@
 package hu.psprog.leaflet.bridge.client.domain.error;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  *
  * @author Peter Smith
  */
+@JsonDeserialize(builder = ErrorMessageResponse.ErrorMessageResponseBuilder.class)
 public class ErrorMessageResponse {
 
     protected String message;
@@ -51,6 +54,7 @@ public class ErrorMessageResponse {
     /**
      * Builder for {@link ErrorMessageResponse}.
      */
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class ErrorMessageResponseBuilder {
         private String message;
 

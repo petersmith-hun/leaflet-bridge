@@ -1,5 +1,7 @@
 package hu.psprog.leaflet.bridge.client.domain.error;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  *
  * @author Peter Smith
  */
+@JsonDeserialize(builder = ValidationErrorMessageResponse.ValidationErrorMessageResponseBuilder.class)
 public class ValidationErrorMessageResponse extends ErrorMessageResponse {
 
     private String field;
@@ -54,6 +57,7 @@ public class ValidationErrorMessageResponse extends ErrorMessageResponse {
     /**
      * Builder for {@link ValidationErrorMessageResponse}.
      */
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class ValidationErrorMessageResponseBuilder {
         private String message;
         private String field;
