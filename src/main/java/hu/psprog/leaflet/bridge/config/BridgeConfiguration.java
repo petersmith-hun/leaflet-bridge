@@ -19,6 +19,7 @@ import javax.ws.rs.client.ClientBuilder;
 public class BridgeConfiguration {
 
     public static final String DEVICE_ID_HEADER = "X-Device-ID";
+    public static final String CLIENT_ID_HEADER = "X-Client-ID";
     public static final String AUTH_TOKEN_HEADER = "X-Auth-Token";
 
     @Bean

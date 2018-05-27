@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.CLIENT_ID_HEADER;
 import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.DEVICE_ID_HEADER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -65,6 +66,7 @@ public class InvocationFactoryTest {
     private static final String PUT = "PUT";
     private static final String TARGET = "http://localhost:10000/test";
     private static final String DEVICE_ID = UUID.randomUUID().toString();
+    private static final String CLIENT_ID = UUID.randomUUID().toString();
     private static final String PARAMETER_LIST = "parameterList";
     private static final List<String> VALUE_LIST = Arrays.asList("param1", "param2", "param3");
     private static final String GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST = "parameterList=param1,param2,param3";
@@ -83,6 +85,7 @@ public class InvocationFactoryTest {
     @Before
     public void setup() {
         given(httpServletRequest.getAttribute(DEVICE_ID_HEADER)).willReturn(DEVICE_ID);
+        given(httpServletRequest.getAttribute(CLIENT_ID_HEADER)).willReturn(CLIENT_ID);
         List<CallStrategy> callStrategyList = Arrays.asList(new PostCallStrategy(), new PutCallStrategy(), new GetCallStrategy(), new DeleteCallStrategy());
         invocationFactory = new InvocationFactory(requestAuthentication, callStrategyList, httpServletRequest);
         Map<String, String> auth = new HashMap<>();
@@ -116,6 +119,7 @@ public class InvocationFactoryTest {
         assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
         assertThat(clientRequest.getUri().getQuery(), equalTo(QUERY_STRING));
         assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+        assertThat(clientRequest.getHeaderString(CLIENT_ID_HEADER), equalTo(CLIENT_ID));
         assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
     }
 
