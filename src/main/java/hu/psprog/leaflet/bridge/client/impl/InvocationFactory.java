@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.CLIENT_ID_HEADER;
 import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.DEVICE_ID_HEADER;
 
 /**
@@ -53,7 +54,8 @@ class InvocationFactory {
         target = fillRequestParameters(target, restRequest);
         Invocation.Builder builder = target
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(DEVICE_ID_HEADER, httpServletRequest.getAttribute(DEVICE_ID_HEADER));
+                .header(DEVICE_ID_HEADER, httpServletRequest.getAttribute(DEVICE_ID_HEADER))
+                .header(CLIENT_ID_HEADER, httpServletRequest.getAttribute(CLIENT_ID_HEADER));
         authenticate(builder, restRequest);
 
         return callStrategyMap
