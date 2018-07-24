@@ -7,8 +7,6 @@ import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -18,22 +16,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.CLIENT_ID_HEADER;
-import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.DEVICE_ID_HEADER;
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_HEADER;
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_HEADER;
 
 /**
  * Prepares a Jersey invocation.
  *
  * @author Peter Smith
  */
-@Component
 public class InvocationFactoryImpl implements InvocationFactory {
 
     private final RequestAuthentication requestAuthentication;
     private final Map<RequestMethod, CallStrategy> callStrategyMap;
     private final RequestAdapter requestAdapter;
 
-    @Autowired
     public InvocationFactoryImpl(RequestAuthentication requestAuthentication, List<CallStrategy> callStrategyList, RequestAdapter requestAdapter) {
         this.requestAuthentication = requestAuthentication;
         this.callStrategyMap = callStrategyList.stream()

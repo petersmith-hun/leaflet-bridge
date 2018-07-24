@@ -11,5 +11,11 @@
 
     <artifactId>bridge-spring-integration</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>hu.psprog.leaflet</groupId>
+            <artifactId>bridge-implementation</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

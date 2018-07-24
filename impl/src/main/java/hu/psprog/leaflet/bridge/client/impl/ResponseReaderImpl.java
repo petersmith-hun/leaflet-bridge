@@ -8,26 +8,22 @@ import hu.psprog.leaflet.bridge.client.exception.UnauthorizedAccessException;
 import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.util.Objects;
 
-import static hu.psprog.leaflet.bridge.config.BridgeConfiguration.AUTH_TOKEN_HEADER;
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
 
 /**
  * Handles Jersey's response.
  *
  * @author Peter Smith
  */
-@Component
 public class ResponseReaderImpl implements ResponseReader {
 
     private final RequestAdapter requestAdapter;
 
-    @Autowired
     public ResponseReaderImpl(RequestAdapter requestAdapter) {
         this.requestAdapter = requestAdapter;
     }

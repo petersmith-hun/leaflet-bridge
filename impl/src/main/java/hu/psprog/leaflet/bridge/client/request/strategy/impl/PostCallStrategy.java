@@ -3,7 +3,6 @@ package hu.psprog.leaflet.bridge.client.request.strategy.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-import org.springframework.stereotype.Component;
 
 import javax.ws.rs.client.Invocation;
 
@@ -12,7 +11,6 @@ import javax.ws.rs.client.Invocation;
  *
  * @author Peter Smith
  */
-@Component
 public class PostCallStrategy extends AbstractCallStrategy {
 
     @Override
