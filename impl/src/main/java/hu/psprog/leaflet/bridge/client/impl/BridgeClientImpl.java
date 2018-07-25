@@ -18,7 +18,7 @@ import java.io.IOException;
  *
  * @author Peter Smith
  */
-class BridgeClientImpl implements BridgeClient {
+public class BridgeClientImpl implements BridgeClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientImpl.class);
 
