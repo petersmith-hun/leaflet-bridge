@@ -2,6 +2,8 @@ package hu.psprog.leaflet.bridge.client.impl;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
+import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
+import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -18,11 +20,11 @@ import javax.ws.rs.client.WebTarget;
 class BridgeClientFactory {
 
     private Client client;
-    private InvocationFactoryImpl invocationFactory;
-    private ResponseReaderImpl responseReader;
+    private InvocationFactory invocationFactory;
+    private ResponseReader responseReader;
 
     @Autowired
-    public BridgeClientFactory(Client client, InvocationFactoryImpl invocationFactory, ResponseReaderImpl responseReader) {
+    public BridgeClientFactory(Client client, InvocationFactory invocationFactory, ResponseReader responseReader) {
         this.client = client;
         this.invocationFactory = invocationFactory;
         this.responseReader = responseReader;

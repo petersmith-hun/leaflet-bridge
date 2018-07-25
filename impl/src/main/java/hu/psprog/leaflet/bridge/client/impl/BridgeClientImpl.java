@@ -2,6 +2,8 @@ package hu.psprog.leaflet.bridge.client.impl;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
+import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
+import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +23,10 @@ class BridgeClientImpl implements BridgeClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientImpl.class);
 
     private final WebTarget webTarget;
-    private final InvocationFactoryImpl invocationFactory;
-    private final ResponseReaderImpl responseReader;
+    private final InvocationFactory invocationFactory;
+    private final ResponseReader responseReader;
 
-    public BridgeClientImpl(WebTarget webTarget, InvocationFactoryImpl invocationFactory, ResponseReaderImpl responseReader) {
+    public BridgeClientImpl(WebTarget webTarget, InvocationFactory invocationFactory, ResponseReader responseReader) {
         this.webTarget = webTarget;
         this.invocationFactory = invocationFactory;
         this.responseReader = responseReader;
