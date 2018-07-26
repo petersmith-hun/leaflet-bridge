@@ -7,9 +7,18 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 
 /**
+ * Prepares a Jersey invocation.
+ *
  * @author Peter Smith
  */
 public interface InvocationFactory {
 
+    /**
+     * Creates an {@link Invocation} for given {@link RESTRequest}.
+     *
+     * @param webTarget initial {@link WebTarget} to send request via
+     * @param restRequest {@link RESTRequest} to build {@link Invocation} for
+     * @return built {@link Invocation}
+     */
     Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) throws JsonProcessingException;
 }

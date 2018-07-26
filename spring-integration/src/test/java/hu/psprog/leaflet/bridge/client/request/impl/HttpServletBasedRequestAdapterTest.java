@@ -18,6 +18,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
+ * Unit tests for {@link HttpServletBasedRequestAdapter}.
+ *
  * @author Peter Smith
  */
 @RunWith(MockitoJUnitRunner.class)
