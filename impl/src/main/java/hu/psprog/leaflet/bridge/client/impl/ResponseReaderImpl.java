@@ -16,7 +16,7 @@ import java.util.Objects;
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
 
 /**
- * Handles Jersey's response.
+ * Implementation of {@link ResponseReader}.
  *
  * @author Peter Smith
  */
@@ -28,14 +28,6 @@ public class ResponseReaderImpl implements ResponseReader {
         this.requestAdapter = requestAdapter;
     }
 
-    /**
-     * Reads given response and parses it to the given response type of {@link GenericType}
-     *
-     * @param response raw {@link Response} of Jersey client
-     * @param responseType target type of response content
-     * @param <T> T type of target
-     * @return response payload as T
-     */
     @Override
     public <T> T read(Response response, GenericType<T> responseType) {
         checkResponse(response);
@@ -43,11 +35,6 @@ public class ResponseReaderImpl implements ResponseReader {
         return response.readEntity(responseType);
     }
 
-    /**
-     * Reads given void response.
-     *
-     * @param response raw {@link Response} of Jersey client
-     */
     @Override
     public void read(Response response) {
         checkResponse(response);

@@ -20,7 +20,7 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_H
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_HEADER;
 
 /**
- * Prepares a Jersey invocation.
+ * Implementation of {@link InvocationFactory}.
  *
  * @author Peter Smith
  */
@@ -37,13 +37,6 @@ public class InvocationFactoryImpl implements InvocationFactory {
         this.requestAdapter = requestAdapter;
     }
 
-    /**
-     * Creates an {@link Invocation} for given {@link RESTRequest}.
-     *
-     * @param webTarget initial {@link WebTarget} to send request via
-     * @param restRequest {@link RESTRequest} to build {@link Invocation} for
-     * @return built {@link Invocation}
-     */
     @Override
     public Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) throws JsonProcessingException {
         WebTarget target = webTarget
