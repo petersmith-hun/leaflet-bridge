@@ -2,20 +2,19 @@ package hu.psprog.leaflet.bridge.integration.postprocessing;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeService;
-import hu.psprog.leaflet.bridge.integration.postprocessing.BridgeAssignmentBeanFactoryPostProcessor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 

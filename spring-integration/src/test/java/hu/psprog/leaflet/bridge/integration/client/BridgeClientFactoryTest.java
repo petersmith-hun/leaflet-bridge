@@ -9,12 +9,11 @@ import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
 import hu.psprog.leaflet.bridge.client.impl.ResponseReaderImpl;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-import hu.psprog.leaflet.bridge.integration.client.BridgeClientFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
