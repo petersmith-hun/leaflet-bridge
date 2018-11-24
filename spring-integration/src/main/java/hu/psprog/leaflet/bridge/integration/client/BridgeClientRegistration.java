@@ -1,4 +1,4 @@
-package hu.psprog.leaflet.bridge.client.impl;
+package hu.psprog.leaflet.bridge.integration.client;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;

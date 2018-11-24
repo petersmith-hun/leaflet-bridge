@@ -1,4 +1,4 @@
-package hu.psprog.leaflet.bridge.client.request.impl;
+package hu.psprog.leaflet.bridge.integration.request.adapter;
 
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
-package hu.psprog.leaflet.bridge.client.request.impl;
+package hu.psprog.leaflet.bridge.integration.request.adapter;
 
+import hu.psprog.leaflet.bridge.integration.request.adapter.HttpServletBasedRequestAdapter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
