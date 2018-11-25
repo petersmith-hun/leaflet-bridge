@@ -1,4 +1,4 @@
-module bridge.spring.integration {
+module leaflet.component.bridge.integration.spring {
     requires java.compiler;
     requires java.ws.rs;
     requires javax.servlet.api;
@@ -9,7 +9,7 @@ module bridge.spring.integration {
     requires spring.boot;
     requires spring.context;
     requires spring.core;
-    requires bridge.api;
-    requires bridge.implementation;
+    requires leaflet.component.bridge.api;
+    requires leaflet.component.bridge.implementation;
     requires java.annotation;
 }

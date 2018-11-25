@@ -1,4 +1,4 @@
-module bridge.api {
+module leaflet.component.bridge.api {
     requires java.ws.rs;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
