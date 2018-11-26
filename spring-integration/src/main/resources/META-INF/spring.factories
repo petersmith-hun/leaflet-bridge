@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  hu.psprog.leaflet.bridge.config.BridgeConfiguration
+  hu.psprog.leaflet.bridge.integration.config.BridgeConfiguration
