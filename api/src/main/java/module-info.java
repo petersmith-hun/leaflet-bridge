@@ -2,7 +2,7 @@ module leaflet.component.bridge.api {
     requires java.ws.rs;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
-    requires jackson.annotations;
+    requires com.fasterxml.jackson.annotation;
     requires org.apache.commons.lang3;
     requires spring.context;
 
