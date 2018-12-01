@@ -1,7 +1,7 @@
-module leaflet.component.bridge.integration.spring {
+open module leaflet.component.bridge.integration.spring {
+    requires java.annotation;
     requires java.compiler;
     requires java.ws.rs;
-    requires javax.servlet.api;
     requires com.fasterxml.jackson.jaxrs.json;
     requires jersey.media.multipart;
     requires slf4j.api;
@@ -11,5 +11,5 @@ module leaflet.component.bridge.integration.spring {
     requires spring.core;
     requires leaflet.component.bridge.api;
     requires leaflet.component.bridge.implementation;
-    requires java.annotation;
+    requires tomcat.embed.core;
 }

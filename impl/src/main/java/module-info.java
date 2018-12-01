@@ -1,4 +1,4 @@
-module leaflet.component.bridge.implementation {
+open module leaflet.component.bridge.implementation {
     requires java.ws.rs;
     requires com.fasterxml.jackson.core;
     requires slf4j.api;
