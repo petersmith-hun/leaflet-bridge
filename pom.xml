@@ -26,8 +26,8 @@
         <skip.it>false</skip.it>
 
         <!-- dependency versions -->
-        <spring.framework.version>5.1.2.RELEASE</spring.framework.version>
-        <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
+        <spring.framework.version>5.1.3.RELEASE</spring.framework.version>
+        <spring.boot.version>2.1.1.RELEASE</spring.boot.version>
         <jersey.version>2.27</jersey.version>
         <rs-api.version>2.1.1</rs-api.version>
         <jackson.version>2.9.7</jackson.version>
