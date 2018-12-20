@@ -1,4 +1,4 @@
-package hu.psprog.leaflet.bridge.client.postprocessing;
+package hu.psprog.leaflet.bridge.integration.postprocessing;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeService;

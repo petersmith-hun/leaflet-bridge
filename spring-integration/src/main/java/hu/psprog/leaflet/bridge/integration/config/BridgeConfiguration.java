@@ -1,4 +1,4 @@
-package hu.psprog.leaflet.bridge.config;
+package hu.psprog.leaflet.bridge.integration.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;

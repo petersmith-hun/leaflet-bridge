@@ -1,9 +1,10 @@
-package hu.psprog.leaflet.bridge.client.impl;
+package hu.psprog.leaflet.bridge.integration.client;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
+import hu.psprog.leaflet.bridge.client.impl.BridgeClientImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;

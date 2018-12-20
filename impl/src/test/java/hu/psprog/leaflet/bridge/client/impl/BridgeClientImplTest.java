@@ -10,16 +10,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
@@ -60,7 +60,7 @@ public class BridgeClientImplTest {
     public void shouldCallForWrappedResponse() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        GenericType<WrapperBodyDataModel<BaseBodyDataModel>> genericType = new GenericType<WrapperBodyDataModel<BaseBodyDataModel>>() {};
+        GenericType<WrapperBodyDataModel<BaseBodyDataModel>> genericType = new GenericType<>() {};
         given(invocationFactory.getInvocationFor(eq(webTarget), any(RESTRequest.class))).willReturn(invocation);
 
         // when
@@ -74,7 +74,7 @@ public class BridgeClientImplTest {
     public void shouldThrowCommunicationFailureExceptionOnCallForWrappedResponse() throws CommunicationFailureException, JsonProcessingException {
 
         // given
-        GenericType<WrapperBodyDataModel<BaseBodyDataModel>> genericType = new GenericType<WrapperBodyDataModel<BaseBodyDataModel>>() {};
+        GenericType<WrapperBodyDataModel<BaseBodyDataModel>> genericType = new GenericType<>() {};
         doThrow(JsonProcessingException.class).when(invocationFactory).getInvocationFor(eq(webTarget), any(RESTRequest.class));
 
         // when

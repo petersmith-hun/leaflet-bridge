@@ -1,17 +1,19 @@
-package hu.psprog.leaflet.bridge.client.impl;
+package hu.psprog.leaflet.bridge.integration.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.api.rest.response.entry.EntryDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
+import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
+import hu.psprog.leaflet.bridge.client.impl.ResponseReaderImpl;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;

@@ -1,4 +1,4 @@
-package hu.psprog.leaflet.bridge.client.impl;
+package hu.psprog.leaflet.bridge.integration.client;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
@@ -44,7 +44,7 @@ class BridgeClientRegistration {
         Optional.ofNullable(clients)
                 .orElse(Collections.emptyMap())
                 .entrySet().stream()
-                .peek(entry -> LOGGER.info("Registering client [{}] with configuration [{}]", entry.getKey(), entry.getValue()))
+                .peek(entry -> LOGGER.info("Registering Bridge Client [{}] with configuration [{}]", entry.getKey(), entry.getValue()))
                 .forEach(entry -> {
                     BridgeClient bridgeClient = bridgeClientFactory.createBridgeClient(entry.getValue());
                     configurableListableBeanFactory.registerSingleton(entry.getKey(), bridgeClient);

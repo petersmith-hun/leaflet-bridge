@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -58,7 +58,7 @@ public class ResponseReaderImplTest {
     @InjectMocks
     private ResponseReaderImpl responseReader;
 
-    private GenericType<BaseBodyDataModel> genericType = new GenericType<BaseBodyDataModel>() {};
+    private GenericType<BaseBodyDataModel> genericType = new GenericType<>() {};
     private BaseBodyDataModel baseBodyDataModel = EntryDataModel.getBuilder().build();
 
     @Before
@@ -115,13 +115,17 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(400);
         given(response.getStatusInfo()).willReturn(Response.Status.BAD_REQUEST);
-        given(response.getEntity()).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
+        given(response.readEntity(ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
 
         // when
-        responseReader.read(response, genericType);
+        try {
+            responseReader.read(response, genericType);
+        } finally {
 
-        // then
-        // expected exception
+            // then
+            // expected exception
+            verify(response).readEntity(ValidationErrorMessageListResponse.class);
+        }
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -130,13 +134,17 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(404);
         given(response.getStatusInfo()).willReturn(Response.Status.NOT_FOUND);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response, genericType);
+        try {
+            responseReader.read(response, genericType);
+        } finally {
 
-        // then
-        // expected exception
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 
     @Test(expected = RequestProcessingFailureException.class)
@@ -145,13 +153,17 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(500);
         given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response, genericType);
+        try {
+            responseReader.read(response, genericType);
+        } finally {
 
-        // then
-        // expected exception
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 
     @Test(expected = ValidationFailureException.class)
@@ -160,13 +172,17 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(400);
         given(response.getStatusInfo()).willReturn(Response.Status.BAD_REQUEST);
-        given(response.getEntity()).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
+        given(response.readEntity(ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
 
         // when
-        responseReader.read(response);
+        try {
+            responseReader.read(response, genericType);
+        } finally {
 
-        // then
-        // expected exception
+            // then
+            // expected exception
+            verify(response).readEntity(ValidationErrorMessageListResponse.class);
+        }
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -175,13 +191,17 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(404);
         given(response.getStatusInfo()).willReturn(Response.Status.NOT_FOUND);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response);
+        try {
+            responseReader.read(response, genericType);
+        } finally {
 
-        // then
-        // expected exception
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 
     @Test(expected = RequestProcessingFailureException.class)
@@ -190,13 +210,20 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(500);
         given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
         responseReader.read(response);
 
-        // then
-        // expected exception
+        // when
+        try {
+            responseReader.read(response, genericType);
+        } finally {
+
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 
     @Test(expected = UnauthorizedAccessException.class)
@@ -205,13 +232,20 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(401);
         given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
         responseReader.read(response);
 
-        // then
-        // expected exception
+        // when
+        try {
+            responseReader.read(response, genericType);
+        } finally {
+
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 
     @Test(expected = ForbiddenOperationException.class)
@@ -220,13 +254,20 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(403);
         given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
         responseReader.read(response);
 
-        // then
-        // expected exception
+        // when
+        try {
+            responseReader.read(response, genericType);
+        } finally {
+
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 
     @Test(expected = ConflictingRequestException.class)
@@ -235,12 +276,19 @@ public class ResponseReaderImplTest {
         // given
         given(response.getStatus()).willReturn(409);
         given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.getEntity()).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
         responseReader.read(response);
 
-        // then
-        // expected exception
+        // when
+        try {
+            responseReader.read(response, genericType);
+        } finally {
+
+            // then
+            // expected exception
+            verify(response).readEntity(ErrorMessageResponse.class);
+        }
     }
 }
