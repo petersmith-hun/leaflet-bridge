@@ -47,6 +47,7 @@ public class InvocationFactoryImpl implements InvocationFactory {
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header(DEVICE_ID_HEADER, requestAdapter.provideDeviceID())
                 .header(CLIENT_ID_HEADER, requestAdapter.provideClientID());
+        addCustomHeaderParameters(builder, restRequest);
         authenticate(builder, restRequest);
 
         return callStrategyMap
@@ -62,6 +63,11 @@ public class InvocationFactoryImpl implements InvocationFactory {
         }
 
         return targetWithParameters;
+    }
+
+    private void addCustomHeaderParameters(Invocation.Builder builder, RESTRequest request) {
+        request.getHeaderParameters()
+                .forEach(builder::header);
     }
 
     private void authenticate(Invocation.Builder builder, RESTRequest request) {

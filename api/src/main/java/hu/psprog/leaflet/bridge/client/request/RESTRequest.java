@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_RESPONSE;
+
 /**
  * Model object containing all necessary information of a request.
  *
@@ -21,6 +23,7 @@ public class RESTRequest {
     private Serializable requestBody;
     private Map<String, Object> pathParameters = new HashMap<>();
     private Map<String, Object> requestParameters = new HashMap<>();
+    private Map<String, Object> headerParameters = new HashMap<>();
     private boolean multipart;
     private RequestBodyAdapter adapter;
 
@@ -50,6 +53,10 @@ public class RESTRequest {
 
     public Map<String, Object> getRequestParameters() {
         return requestParameters;
+    }
+
+    public Map<String, Object> getHeaderParameters() {
+        return headerParameters;
     }
 
     public boolean isMultipart() {
@@ -174,6 +181,31 @@ public class RESTRequest {
         public RESTRequestBuilder addRequestParameters(String key, String value) {
             restRequest.requestParameters.put(key, value);
             return this;
+        }
+
+        /**
+         * _Optional_
+         * Adds a header parameter to the request.
+         *
+         * @param key key of the header parameter
+         * @param value oncrete value of the header parameter
+         * @return Builder instance
+         */
+        public RESTRequestBuilder addHeaderParameter(String key, String value) {
+            restRequest.headerParameters.put(key, value);
+            return this;
+        }
+
+        /**
+         * _Optional_
+         * Adds ReCaptcha response token to the request as X-Captcha-Response header parameter.
+         * Mandatory for ReCaptcha-validated requests!
+         *
+         * @param value ReCaptcha response token
+         * @return Builder instance
+         */
+        public RESTRequestBuilder recaptchaResponse(String value) {
+            return addHeaderParameter(X_CAPTCHA_RESPONSE, value);
         }
 
         /**
