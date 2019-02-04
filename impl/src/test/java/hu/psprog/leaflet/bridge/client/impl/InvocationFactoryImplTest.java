@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_HEADER;
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_HEADER;
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_RESPONSE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -70,6 +71,7 @@ public class InvocationFactoryImplTest {
     private static final String PARAMETER_LIST = "parameterList";
     private static final List<String> VALUE_LIST = Arrays.asList("param1", "param2", "param3");
     private static final String GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST = "parameterList=param1,param2,param3";
+    private static final String RECAPTCHA_TOKEN = "recaptcha-token";
     private static final WebTarget WEB_TARGET = ClientBuilder.newBuilder()
             .build()
             .target(TARGET);
@@ -145,7 +147,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedPost() throws JsonProcessingException {
+    public void shouldGetInvocationForAuthenticatedAndReCaptchaValidatedPost() throws JsonProcessingException {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
@@ -154,6 +156,7 @@ public class InvocationFactoryImplTest {
                 .path(TestPath.ENTRIES)
                 .requestBody(entryCreateRequestModel)
                 .authenticated()
+                .recaptchaResponse(RECAPTCHA_TOKEN)
                 .build();
 
         // when
@@ -168,6 +171,7 @@ public class InvocationFactoryImplTest {
         assertThat(clientRequest.getEntity(), equalTo(entryCreateRequestModel));
         assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
         assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+        assertThat(clientRequest.getHeaderString(X_CAPTCHA_RESPONSE), equalTo(RECAPTCHA_TOKEN));
     }
 
     @Test
