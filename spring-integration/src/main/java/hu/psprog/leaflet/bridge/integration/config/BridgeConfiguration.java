@@ -1,5 +1,6 @@
 package hu.psprog.leaflet.bridge.integration.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
@@ -32,10 +33,11 @@ import java.util.List;
 public class BridgeConfiguration {
 
     @Bean
-    public Client jacksonClient() {
+    @Autowired
+    public Client jacksonClient(ObjectMapper objectMapper) {
 
         return ClientBuilder.newBuilder()
-                .register(JacksonJsonProvider.class)
+                .register(new JacksonJsonProvider(objectMapper))
                 .register(MultiPartFeature.class)
                 .build();
     }
