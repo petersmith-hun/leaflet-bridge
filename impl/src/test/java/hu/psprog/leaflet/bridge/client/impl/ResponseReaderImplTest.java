@@ -79,6 +79,7 @@ public class ResponseReaderImplTest {
         // then
         assertThat(result, equalTo(baseBodyDataModel));
         verify(response).readEntity(genericType);
+        verify(response).close();
         verify(requestAdapter).consumeAuthenticationToken(TOKEN_VALUE);
     }
 
@@ -93,6 +94,7 @@ public class ResponseReaderImplTest {
 
         // then
         verify(requestAdapter).consumeAuthenticationToken(TOKEN_VALUE);
+        verify(response).close();
     }
 
     @Test
@@ -107,6 +109,7 @@ public class ResponseReaderImplTest {
 
         // then
         verifyZeroInteractions(requestAdapter);
+        verify(response).close();
     }
 
     @Test(expected = ValidationFailureException.class)
@@ -125,6 +128,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ValidationErrorMessageListResponse.class);
+            verify(response).close();
         }
     }
 
@@ -144,6 +148,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 
@@ -163,6 +168,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 
@@ -182,6 +188,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ValidationErrorMessageListResponse.class);
+            verify(response).close();
         }
     }
 
@@ -201,6 +208,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 
@@ -223,6 +231,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 
@@ -245,6 +254,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 
@@ -267,6 +277,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 
@@ -289,6 +300,7 @@ public class ResponseReaderImplTest {
             // then
             // expected exception
             verify(response).readEntity(ErrorMessageResponse.class);
+            verify(response).close();
         }
     }
 }
