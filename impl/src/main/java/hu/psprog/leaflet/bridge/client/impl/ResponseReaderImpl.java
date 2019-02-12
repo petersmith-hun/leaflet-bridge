@@ -30,15 +30,23 @@ public class ResponseReaderImpl implements ResponseReader {
 
     @Override
     public <T> T read(Response response, GenericType<T> responseType) {
-        checkResponse(response);
-        extractToken(response);
-        return response.readEntity(responseType);
+        try {
+            checkResponse(response);
+            extractToken(response);
+            return response.readEntity(responseType);
+        } finally {
+            close(response);
+        }
     }
 
     @Override
     public void read(Response response) {
-        checkResponse(response);
-        extractToken(response);
+        try {
+            checkResponse(response);
+            extractToken(response);
+        } finally {
+            close(response);
+        }
     }
 
     private void extractToken(Response response) {
@@ -51,6 +59,12 @@ public class ResponseReaderImpl implements ResponseReader {
     private void checkResponse(Response response) {
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
             raiseException(response);
+        }
+    }
+
+    private void close(Response response) {
+        if (Objects.nonNull(response)) {
+            response.close();
         }
     }
 
