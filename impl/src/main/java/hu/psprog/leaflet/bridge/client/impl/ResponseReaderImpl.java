@@ -11,6 +11,7 @@ import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.io.Closeable;
 import java.util.Objects;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
@@ -35,7 +36,9 @@ public class ResponseReaderImpl implements ResponseReader {
             extractToken(response);
             return response.readEntity(responseType);
         } finally {
-            close(response);
+            if (!isCloseable(responseType)) {
+                close(response);
+            }
         }
     }
 
@@ -60,6 +63,10 @@ public class ResponseReaderImpl implements ResponseReader {
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
             raiseException(response);
         }
+    }
+
+    private <T> boolean isCloseable(GenericType<T> responseType) {
+        return Closeable.class.isAssignableFrom(responseType.getRawType());
     }
 
     private void close(Response response) {

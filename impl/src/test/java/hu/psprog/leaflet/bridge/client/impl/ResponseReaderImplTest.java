@@ -21,12 +21,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -48,6 +52,8 @@ public class ResponseReaderImplTest {
                     .withMessage("constraint violation")
                     .build()))
             .build();
+    protected static final GenericType<InputStream> INPUT_STREAM_GENERIC_TYPE = new GenericType<>() {
+    };
 
     @Mock
     private Response response;
@@ -110,6 +116,28 @@ public class ResponseReaderImplTest {
         // then
         verifyZeroInteractions(requestAdapter);
         verify(response).close();
+    }
+
+    @Test
+    public void shouldNotCloseResponseForCloseableResponseType() throws IOException {
+
+        // given
+        InputStream byteArrayInputStream = new ByteArrayInputStream("response".getBytes());
+        given(response.readEntity(INPUT_STREAM_GENERIC_TYPE)).willReturn(byteArrayInputStream);
+        given(response.getStatusInfo()).willReturn(Response.Status.OK);
+
+        // when
+        InputStream result = responseReader.read(response, INPUT_STREAM_GENERIC_TYPE);
+
+        // then
+        assertThat(result, equalTo(byteArrayInputStream));
+        verify(response).readEntity(INPUT_STREAM_GENERIC_TYPE);
+        verify(response, never()).close();
+        verify(requestAdapter).consumeAuthenticationToken(TOKEN_VALUE);
+
+        // clean-up
+        result.close();
+        byteArrayInputStream.close();
     }
 
     @Test(expected = ValidationFailureException.class)
