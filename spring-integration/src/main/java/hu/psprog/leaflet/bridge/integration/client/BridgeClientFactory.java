@@ -18,7 +18,7 @@ import javax.ws.rs.client.WebTarget;
  * @author Peter Smith
  */
 @Component
-class BridgeClientFactory {
+public class BridgeClientFactory {
 
     private Client client;
     private InvocationFactory invocationFactory;

@@ -13,7 +13,8 @@ public class OrderBy {
     public enum Entry {
         ID("id"),
         TITLE("title"),
-        CREATED("created");
+        CREATED("created"),
+        PUBLISHED("published");
 
         private String field;
 
