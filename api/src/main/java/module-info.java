@@ -4,7 +4,7 @@ open module leaflet.component.bridge.api {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
     requires org.apache.commons.lang3;
-    requires spring.context;
+    requires static spring.context;
 
     exports hu.psprog.leaflet.bridge.adapter;
     exports hu.psprog.leaflet.bridge.client;
