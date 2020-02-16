@@ -7,7 +7,7 @@
     <groupId>hu.psprog.leaflet</groupId>
     <artifactId>leaflet-bridge</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.3</version>
+    <version>3.2.4</version>
 
     <modules>
         <module>api</module>
@@ -26,19 +26,20 @@
         <skip.it>false</skip.it>
 
         <!-- dependency versions -->
-        <spring.framework.version>5.1.3.RELEASE</spring.framework.version>
-        <spring.boot.version>2.1.1.RELEASE</spring.boot.version>
-        <jersey.version>2.27</jersey.version>
-        <rs-api.version>2.1.1</rs-api.version>
-        <jackson.version>2.9.7</jackson.version>
+        <spring.framework.version>5.2.3.RELEASE</spring.framework.version>
+        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>
+        <jersey.version>2.30</jersey.version>
+        <rs-api.version>2.1.6</rs-api.version>
+        <jackson.version>2.10.2</jackson.version>
         <logback.version>1.2.3</logback.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <commons-lang3.version>3.8.1</commons-lang3.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <commons-io.version>2.6</commons-io.version>
-        <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-        <tomcat-embed-core.version>9.0.12</tomcat-embed-core.version>
-        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+        <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <tomcat-embed-core.version>9.0.31</tomcat-embed-core.version>
+        <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
+        <jakarta.activation-api.version>1.2.1</jakarta.activation-api.version>
 
         <!-- test framework versions -->
         <junit.version>4.12</junit.version>
@@ -46,9 +47,9 @@
         <hamcrest-all.version>1.3</hamcrest-all.version>
         <wiremock.version>2.6.0</wiremock.version>
         <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
-        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
-        <leaflet.rest-api.version>1.6.6</leaflet.rest-api.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+        <leaflet.rest-api.version>1.6.7</leaflet.rest-api.version>
     </properties>
 
     <dependencyManagement>
@@ -74,14 +75,20 @@
                 <version>${spring.boot.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${rs-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.activation</groupId>
+                        <artifactId>jakarta.activation</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
@@ -150,19 +157,19 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>${javax.annotation-api.version}</version>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-runtime</artifactId>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>${jaxb-runtime.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-runtime.version}</version>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${jakarta.activation-api.version}</version>
             </dependency>
 
             <!-- test dependencies -->
@@ -271,6 +278,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>--add-exports</arg>
+                        <arg>com.fasterxml.jackson.jaxrs.json/com.fasterxml.jackson.jaxrs.json=leaflet.component.bridge.integration.spring</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>

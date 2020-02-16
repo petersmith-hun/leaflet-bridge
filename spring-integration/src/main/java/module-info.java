@@ -5,12 +5,12 @@ open module leaflet.component.bridge.integration.spring {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.jaxrs.json;
     requires jersey.media.multipart;
-    requires slf4j.api;
+    requires org.slf4j;
     requires spring.beans;
     requires spring.boot;
     requires spring.context;
     requires spring.core;
     requires leaflet.component.bridge.api;
     requires leaflet.component.bridge.implementation;
-    requires tomcat.embed.core;
+    requires org.apache.tomcat.embed.core;
 }
