@@ -1,0 +1,26 @@
+version: 2.1
+orbs:
+  jira: circleci/jira@1.1.2
+jobs:
+  build_leaflet-bridge:
+    docker:
+      - image: cimg/openjdk:11.0.6
+    steps:
+      - checkout
+      - run:
+          command: mvn clean deploy -s .circleci/settings.xml
+          name: Build and upload to Leaflet Internal repository
+      - store_test_results:
+          path: impl/target/surefire-reports
+      - store_test_results:
+          path: spring-integration/target/surefire-reports
+workflows:
+  build:
+    jobs:
+      - build_leaflet-bridge:
+         context: leaflet_ci
+         post-steps:
+           - jira/notify:
+               environment_type: production
+               job_type: build
+  version: 2.1
