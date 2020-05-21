@@ -37,7 +37,7 @@
         <commons-io.version>2.6</commons-io.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <tomcat-embed-core.version>9.0.31</tomcat-embed-core.version>
+        <tomcat-embed-core.version>9.0.35</tomcat-embed-core.version>
         <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
         <jakarta.activation-api.version>1.2.1</jakarta.activation-api.version>
 
