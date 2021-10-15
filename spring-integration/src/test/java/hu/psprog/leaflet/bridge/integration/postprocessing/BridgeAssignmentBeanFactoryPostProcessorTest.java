@@ -2,11 +2,12 @@ package hu.psprog.leaflet.bridge.integration.postprocessing;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -23,16 +24,16 @@ import static org.mockito.Mockito.verify;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BridgeAssignmentBeanFactoryPostProcessorTest {
 
     private static final String CLIENT_BEAN_NAME = "testClient";
     private static final RuntimeBeanReference RUNTIME_BEAN_REFERENCE = new RuntimeBeanReference(CLIENT_BEAN_NAME);
 
-    @Mock
+    @Mock(lenient = true)
     private ConfigurableListableBeanFactory configurableListableBeanFactory;
 
-    @Mock
+    @Mock(lenient = true)
     private BeanDefinition beanDefinition;
 
     @Mock
@@ -67,27 +68,29 @@ public class BridgeAssignmentBeanFactoryPostProcessorTest {
         verify(constructorArgumentValues).addIndexedArgumentValue(eq(1), eq(RUNTIME_BEAN_REFERENCE));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldPostProcessorThrowExceptionForMultipleConstructors() {
 
         // given
         prepareMocks(TestClientWithMultipleConstructors.class);
 
         // when
-        bridgeAssignmentBeanFactoryPostProcessor.postProcessBeanFactory(configurableListableBeanFactory);
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> bridgeAssignmentBeanFactoryPostProcessor.postProcessBeanFactory(configurableListableBeanFactory));
 
         // then
         // exception expected
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldPostProcessorThrowExceptionForInvalidConstructor() {
 
         // given
         prepareMocks(TestClientWithInvalidConstructor.class);
 
         // when
-        bridgeAssignmentBeanFactoryPostProcessor.postProcessBeanFactory(configurableListableBeanFactory);
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> bridgeAssignmentBeanFactoryPostProcessor.postProcessBeanFactory(configurableListableBeanFactory));
 
         // then
         // exception expected

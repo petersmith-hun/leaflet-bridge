@@ -2,11 +2,11 @@ package hu.psprog.leaflet.bridge.integration.client;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.HashMap;
@@ -14,14 +14,14 @@ import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link BridgeClientRegistration}.
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BridgeClientRegistrationTest {
 
     private static final BridgeSettings BRIDGE_SETTINGS = BridgeSettings.getBuilder().withHostUrl("http://localhost:9999/svc").build();
@@ -69,6 +69,6 @@ public class BridgeClientRegistrationTest {
         bridgeClientRegistration.initRegistry();
 
         // then
-        verifyZeroInteractions(configurableListableBeanFactory, bridgeClientFactory);
+        verifyNoInteractions(configurableListableBeanFactory, bridgeClientFactory);
     }
 }

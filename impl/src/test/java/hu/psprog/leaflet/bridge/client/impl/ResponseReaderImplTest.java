@@ -12,12 +12,13 @@ import hu.psprog.leaflet.bridge.client.exception.ResourceNotFoundException;
 import hu.psprog.leaflet.bridge.client.exception.UnauthorizedAccessException;
 import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -32,14 +33,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link ResponseReaderImpl}.
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResponseReaderImplTest {
 
     private static final String TOKEN_VALUE = "token";
@@ -55,7 +56,7 @@ public class ResponseReaderImplTest {
     protected static final GenericType<InputStream> INPUT_STREAM_GENERIC_TYPE = new GenericType<>() {
     };
 
-    @Mock
+    @Mock(lenient = true)
     private Response response;
 
     @Mock
@@ -64,10 +65,10 @@ public class ResponseReaderImplTest {
     @InjectMocks
     private ResponseReaderImpl responseReader;
 
-    private GenericType<BaseBodyDataModel> genericType = new GenericType<>() {};
-    private BaseBodyDataModel baseBodyDataModel = EntryDataModel.getBuilder().build();
+    private final GenericType<BaseBodyDataModel> genericType = new GenericType<>() {};
+    private final BaseBodyDataModel baseBodyDataModel = EntryDataModel.getBuilder().build();
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(response.readEntity(genericType)).willReturn(baseBodyDataModel);
         given(response.getHeaderString(AUTH_TOKEN_HEADER)).willReturn(TOKEN_VALUE);
@@ -114,7 +115,7 @@ public class ResponseReaderImplTest {
         responseReader.read(response);
 
         // then
-        verifyZeroInteractions(requestAdapter);
+        verifyNoInteractions(requestAdapter);
         verify(response).close();
     }
 
@@ -140,7 +141,7 @@ public class ResponseReaderImplTest {
         byteArrayInputStream.close();
     }
 
-    @Test(expected = ValidationFailureException.class)
+    @Test
     public void shouldThrowValidationFailureExceptionWhenReadingForGivenType() {
 
         // given
@@ -149,18 +150,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
 
         // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
+        Assertions.assertThrows(ValidationFailureException.class, () -> responseReader.read(response, genericType));
 
-            // then
-            // expected exception
-            verify(response).readEntity(ValidationErrorMessageListResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ValidationErrorMessageListResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void shouldThrowResourceNotFoundExceptionWhenReadingForGivenType() {
 
         // given
@@ -169,18 +167,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> responseReader.read(response, genericType));
 
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = RequestProcessingFailureException.class)
+    @Test
     public void shouldThrowRequestProcessingFailureExceptionWhenReadingForGivenType() {
 
         // given
@@ -189,18 +184,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
+        Assertions.assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response, genericType));
 
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = ValidationFailureException.class)
+    @Test
     public void shouldThrowValidationFailureExceptionWhenReadingWithoutContent() {
 
         // given
@@ -209,18 +201,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
 
         // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
+        Assertions.assertThrows(ValidationFailureException.class, () -> responseReader.read(response, genericType));
 
-            // then
-            // expected exception
-            verify(response).readEntity(ValidationErrorMessageListResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ValidationErrorMessageListResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void shouldThrowResourceNotFoundExceptionWhenReadingWithoutContent() {
 
         // given
@@ -229,18 +218,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> responseReader.read(response));
 
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = RequestProcessingFailureException.class)
+    @Test
     public void shouldThrowRequestProcessingFailureExceptionWhenReadingWithoutContent() {
 
         // given
@@ -249,21 +235,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response);
+        Assertions.assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response));
 
-        // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
-
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = UnauthorizedAccessException.class)
+    @Test
     public void shouldThrowUnauthorizedAccessExceptionWhenReadingWithoutContent() {
 
         // given
@@ -272,21 +252,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response);
+        Assertions.assertThrows(UnauthorizedAccessException.class, () -> responseReader.read(response));
 
-        // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
-
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = ForbiddenOperationException.class)
+    @Test
     public void shouldThrowForbiddenOperationExceptionWhenReadingWithoutContent() {
 
         // given
@@ -295,21 +269,15 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response);
+        Assertions.assertThrows(ForbiddenOperationException.class, () -> responseReader.read(response));
 
-        // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
-
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 
-    @Test(expected = ConflictingRequestException.class)
+    @Test
     public void shouldThrowConflictingRequestExceptionWhenReadingWithoutContent() {
 
         // given
@@ -318,17 +286,11 @@ public class ResponseReaderImplTest {
         given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        responseReader.read(response);
+        Assertions.assertThrows(ConflictingRequestException.class, () -> responseReader.read(response));
 
-        // when
-        try {
-            responseReader.read(response, genericType);
-        } finally {
-
-            // then
-            // expected exception
-            verify(response).readEntity(ErrorMessageResponse.class);
-            verify(response).close();
-        }
+        // then
+        // expected exception
+        verify(response).readEntity(ErrorMessageResponse.class);
+        verify(response).close();
     }
 }

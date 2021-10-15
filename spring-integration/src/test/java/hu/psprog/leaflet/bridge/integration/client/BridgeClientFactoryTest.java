@@ -9,11 +9,11 @@ import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
 import hu.psprog.leaflet.bridge.client.impl.ResponseReaderImpl;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
@@ -31,7 +31,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class BridgeClientFactoryTest {
 
     private static final RESTRequest REST_REQUEST = RESTRequest.getBuilder().method(RequestMethod.GET).build();

@@ -5,12 +5,12 @@ import hu.psprog.leaflet.bridge.adapter.RequestBodyAdapter;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.JerseyInvocation;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -25,21 +25,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link PostCallStrategy}.
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PostCallStrategyTest {
 
     private static final String REQUEST_BODY = "request body";
     private static final String TRANSFORMED_REQUEST_BODY = "transformed request body";
     private static final String METHOD_POST = "POST";
 
-    @Mock
+    @Mock(lenient = true)
     private RequestBodyAdapter mockedAdapter;
 
     @InjectMocks
@@ -47,7 +47,7 @@ public class PostCallStrategyTest {
 
     private Invocation.Builder invocationBuilder;
 
-    @Before
+    @BeforeEach
     public void setup() {
         invocationBuilder = ClientBuilder
                 .newClient()
@@ -71,7 +71,7 @@ public class PostCallStrategyTest {
         assertThat(requestContext.getMethod(), equalTo(METHOD_POST));
         assertThat(requestContext.getEntity(), equalTo(REQUEST_BODY));
         assertThat(requestContext.getMediaType(), equalTo(MediaType.APPLICATION_JSON_TYPE));
-        verifyZeroInteractions(mockedAdapter);
+        verifyNoInteractions(mockedAdapter);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class PostCallStrategyTest {
         assertThat(requestContext.getMethod(), equalTo(METHOD_POST));
         assertThat(requestContext.getEntity(), equalTo(StringUtils.EMPTY));
         assertThat(requestContext.getMediaType(), equalTo(MediaType.APPLICATION_JSON_TYPE));
-        verifyZeroInteractions(mockedAdapter);
+        verifyNoInteractions(mockedAdapter);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class PostCallStrategyTest {
         assertThat(requestContext.getMethod(), equalTo(METHOD_POST));
         assertThat(requestContext.getEntity(), equalTo(REQUEST_BODY));
         assertThat(requestContext.getMediaType(), equalTo(MediaType.MULTIPART_FORM_DATA_TYPE));
-        verifyZeroInteractions(mockedAdapter);
+        verifyNoInteractions(mockedAdapter);
     }
 
     private ClientRequestContext extractRequestContext(Invocation invocation) throws IllegalAccessException {
