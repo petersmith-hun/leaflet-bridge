@@ -16,11 +16,11 @@ import hu.psprog.leaflet.bridge.client.request.strategy.impl.PostCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.PutCallStrategy;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.JerseyInvocation;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -37,7 +37,7 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_H
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_HEADER;
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_RESPONSE;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -45,7 +45,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class InvocationFactoryImplTest {
 
     private static final String PAGE = "page";
@@ -76,7 +76,7 @@ public class InvocationFactoryImplTest {
             .build()
             .target(TARGET);
 
-    @Mock
+    @Mock(lenient = true)
     private RequestAuthentication requestAuthentication;
 
     @Mock
@@ -84,7 +84,7 @@ public class InvocationFactoryImplTest {
 
     private InvocationFactoryImpl invocationFactory;
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(requestAdapter.provideDeviceID()).willReturn(DEVICE_ID);
         given(requestAdapter.provideClientID()).willReturn(CLIENT_ID);
