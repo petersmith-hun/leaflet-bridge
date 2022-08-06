@@ -58,8 +58,8 @@ public class InvocationFactoryImpl implements InvocationFactory {
     private WebTarget fillRequestParameters(WebTarget webTarget, RESTRequest request) {
 
         WebTarget targetWithParameters = webTarget;
-        for (Map.Entry entry : request.getRequestParameters().entrySet()) {
-            targetWithParameters = targetWithParameters.queryParam(entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<String, Object> entry : request.getRequestParameters().entrySet()) {
+            targetWithParameters = targetWithParameters.queryParam(entry.getKey(), entry.getValue());
         }
 
         return targetWithParameters;

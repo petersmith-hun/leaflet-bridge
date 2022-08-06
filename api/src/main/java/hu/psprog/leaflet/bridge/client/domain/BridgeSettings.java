@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.client.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Configuration wrapper for BridgeClient instance settings.
@@ -12,13 +13,22 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class BridgeSettings {
     
     private String hostUrl;
+    private String oAuthRegistrationID;
 
     public String getHostUrl() {
         return hostUrl;
     }
 
-    public void setHostUrl(String hostUrl) {
+    void setHostUrl(String hostUrl) {
         this.hostUrl = hostUrl;
+    }
+
+    public String getOAuthRegistrationID() {
+        return oAuthRegistrationID;
+    }
+
+    void setOAuthRegistrationID(String oAuthRegistrationID) {
+        this.oAuthRegistrationID = oAuthRegistrationID;
     }
 
     @Override
@@ -31,6 +41,7 @@ public class BridgeSettings {
 
         return new EqualsBuilder()
                 .append(hostUrl, that.hostUrl)
+                .append(oAuthRegistrationID, that.oAuthRegistrationID)
                 .isEquals();
     }
 
@@ -38,13 +49,15 @@ public class BridgeSettings {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(hostUrl)
+                .append(oAuthRegistrationID)
                 .toHashCode();
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("hostUrl", hostUrl)
+                .append("oAuthRegistrationID", oAuthRegistrationID)
                 .toString();
     }
 
@@ -57,6 +70,7 @@ public class BridgeSettings {
      */
     public static final class BridgeSettingsBuilder {
         private String hostUrl;
+        private String oAuthRegistrationID;
 
         private BridgeSettingsBuilder() {
         }
@@ -66,9 +80,15 @@ public class BridgeSettings {
             return this;
         }
 
+        public BridgeSettingsBuilder withOAuthRegistrationID(String oAuthRegistrationID) {
+            this.oAuthRegistrationID = oAuthRegistrationID;
+            return this;
+        }
+
         public BridgeSettings build() {
             BridgeSettings bridgeSettings = new BridgeSettings();
             bridgeSettings.hostUrl = this.hostUrl;
+            bridgeSettings.oAuthRegistrationID = this.oAuthRegistrationID;
             return bridgeSettings;
         }
     }

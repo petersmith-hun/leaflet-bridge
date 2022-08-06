@@ -5,8 +5,9 @@ import hu.psprog.leaflet.api.rest.response.entry.EntryDataModel;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
-import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
-import hu.psprog.leaflet.bridge.client.impl.ResponseReaderImpl;
+import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
+import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
+import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import org.junit.jupiter.api.Test;
@@ -44,10 +45,13 @@ public class BridgeClientFactoryTest {
     private Client client;
 
     @Mock
-    private InvocationFactoryImpl invocationFactory;
+    private InvocationFactory invocationFactory;
 
     @Mock
-    private ResponseReaderImpl responseReader;
+    private ResponseReader responseReader;
+
+    @Mock
+    private InvocationFactoryProvider invocationFactoryProvider;
 
     @Mock
     private WebTarget webTarget;
@@ -66,6 +70,7 @@ public class BridgeClientFactoryTest {
 
         // given
         given(client.target(BRIDGE_SETTINGS.getHostUrl())).willReturn(webTarget);
+        given(invocationFactoryProvider.getInvocationFactory(BRIDGE_SETTINGS)).willReturn(invocationFactory);
         given(invocationFactory.getInvocationFor(webTarget, REST_REQUEST)).willReturn(invocation);
         given(invocation.invoke()).willReturn(response);
         given(responseReader.read(response, new GenericType<>(EntryDataModel.class))).willReturn(ENTRY_DATA_MODEL);

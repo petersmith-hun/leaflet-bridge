@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.integration.client;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
+import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.impl.BridgeClientImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,14 @@ import javax.ws.rs.client.WebTarget;
 @Component
 public class BridgeClientFactory {
 
-    private Client client;
-    private InvocationFactory invocationFactory;
-    private ResponseReader responseReader;
+    private final Client client;
+    private final InvocationFactoryProvider invocationFactoryProvider;
+    private final ResponseReader responseReader;
 
     @Autowired
-    public BridgeClientFactory(Client client, InvocationFactory invocationFactory, ResponseReader responseReader) {
+    public BridgeClientFactory(Client client, InvocationFactoryProvider invocationFactoryProvider, ResponseReader responseReader) {
         this.client = client;
-        this.invocationFactory = invocationFactory;
+        this.invocationFactoryProvider = invocationFactoryProvider;
         this.responseReader = responseReader;
     }
 
@@ -40,6 +41,7 @@ public class BridgeClientFactory {
     public BridgeClient createBridgeClient(BridgeSettings bridgeSettings) {
 
         Assert.hasLength(bridgeSettings.getHostUrl(), "Remote service host must be specified!");
+        InvocationFactory invocationFactory = invocationFactoryProvider.getInvocationFactory(bridgeSettings);
 
         return new BridgeClientImpl(createWebTarget(bridgeSettings.getHostUrl()), invocationFactory, responseReader);
     }
