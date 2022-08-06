@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 @Component
 @ConfigurationProperties("bridge")
-public class BridgeClientRegistration {
+class BridgeClientRegistration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientRegistration.class);
 

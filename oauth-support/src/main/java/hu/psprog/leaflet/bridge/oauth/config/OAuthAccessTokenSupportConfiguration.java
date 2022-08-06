@@ -24,14 +24,12 @@ public class OAuthAccessTokenSupportConfiguration {
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientServiceOAuth2AuthorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
                                                                                               OAuth2AuthorizedClientService oAuth2AuthorizedClientService) {
-
         return new AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, oAuth2AuthorizedClientService);
     }
 
     @Bean
     public OAuth2AuthorizedClientManager defaultOAuth2AuthorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
-                                                                       OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository) {
-
+                                                                              OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository) {
         return new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, oAuth2AuthorizedClientRepository);
     }
 
@@ -39,7 +37,6 @@ public class OAuthAccessTokenSupportConfiguration {
     @Primary
     public DelegatingOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager(OAuth2AuthorizedClientManager defaultOAuth2AuthorizedClientManager,
                                                                                  OAuth2AuthorizedClientManager authorizedClientServiceOAuth2AuthorizedClientManager) {
-
         return new DelegatingOAuth2AuthorizedClientManager(defaultOAuth2AuthorizedClientManager, authorizedClientServiceOAuth2AuthorizedClientManager);
     }
 }
