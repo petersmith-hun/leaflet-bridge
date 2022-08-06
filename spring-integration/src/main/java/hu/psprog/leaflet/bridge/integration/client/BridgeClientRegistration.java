@@ -25,12 +25,12 @@ import java.util.Optional;
  */
 @Component
 @ConfigurationProperties("bridge")
-class BridgeClientRegistration {
+public class BridgeClientRegistration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientRegistration.class);
 
-    private BridgeClientFactory bridgeClientFactory;
-    private ConfigurableListableBeanFactory configurableListableBeanFactory;
+    private final BridgeClientFactory bridgeClientFactory;
+    private final ConfigurableListableBeanFactory configurableListableBeanFactory;
     private Map<String, BridgeSettings> clients;
 
     @Autowired
@@ -40,7 +40,7 @@ class BridgeClientRegistration {
     }
 
     @PostConstruct
-    public void initRegistry() {
+    void initRegistry() {
         Optional.ofNullable(clients)
                 .orElse(Collections.emptyMap())
                 .entrySet().stream()
@@ -56,7 +56,7 @@ class BridgeClientRegistration {
         return clients;
     }
 
-    public void setClients(Map<String, BridgeSettings> clients) {
+    void setClients(Map<String, BridgeSettings> clients) {
         this.clients = clients;
     }
 }

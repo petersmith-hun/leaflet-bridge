@@ -3,6 +3,7 @@ package hu.psprog.leaflet.bridge.integration.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
+import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
 import hu.psprog.leaflet.bridge.client.impl.ResponseReaderImpl;
@@ -72,5 +73,11 @@ public class BridgeConfiguration {
     @Autowired
     public ResponseReader responseReader(RequestAdapter requestAdapter) {
         return new ResponseReaderImpl(requestAdapter);
+    }
+
+    @Bean
+    @Autowired
+    public InvocationFactoryProvider invocationFactoryProvider(InvocationFactory invocationFactory) {
+        return bridgeSettings -> invocationFactory;
     }
 }
