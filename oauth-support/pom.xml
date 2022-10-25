@@ -5,7 +5,7 @@
     <parent>
         <artifactId>leaflet-bridge</artifactId>
         <groupId>hu.psprog.leaflet</groupId>
-        <version>3.3.1</version>
+        <version>3.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +15,10 @@
         <dependency>
             <groupId>hu.psprog.leaflet</groupId>
             <artifactId>bridge-implementation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>hu.psprog.leaflet</groupId>
+            <artifactId>bridge-spring-integration</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

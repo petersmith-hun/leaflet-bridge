@@ -6,7 +6,7 @@
 
     <artifactId>leaflet-bridge</artifactId>
     <packaging>pom</packaging>
-    <version>3.3.1</version>
+    <version>3.4.0</version>
 
     <parent>
         <groupId>hu.psprog.leaflet</groupId>
@@ -25,6 +25,9 @@
 
         <!-- Java environment version -->
         <java.version>11</java.version>
+
+        <!-- overrides for leaflet internal libs -->
+        <leaflet.bridge.version>${project.version}</leaflet.bridge.version>
 
         <!-- compiler settings -->
         <maven.compiler.source>${java.version}</maven.compiler.source>

@@ -14,6 +14,7 @@ public class BridgeSettings {
     
     private String hostUrl;
     private String oAuthRegistrationID;
+    private boolean useLeafletLink = true;
 
     public String getHostUrl() {
         return hostUrl;
@@ -31,6 +32,14 @@ public class BridgeSettings {
         this.oAuthRegistrationID = oAuthRegistrationID;
     }
 
+    public boolean isUseLeafletLink() {
+        return useLeafletLink;
+    }
+
+    void setUseLeafletLink(boolean useLeafletLink) {
+        this.useLeafletLink = useLeafletLink;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,6 +51,7 @@ public class BridgeSettings {
         return new EqualsBuilder()
                 .append(hostUrl, that.hostUrl)
                 .append(oAuthRegistrationID, that.oAuthRegistrationID)
+                .append(useLeafletLink, that.useLeafletLink)
                 .isEquals();
     }
 
@@ -50,6 +60,7 @@ public class BridgeSettings {
         return new HashCodeBuilder(17, 37)
                 .append(hostUrl)
                 .append(oAuthRegistrationID)
+                .append(useLeafletLink)
                 .toHashCode();
     }
 
@@ -58,6 +69,7 @@ public class BridgeSettings {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("hostUrl", hostUrl)
                 .append("oAuthRegistrationID", oAuthRegistrationID)
+                .append("useLeafletLink", useLeafletLink)
                 .toString();
     }
 
@@ -71,6 +83,7 @@ public class BridgeSettings {
     public static final class BridgeSettingsBuilder {
         private String hostUrl;
         private String oAuthRegistrationID;
+        private boolean useLeafletLink;
 
         private BridgeSettingsBuilder() {
         }
@@ -85,10 +98,16 @@ public class BridgeSettings {
             return this;
         }
 
+        public BridgeSettingsBuilder withUseLeafletLink(boolean useLeafletLink) {
+            this.useLeafletLink = useLeafletLink;
+            return this;
+        }
+
         public BridgeSettings build() {
             BridgeSettings bridgeSettings = new BridgeSettings();
             bridgeSettings.hostUrl = this.hostUrl;
             bridgeSettings.oAuthRegistrationID = this.oAuthRegistrationID;
+            bridgeSettings.useLeafletLink = this.useLeafletLink;
             return bridgeSettings;
         }
     }

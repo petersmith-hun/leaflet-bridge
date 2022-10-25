@@ -7,6 +7,7 @@ import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
 import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
+import hu.psprog.leaflet.bridge.integration.request.adapter.StaticRequestAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -30,15 +31,15 @@ public class OAuthDelegatingInvocationFactoryProvider implements InvocationFacto
 
     private final InvocationFactory defaultInvocationFactory;
     private final List<CallStrategy> callStrategyList;
-    private final RequestAdapter requestAdapter;
+    private final RequestAdapter defaultRequestAdapter;
     private final OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @Autowired
     public OAuthDelegatingInvocationFactoryProvider(InvocationFactory defaultInvocationFactory, List<CallStrategy> callStrategyList,
-                                                    RequestAdapter requestAdapter, OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager) {
+                                                    RequestAdapter defaultRequestAdapter, OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager) {
         this.defaultInvocationFactory = defaultInvocationFactory;
         this.callStrategyList = callStrategyList;
-        this.requestAdapter = requestAdapter;
+        this.defaultRequestAdapter = defaultRequestAdapter;
         this.oAuth2AuthorizedClientManager = oAuth2AuthorizedClientManager;
     }
 
@@ -56,9 +57,20 @@ public class OAuthDelegatingInvocationFactoryProvider implements InvocationFacto
 
     private InvocationFactory createInvocationFactory(BridgeSettings bridgeSettings) {
 
-        RequestAuthentication oAuthRequestAuthentication =
-                new SpringIntegratedOAuthRequestAuthentication(bridgeSettings.getOAuthRegistrationID(), oAuth2AuthorizedClientManager);
+        RequestAuthentication oAuthRequestAuthentication = createRequestAuthentication(bridgeSettings);
+        RequestAdapter requestAdapter = getRequestAdapter(bridgeSettings);
 
         return new InvocationFactoryImpl(oAuthRequestAuthentication, callStrategyList, requestAdapter);
+    }
+
+    private SpringIntegratedOAuthRequestAuthentication createRequestAuthentication(BridgeSettings bridgeSettings) {
+        return new SpringIntegratedOAuthRequestAuthentication(bridgeSettings.getOAuthRegistrationID(), oAuth2AuthorizedClientManager);
+    }
+
+    private RequestAdapter getRequestAdapter(BridgeSettings bridgeSettings) {
+
+        return bridgeSettings.isUseLeafletLink()
+                ? defaultRequestAdapter
+                : new StaticRequestAdapter(bridgeSettings.getOAuthRegistrationID());
     }
 }
