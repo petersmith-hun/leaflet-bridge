@@ -8,10 +8,12 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.core.AbstractOAuth2Token;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -55,10 +57,15 @@ public class SpringIntegratedOAuthRequestAuthentication implements RequestAuthen
 
     private OAuth2AuthorizeRequest createAuthorizeRequest() {
 
-        return OAuth2AuthorizeRequest
-                .withClientRegistrationId(registrationID)
-                .principal(SecurityContextHolder.getContext().getAuthentication())
-                .build();
+        OAuth2AuthorizeRequest.Builder builder = OAuth2AuthorizeRequest.withClientRegistrationId(registrationID);
+
+        if (Objects.isNull(RequestContextHolder.getRequestAttributes())) {
+            builder.principal(registrationID);
+        } else {
+            builder.principal(SecurityContextHolder.getContext().getAuthentication());
+        }
+
+        return builder.build();
     }
 
     private Map<String, String> formatAuthorizationHeader(String accessToken) {
