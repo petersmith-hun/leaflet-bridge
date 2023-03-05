@@ -1,5 +1,8 @@
 package hu.psprog.leaflet.bridge.oauth.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -17,6 +20,8 @@ import java.util.Objects;
  */
 public class DelegatingOAuth2AuthorizedClientManager implements OAuth2AuthorizedClientManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DelegatingOAuth2AuthorizedClientManager.class);
+
     private final OAuth2AuthorizedClientManager defaultOAuth2AuthorizedClientManager;
     private final OAuth2AuthorizedClientManager authorizedClientServiceOAuth2AuthorizedClientManager;
 
@@ -29,8 +34,16 @@ public class DelegatingOAuth2AuthorizedClientManager implements OAuth2Authorized
     @Override
     public OAuth2AuthorizedClient authorize(OAuth2AuthorizeRequest authorizeRequest) {
 
-        return Objects.isNull(RequestContextHolder.getRequestAttributes())
-                ? authorizedClientServiceOAuth2AuthorizedClientManager.authorize(authorizeRequest)
-                : defaultOAuth2AuthorizedClientManager.authorize(authorizeRequest);
+        OAuth2AuthorizedClient authorizedClient = null;
+        try {
+            authorizedClient = Objects.isNull(RequestContextHolder.getRequestAttributes())
+                    ? authorizedClientServiceOAuth2AuthorizedClientManager.authorize(authorizeRequest)
+                    : defaultOAuth2AuthorizedClientManager.authorize(authorizeRequest);
+
+        } catch (ClientAuthorizationRequiredException exception) {
+            LOGGER.warn("Couldn't retrieve an authorized client for principal {}", authorizeRequest.getPrincipal(), exception);
+        }
+
+        return authorizedClient;
     }
 }

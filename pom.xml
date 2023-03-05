@@ -6,7 +6,7 @@
 
     <artifactId>leaflet-bridge</artifactId>
     <packaging>pom</packaging>
-    <version>3.4.1</version>
+    <version>3.4.2</version>
 
     <parent>
         <groupId>hu.psprog.leaflet</groupId>
