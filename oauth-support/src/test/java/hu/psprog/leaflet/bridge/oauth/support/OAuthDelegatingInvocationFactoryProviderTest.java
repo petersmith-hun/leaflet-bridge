@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -24,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link OAuthDelegatingInvocationFactoryProvider}.
@@ -45,7 +45,10 @@ class OAuthDelegatingInvocationFactoryProviderTest {
     private RequestAdapter defaultRequestAdapter;
 
     @Mock
-    private OAuth2AuthorizedClientManager clientManager;
+    private RequestAuthentication requestAuthentication;
+
+    @Mock
+    private OAuthRequestAuthenticationFactory oAuthRequestAuthenticationFactory;
 
     private OAuthDelegatingInvocationFactoryProvider oAuthDelegatingInvocationFactoryProvider;
 
@@ -55,11 +58,11 @@ class OAuthDelegatingInvocationFactoryProviderTest {
         given(callStrategy.forMethod()).willReturn(RequestMethod.GET);
 
         oAuthDelegatingInvocationFactoryProvider = new OAuthDelegatingInvocationFactoryProvider(defaultInvocationFactory,
-                List.of(callStrategy), defaultRequestAdapter, clientManager);
+                List.of(callStrategy), defaultRequestAdapter, oAuthRequestAuthenticationFactory);
     }
 
     @Test
-    public void shouldGetInvocationFactoryReturnDefaultInstanceForNonOAuthClient() throws IllegalAccessException {
+    public void shouldGetInvocationFactoryReturnDefaultInstanceForNonOAuthClient() {
 
         // given
         BridgeSettings bridgeSettings = prepareBridgeSettings(null, true);
@@ -69,6 +72,7 @@ class OAuthDelegatingInvocationFactoryProviderTest {
 
         // then
         assertThat(result, equalTo(defaultInvocationFactory));
+        verifyNoInteractions(oAuthRequestAuthenticationFactory);
     }
 
     @Test
@@ -76,14 +80,14 @@ class OAuthDelegatingInvocationFactoryProviderTest {
 
         // given
         BridgeSettings bridgeSettings = prepareBridgeSettings(REGISTRATION_ID, true);
+        given(oAuthRequestAuthenticationFactory.createRequestAuthentication(bridgeSettings)).willReturn(requestAuthentication);
 
         // when
         InvocationFactory result = oAuthDelegatingInvocationFactoryProvider.getInvocationFactory(bridgeSettings);
 
         // then
         assertThat(result, not(equalTo(defaultInvocationFactory)));
-        RequestAuthentication requestAuthentication = assertRequestAuthentication(result);
-        assertRegistrationID(requestAuthentication);
+        assertRequestAuthentication(result);
         assertThat(extractRequestAdapter(result), equalTo(defaultRequestAdapter));
     }
 
@@ -98,25 +102,16 @@ class OAuthDelegatingInvocationFactoryProviderTest {
 
         // then
         assertThat(result, not(equalTo(defaultInvocationFactory)));
-        RequestAuthentication requestAuthentication = assertRequestAuthentication(result);
-        assertRegistrationID(requestAuthentication);
+        assertRequestAuthentication(result);
         RequestAdapter requestAdapter = extractRequestAdapter(result);
         assertThat(requestAdapter, isA(StaticRequestAdapter.class));
         assertThat(requestAdapter.provideClientID(), equalTo(REGISTRATION_ID));
     }
 
-    private RequestAuthentication assertRequestAuthentication(InvocationFactory invocationFactory) throws IllegalAccessException {
+    private void assertRequestAuthentication(InvocationFactory invocationFactory) throws IllegalAccessException {
 
         RequestAuthentication requestAuthentication = extractFieldValue(invocationFactory, "requestAuthentication");
-        assertThat(requestAuthentication, isA(SpringIntegratedOAuthRequestAuthentication.class));
-
-        return requestAuthentication;
-    }
-
-    private void assertRegistrationID(RequestAuthentication requestAuthentication) throws IllegalAccessException {
-
-        String registrationID = extractFieldValue(requestAuthentication, "registrationID");
-        assertThat(registrationID, equalTo(REGISTRATION_ID));
+        assertThat(requestAuthentication, equalTo(requestAuthentication));
     }
 
     private RequestAdapter extractRequestAdapter(InvocationFactory invocationFactory) throws IllegalAccessException {
