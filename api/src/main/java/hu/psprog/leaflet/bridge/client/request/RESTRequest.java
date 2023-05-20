@@ -1,12 +1,12 @@
 package hu.psprog.leaflet.bridge.client.request;
 
 import hu.psprog.leaflet.bridge.adapter.RequestBodyAdapter;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_RESPONSE;
 
@@ -15,56 +15,21 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_R
  *
  * @author Peter Smith
  */
+@Getter
 public class RESTRequest {
 
     private RequestMethod method;
     private Path path;
     private boolean authenticationRequired;
     private Serializable requestBody;
-    private Map<String, Object> pathParameters = new HashMap<>();
-    private Map<String, Object> requestParameters = new HashMap<>();
-    private Map<String, Object> headerParameters = new HashMap<>();
+    private final Map<String, Object> pathParameters = new HashMap<>();
+    private final Map<String, Object> requestParameters = new HashMap<>();
+    private final Map<String, Object> headerParameters = new HashMap<>();
     private boolean multipart;
     private RequestBodyAdapter adapter;
 
     private RESTRequest() {
         // prevent direct initialization
-    }
-
-    public RequestMethod getMethod() {
-        return method;
-    }
-
-    public Path getPath() {
-        return path;
-    }
-
-    public boolean isAuthenticationRequired() {
-        return authenticationRequired;
-    }
-
-    public Serializable getRequestBody() {
-        return requestBody;
-    }
-
-    public Map<String, Object> getPathParameters() {
-        return pathParameters;
-    }
-
-    public Map<String, Object> getRequestParameters() {
-        return requestParameters;
-    }
-
-    public Map<String, Object> getHeaderParameters() {
-        return headerParameters;
-    }
-
-    public boolean isMultipart() {
-        return multipart;
-    }
-
-    public RequestBodyAdapter getAdapter() {
-        return adapter;
     }
 
     public static RESTRequestBuilder getBuilder() {
@@ -76,7 +41,7 @@ public class RESTRequest {
      */
     public static class RESTRequestBuilder {
 
-        private RESTRequest restRequest;
+        private final RESTRequest restRequest;
 
         private RESTRequestBuilder() {
             restRequest = new RESTRequest();
@@ -188,7 +153,7 @@ public class RESTRequest {
          * Adds a header parameter to the request.
          *
          * @param key key of the header parameter
-         * @param value oncrete value of the header parameter
+         * @param value concrete value of the header parameter
          * @return Builder instance
          */
         public RESTRequestBuilder addHeaderParameter(String key, String value) {
@@ -217,8 +182,7 @@ public class RESTRequest {
          * @return Builder instance
          */
         public RESTRequestBuilder addRequestParameters(String key, List<String> valueList) {
-            addRequestParameters(key, valueList.stream()
-                    .collect(Collectors.joining(",")));
+            addRequestParameters(key, String.join(",", valueList));
             return this;
         }
 

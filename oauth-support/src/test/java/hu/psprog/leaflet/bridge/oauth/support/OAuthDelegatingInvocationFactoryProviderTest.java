@@ -38,7 +38,7 @@ class OAuthDelegatingInvocationFactoryProviderTest {
     @Mock
     private InvocationFactory defaultInvocationFactory;
 
-    @Mock(lenient = true)
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private CallStrategy callStrategy;
 
     @Mock

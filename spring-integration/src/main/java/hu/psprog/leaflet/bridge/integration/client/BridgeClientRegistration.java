@@ -9,7 +9,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * Handles BridgeClient instance registration based on Bridge configuration provided by the application.
  * Configuration must be specified in the following way:
  * 'bridge.clients.client-name.parameters' (currently only the host-url parameter is supported)
- * For every records in the configuration like the one above, a new BridgeClient instance will be instantiated,
+ * For every record in the configuration like the one above, a new BridgeClient instance will be instantiated,
  * and will be put into the bean context with the specified 'client-name'.
  *
  * @author Peter Smith

@@ -1,10 +1,9 @@
 package hu.psprog.leaflet.bridge.client.domain.error;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,64 +11,8 @@ import java.util.List;
  *
  * @author Peter Smith
  */
-@JsonDeserialize(builder = ValidationErrorMessageListResponse.ValidationErrorMessageListResponseBuilder.class)
-public class ValidationErrorMessageListResponse {
-
-    private List<ValidationErrorMessageResponse> validation;
-
-    public List<ValidationErrorMessageResponse> getValidation() {
-        return validation;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ValidationErrorMessageListResponse that = (ValidationErrorMessageListResponse) o;
-
-        return new EqualsBuilder()
-                .append(validation, that.validation)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(validation)
-                .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("validation", validation)
-                .toString();
-    }
-
-    public static ValidationErrorMessageListResponseBuilder getBuilder() {
-        return new ValidationErrorMessageListResponseBuilder();
-    }
-
-    /**
-     * Builder for {@link ValidationErrorMessageListResponse}.
-     */
-    public static final class ValidationErrorMessageListResponseBuilder {
-        private List<ValidationErrorMessageResponse> validation;
-
-        private ValidationErrorMessageListResponseBuilder() {
-        }
-
-        public ValidationErrorMessageListResponseBuilder withValidation(List<ValidationErrorMessageResponse> validation) {
-            this.validation = validation;
-            return this;
-        }
-
-        public ValidationErrorMessageListResponse build() {
-            ValidationErrorMessageListResponse validationErrorMessageListResponse = new ValidationErrorMessageListResponse();
-            validationErrorMessageListResponse.validation = this.validation;
-            return validationErrorMessageListResponse;
-        }
-    }
-}
+@Builder(setterPrefix = "with", builderMethodName = "getBuilder")
+@Jacksonized
+public record ValidationErrorMessageListResponse(
+        List<ValidationErrorMessageResponse> validation
+) implements Serializable { }

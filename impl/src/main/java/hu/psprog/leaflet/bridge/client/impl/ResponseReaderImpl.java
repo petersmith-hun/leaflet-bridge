@@ -9,8 +9,8 @@ import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.io.Closeable;
 import java.util.Objects;
 
@@ -77,18 +77,12 @@ public class ResponseReaderImpl implements ResponseReader {
 
     private void raiseException(Response response) {
         switch (Response.Status.fromStatusCode(response.getStatus())) {
-            case UNAUTHORIZED:
-                throw new UnauthorizedAccessException(response);
-            case FORBIDDEN:
-                throw new ForbiddenOperationException(response);
-            case BAD_REQUEST:
-                throw new ValidationFailureException(response);
-            case NOT_FOUND:
-                throw new ResourceNotFoundException(response);
-            case CONFLICT:
-                throw new ConflictingRequestException(response);
-            default:
-                throw new RequestProcessingFailureException(response);
+            case UNAUTHORIZED -> throw new UnauthorizedAccessException(response);
+            case FORBIDDEN -> throw new ForbiddenOperationException(response);
+            case BAD_REQUEST -> throw new ValidationFailureException(response);
+            case NOT_FOUND -> throw new ResourceNotFoundException(response);
+            case CONFLICT -> throw new ConflictingRequestException(response);
+            default -> throw new RequestProcessingFailureException(response);
         }
     }
 }

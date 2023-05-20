@@ -1,16 +1,15 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
 import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -38,7 +37,7 @@ public class InvocationFactoryImpl implements InvocationFactory {
     }
 
     @Override
-    public Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) throws JsonProcessingException {
+    public Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) {
         WebTarget target = webTarget
                 .path(restRequest.getPath().getURI())
                 .resolveTemplates(restRequest.getPathParameters());

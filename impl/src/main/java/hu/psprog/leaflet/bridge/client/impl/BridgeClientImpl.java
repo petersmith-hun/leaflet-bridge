@@ -8,9 +8,9 @@ import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 
 /**

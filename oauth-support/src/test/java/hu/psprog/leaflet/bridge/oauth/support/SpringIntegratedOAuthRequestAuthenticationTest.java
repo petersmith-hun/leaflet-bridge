@@ -89,7 +89,7 @@ class SpringIntegratedOAuthRequestAuthenticationTest {
     }
 
     @Test
-    public void shouldGetAuthenticationHeaderReturnEmptyMapForEmptytoken() {
+    public void shouldGetAuthenticationHeaderReturnEmptyMapForEmptyToken() {
 
         // given
         given(clientManager.authorize(any(OAuth2AuthorizeRequest.class))).willReturn(authorizedClient);

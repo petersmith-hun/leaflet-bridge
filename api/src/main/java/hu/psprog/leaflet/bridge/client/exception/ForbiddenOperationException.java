@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Exception to throw for HTTP 403 response.

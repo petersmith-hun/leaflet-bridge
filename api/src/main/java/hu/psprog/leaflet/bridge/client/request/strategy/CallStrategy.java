@@ -1,10 +1,8 @@
 package hu.psprog.leaflet.bridge.client.request.strategy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-
-import javax.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Invocation;
 
 /**
  * Call strategy based on request method.
@@ -19,9 +17,8 @@ public interface CallStrategy {
      * @param builder {@link Invocation.Builder} object
      * @param request {@link RESTRequest} object containing request parameters
      * @return Invocation object
-     * @throws JsonProcessingException on JSON processing failure
      */
-    Invocation prepareInvocation(Invocation.Builder builder, RESTRequest request) throws JsonProcessingException;
+    Invocation prepareInvocation(Invocation.Builder builder, RESTRequest request);
 
     /**
      * Returns method to use strategy for.

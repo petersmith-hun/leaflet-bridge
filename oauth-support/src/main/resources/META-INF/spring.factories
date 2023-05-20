@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  hu.psprog.leaflet.bridge.oauth.config.OAuthAccessTokenSupportConfiguration

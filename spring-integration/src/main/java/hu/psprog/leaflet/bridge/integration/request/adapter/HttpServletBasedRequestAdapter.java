@@ -4,8 +4,8 @@ import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_HEADER;
@@ -20,8 +20,8 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_H
 @Component
 public class HttpServletBasedRequestAdapter implements RequestAdapter {
 
-    private HttpServletRequest httpServletRequest;
-    private HttpServletResponse httpServletResponse;
+    private final HttpServletRequest httpServletRequest;
+    private final HttpServletResponse httpServletResponse;
 
     @Autowired
     public HttpServletBasedRequestAdapter(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {

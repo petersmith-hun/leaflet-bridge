@@ -20,8 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +48,7 @@ public class ResponseReaderImplTest {
             .withMessage("error")
             .build();
     private static final ValidationErrorMessageListResponse VALIDATION_ERROR_MESSAGE_LIST_RESPONSE = ValidationErrorMessageListResponse.getBuilder()
-            .withValidation(Collections.singletonList(ValidationErrorMessageResponse.getExtendedBuilder()
+            .withValidation(Collections.singletonList(ValidationErrorMessageResponse.getBuilder()
                     .withField("field1")
                     .withMessage("constraint violation")
                     .build()))
@@ -56,7 +56,7 @@ public class ResponseReaderImplTest {
     protected static final GenericType<InputStream> INPUT_STREAM_GENERIC_TYPE = new GenericType<>() {
     };
 
-    @Mock(lenient = true)
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private Response response;
 
     @Mock
