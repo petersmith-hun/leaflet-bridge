@@ -1,6 +1,5 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.api.rest.request.entry.EntryCreateRequestModel;
 import hu.psprog.leaflet.bridge.client.domain.OrderBy;
 import hu.psprog.leaflet.bridge.client.domain.OrderDirection;
@@ -14,6 +13,9 @@ import hu.psprog.leaflet.bridge.client.request.strategy.impl.DeleteCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.GetCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.PostCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.PutCallStrategy;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -76,7 +75,7 @@ public class InvocationFactoryImplTest {
             .build()
             .target(TARGET);
 
-    @Mock(lenient = true)
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private RequestAuthentication requestAuthentication;
 
     @Mock
@@ -96,7 +95,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedGetWithQueryParameters() throws JsonProcessingException {
+    public void shouldGetInvocationForAuthenticatedGetWithQueryParameters() {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -126,7 +125,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForSimpleGet() throws JsonProcessingException {
+    public void shouldGetInvocationForSimpleGet() {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -147,7 +146,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedAndReCaptchaValidatedPost() throws JsonProcessingException {
+    public void shouldGetInvocationForAuthenticatedAndReCaptchaValidatedPost() {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
@@ -175,7 +174,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedDelete() throws JsonProcessingException {
+    public void shouldGetInvocationForAuthenticatedDelete() {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -199,7 +198,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedPut() throws JsonProcessingException {
+    public void shouldGetInvocationForAuthenticatedPut() {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
@@ -226,7 +225,7 @@ public class InvocationFactoryImplTest {
     }
 
     @Test
-    public void shouldGetInvocationForSimpleGetWithQueryParameterList() throws JsonProcessingException {
+    public void shouldGetInvocationForSimpleGetWithQueryParameterList() {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -264,7 +263,7 @@ public class InvocationFactoryImplTest {
         ENTRIES("/entries"),
         ENTRIES_BY_ID("/entries/{id}");
 
-        private String uri;
+        private final String uri;
 
         TestPath(String uri) {
             this.uri = uri;

@@ -3,7 +3,7 @@ package hu.psprog.leaflet.bridge.client;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 
-import javax.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.GenericType;
 
 /**
  * Interface for Leaflet REST communication bridge, which is technically an API between a frontend and the Leaflet

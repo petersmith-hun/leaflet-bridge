@@ -13,10 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,7 +39,7 @@ public class PostCallStrategyTest {
     private static final String TRANSFORMED_REQUEST_BODY = "transformed request body";
     private static final String METHOD_POST = "POST";
 
-    @Mock(lenient = true)
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private RequestBodyAdapter mockedAdapter;
 
     @InjectMocks
@@ -57,7 +57,7 @@ public class PostCallStrategyTest {
     }
 
     @Test
-    public void shouldPreparePOSTInvocationWithStandardBody() throws JsonProcessingException, IllegalAccessException {
+    public void shouldPreparePOSTInvocationWithStandardBody() throws IllegalAccessException {
 
         // given
         RESTRequest request = prepareRestRequest(true, false, false);
@@ -93,7 +93,7 @@ public class PostCallStrategyTest {
     }
 
     @Test
-    public void shouldPreparePOSTInvocationWithStandardBodyAndAdapter() throws JsonProcessingException, IllegalAccessException {
+    public void shouldPreparePOSTInvocationWithStandardBodyAndAdapter() throws IllegalAccessException {
 
         // given
         RESTRequest request = prepareRestRequest(true, false, true);
@@ -111,7 +111,7 @@ public class PostCallStrategyTest {
     }
 
     @Test
-    public void shouldPreparePOSTInvocationWithMultipartBodyAndAdapter() throws JsonProcessingException, IllegalAccessException {
+    public void shouldPreparePOSTInvocationWithMultipartBodyAndAdapter() throws IllegalAccessException {
 
         // given
         RESTRequest request = prepareRestRequest(true, true, true);
@@ -129,7 +129,7 @@ public class PostCallStrategyTest {
     }
 
     @Test
-    public void shouldPreparePOSTInvocationWithMultipartBodyWithoutAdapter() throws JsonProcessingException, IllegalAccessException {
+    public void shouldPreparePOSTInvocationWithMultipartBodyWithoutAdapter() throws IllegalAccessException {
 
         // given
         RESTRequest request = prepareRestRequest(true, true, false);

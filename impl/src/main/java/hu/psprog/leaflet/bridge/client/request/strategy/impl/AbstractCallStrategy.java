@@ -1,12 +1,11 @@
 package hu.psprog.leaflet.bridge.client.request.strategy.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import java.util.Optional;
 
 /**
@@ -21,9 +20,8 @@ abstract class AbstractCallStrategy implements CallStrategy {
      *
      * @param request {@link RESTRequest} object containing request body
      * @return Entity object
-     * @throws JsonProcessingException on JSON processing failure
      */
-    Entity createEntity(RESTRequest request) throws JsonProcessingException {
+    Entity<?> createEntity(RESTRequest request) {
         return Entity.entity(extractBody(request), extractMediaType(request));
     }
 

@@ -30,10 +30,10 @@ public class BridgeAssignmentBeanFactoryPostProcessorTest {
     private static final String CLIENT_BEAN_NAME = "testClient";
     private static final RuntimeBeanReference RUNTIME_BEAN_REFERENCE = new RuntimeBeanReference(CLIENT_BEAN_NAME);
 
-    @Mock(lenient = true)
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private ConfigurableListableBeanFactory configurableListableBeanFactory;
 
-    @Mock(lenient = true)
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private BeanDefinition beanDefinition;
 
     @Mock

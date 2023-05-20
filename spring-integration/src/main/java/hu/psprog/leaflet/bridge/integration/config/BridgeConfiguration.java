@@ -1,7 +1,7 @@
 package hu.psprog.leaflet.bridge.integration.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
@@ -14,14 +14,14 @@ import hu.psprog.leaflet.bridge.client.request.strategy.impl.DeleteCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.GetCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.PostCallStrategy;
 import hu.psprog.leaflet.bridge.client.request.strategy.impl.PutCallStrategy;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import java.util.List;
 
 /**

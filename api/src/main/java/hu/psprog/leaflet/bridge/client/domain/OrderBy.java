@@ -16,7 +16,7 @@ public class OrderBy {
         CREATED("created"),
         PUBLISHED("published");
 
-        private String field;
+        private final String field;
 
         Entry(String field) {
             this.field = field;
@@ -34,7 +34,7 @@ public class OrderBy {
         ID("id"),
         CREATED("created");
 
-        private String field;
+        private final String field;
 
         Comment(String field) {
             this.field = field;

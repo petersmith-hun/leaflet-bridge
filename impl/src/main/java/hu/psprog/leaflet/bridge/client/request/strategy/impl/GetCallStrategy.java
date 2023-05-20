@@ -1,10 +1,8 @@
 package hu.psprog.leaflet.bridge.client.request.strategy.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-
-import javax.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.Invocation;
 
 /**
  * Call strategy for GET requests.
@@ -14,7 +12,7 @@ import javax.ws.rs.client.Invocation;
 public class GetCallStrategy extends AbstractCallStrategy {
 
     @Override
-    public Invocation prepareInvocation(Invocation.Builder builder, RESTRequest request) throws JsonProcessingException {
+    public Invocation prepareInvocation(Invocation.Builder builder, RESTRequest request) {
         return builder.buildGet();
     }
 

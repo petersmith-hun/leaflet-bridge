@@ -9,7 +9,7 @@ import java.io.Serializable;
  * which is transportable.
  *
  * @param <S> source request body type
- * @param <D> destination request body tpye
+ * @param <D> destination request body type
  * @author Peter Smith
  */
 @FunctionalInterface
