@@ -6,12 +6,12 @@
 
     <artifactId>leaflet-bridge</artifactId>
     <packaging>pom</packaging>
-    <version>3.5.0</version>
+    <version>3.6.0</version>
 
     <parent>
         <groupId>hu.psprog.leaflet</groupId>
         <artifactId>leaflet-stack-base-bom</artifactId>
-        <version>3.0-r2305.1</version>
+        <version>4.0-r2405.1</version>
     </parent>
 
     <modules>
@@ -24,7 +24,7 @@
     <properties>
 
         <!-- Java environment version -->
-        <java.version>17</java.version>
+        <java.version>21</java.version>
 
         <!-- overrides for leaflet internal libs -->
         <leaflet.bridge.version>${project.version}</leaflet.bridge.version>
