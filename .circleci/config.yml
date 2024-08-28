@@ -4,15 +4,19 @@ orbs:
   jira: circleci/jira@2.1.0
   jq: circleci/jq@3.0.0
 
-jobs:
-  build_leaflet-bridge:
+executors:
+  java:
     docker:
       - image: cimg/openjdk:21.0
+
+jobs:
+  build_leaflet-bridge:
+    executor: java
     steps:
       - checkout
       - run:
           command: mvn clean deploy -s .circleci/settings.xml
-          name: Build and upload to Leaflet Internal repository
+          name: Build and upload to GitHub Packages repository
       - store_test_results:
           path: impl/target/surefire-reports
       - store_test_results:
