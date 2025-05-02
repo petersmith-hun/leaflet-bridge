@@ -17,7 +17,6 @@ import hu.psprog.leaflet.bridge.client.request.strategy.impl.PutCallStrategy;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +33,6 @@ import java.util.List;
 public class BridgeConfiguration {
 
     @Bean
-    @Autowired
     public Client jacksonClient(ObjectMapper objectMapper) {
 
         return ClientBuilder.newBuilder()
@@ -64,19 +62,16 @@ public class BridgeConfiguration {
     }
 
     @Bean
-    @Autowired
     public InvocationFactory invocationFactory(RequestAuthentication requestAuthentication, List<CallStrategy> callStrategyList, RequestAdapter requestAdapter) {
         return new InvocationFactoryImpl(requestAuthentication, callStrategyList, requestAdapter);
     }
 
     @Bean
-    @Autowired
     public ResponseReader responseReader(RequestAdapter requestAdapter) {
         return new ResponseReaderImpl(requestAdapter);
     }
 
     @Bean
-    @Autowired
     public InvocationFactoryProvider invocationFactoryProvider(InvocationFactory invocationFactory) {
         return bridgeSettings -> invocationFactory;
     }
