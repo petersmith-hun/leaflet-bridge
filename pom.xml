@@ -6,12 +6,12 @@
 
     <artifactId>leaflet-bridge</artifactId>
     <packaging>pom</packaging>
-    <version>3.6.0</version>
+    <version>3.6.1</version>
 
     <parent>
         <groupId>hu.psprog.leaflet</groupId>
         <artifactId>leaflet-stack-base-bom</artifactId>
-        <version>4.0-r2405.1</version>
+        <version>5.0-r2505.1</version>
     </parent>
 
     <modules>
