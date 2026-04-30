@@ -1,6 +1,9 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
+import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
+import hu.psprog.leaflet.bridge.client.domain.error.ValidationErrorMessageListResponse;
 import hu.psprog.leaflet.bridge.client.exception.ConflictingRequestException;
+import hu.psprog.leaflet.bridge.client.exception.DefaultNonSuccessfulResponseException;
 import hu.psprog.leaflet.bridge.client.exception.ForbiddenOperationException;
 import hu.psprog.leaflet.bridge.client.exception.RequestProcessingFailureException;
 import hu.psprog.leaflet.bridge.client.exception.ResourceNotFoundException;
@@ -8,11 +11,17 @@ import hu.psprog.leaflet.bridge.client.exception.UnauthorizedAccessException;
 import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ProtocolException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
-import java.io.Closeable;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
 
@@ -24,65 +33,95 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_
 public class ResponseReaderImpl implements ResponseReader {
 
     private final RequestAdapter requestAdapter;
+    private final JsonMapper jsonMapper;
 
-    public ResponseReaderImpl(RequestAdapter requestAdapter) {
+    public ResponseReaderImpl(RequestAdapter requestAdapter, JsonMapper jsonMapper) {
         this.requestAdapter = requestAdapter;
+        this.jsonMapper = jsonMapper;
     }
 
     @Override
-    public <T> T read(Response response, GenericType<T> responseType) {
-        try {
+    public <T> T read(ClassicHttpResponse response, TypeReference<T> responseType) {
+
+        try (response) {
             checkResponse(response);
             extractToken(response);
-            return response.readEntity(responseType);
-        } finally {
-            if (!isCloseable(responseType)) {
-                close(response);
-            }
+
+            return jsonMapper.readValue(response.getEntity().getContent(), responseType);
+
+        } catch (DefaultNonSuccessfulResponseException | ValidationFailureException exception) {
+            throw exception;
+
+        } catch (Exception exception) {
+            throw new RequestProcessingFailureException(exception);
         }
     }
 
     @Override
-    public void read(Response response) {
-        try {
+    public void read(ClassicHttpResponse response) {
+
+        try (response) {
             checkResponse(response);
             extractToken(response);
-        } finally {
-            close(response);
+
+        } catch (DefaultNonSuccessfulResponseException | ValidationFailureException exception) {
+            throw exception;
+
+        } catch (Exception exception) {
+            throw new RequestProcessingFailureException(exception);
         }
     }
 
-    private void extractToken(Response response) {
-        String token = response.getHeaderString(AUTH_TOKEN_HEADER);
-        if (Objects.nonNull(token)) {
-            requestAdapter.consumeAuthenticationToken(token);
-        }
-    }
+    private void checkResponse(ClassicHttpResponse response) {
 
-    private void checkResponse(Response response) {
-        if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+        if (response.getCode() >= HttpStatus.SC_REDIRECTION) {
             raiseException(response);
         }
     }
 
-    private <T> boolean isCloseable(GenericType<T> responseType) {
-        return Closeable.class.isAssignableFrom(responseType.getRawType());
-    }
+    private void raiseException(ClassicHttpResponse response) {
 
-    private void close(Response response) {
-        if (Objects.nonNull(response)) {
-            response.close();
+        if (response.getCode() == HttpStatus.SC_BAD_REQUEST) {
+            ValidationErrorMessageListResponse errorResponse = readErrorResponse(response, ValidationErrorMessageListResponse.class);
+            throw new ValidationFailureException(errorResponse);
+
+        } else {
+            ErrorMessageResponse errorResponse = readErrorResponse(response, ErrorMessageResponse.class);
+            throw getExceptionFunction(response).apply(errorResponse, response.getCode());
         }
     }
 
-    private void raiseException(Response response) {
-        switch (Response.Status.fromStatusCode(response.getStatus())) {
-            case UNAUTHORIZED -> throw new UnauthorizedAccessException(response);
-            case FORBIDDEN -> throw new ForbiddenOperationException(response);
-            case BAD_REQUEST -> throw new ValidationFailureException(response);
-            case NOT_FOUND -> throw new ResourceNotFoundException(response);
-            case CONFLICT -> throw new ConflictingRequestException(response);
-            default -> throw new RequestProcessingFailureException(response);
+    private <T> T readErrorResponse(ClassicHttpResponse response, Class<T> responseType) {
+
+        return Optional.ofNullable(response.getEntity())
+                .filter(entity -> entity.getContentLength() > 0L)
+                .map(httpEntity -> {
+                    try {
+                        return httpEntity.getContent();
+                    } catch (IOException exception) {
+                        throw new RequestProcessingFailureException(exception);
+                    }
+                })
+                .map(inputStream -> jsonMapper.readValue(inputStream, responseType))
+                .orElse(null);
+    }
+
+    private BiFunction<ErrorMessageResponse, Integer, DefaultNonSuccessfulResponseException> getExceptionFunction(ClassicHttpResponse response) {
+
+        return switch (response.getCode()) {
+            case HttpStatus.SC_UNAUTHORIZED -> UnauthorizedAccessException::new;
+            case HttpStatus.SC_FORBIDDEN -> ForbiddenOperationException::new;
+            case HttpStatus.SC_NOT_FOUND -> ResourceNotFoundException::new;
+            case HttpStatus.SC_CONFLICT -> ConflictingRequestException::new;
+            default -> RequestProcessingFailureException::new;
+        };
+    }
+
+    private void extractToken(ClassicHttpResponse response) throws ProtocolException {
+
+        Header tokenHeader = response.getHeader(AUTH_TOKEN_HEADER);
+        if (Objects.nonNull(tokenHeader)) {
+            requestAdapter.consumeAuthenticationToken(tokenHeader.getValue());
         }
     }
 }

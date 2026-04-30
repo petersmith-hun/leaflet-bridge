@@ -6,18 +6,17 @@ import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
 import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
-import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
 import hu.psprog.leaflet.bridge.integration.request.adapter.StaticRequestAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
  * {@link InvocationFactoryProvider} implementation for creating OAuth compatible {@link InvocationFactory} instances for Bridge clients.
- *
+ * <p>
  * To enable creating an OAuth {@link InvocationFactory}, set the Spring OAuth registration ID in the Bridge client's configuration.
  * This way, instead of the default {@link InvocationFactory} instance, a separate instance will be created, using the
  * {@link SpringIntegratedOAuthRequestAuthentication} implementation of {@link RequestAuthentication} interface.
@@ -29,17 +28,17 @@ import java.util.Objects;
 public class OAuthDelegatingInvocationFactoryProvider implements InvocationFactoryProvider {
 
     private final InvocationFactory defaultInvocationFactory;
-    private final List<CallStrategy> callStrategyList;
     private final RequestAdapter defaultRequestAdapter;
     private final OAuthRequestAuthenticationFactory oAuthRequestAuthenticationFactory;
+    private final JsonMapper jsonMapper;
 
     @Autowired
-    public OAuthDelegatingInvocationFactoryProvider(InvocationFactory defaultInvocationFactory, List<CallStrategy> callStrategyList,
-                                                    RequestAdapter defaultRequestAdapter, OAuthRequestAuthenticationFactory oAuthRequestAuthenticationFactory) {
+    public OAuthDelegatingInvocationFactoryProvider(InvocationFactory defaultInvocationFactory, RequestAdapter defaultRequestAdapter,
+                                                    OAuthRequestAuthenticationFactory oAuthRequestAuthenticationFactory, JsonMapper jsonMapper) {
         this.defaultInvocationFactory = defaultInvocationFactory;
-        this.callStrategyList = callStrategyList;
         this.defaultRequestAdapter = defaultRequestAdapter;
         this.oAuthRequestAuthenticationFactory = oAuthRequestAuthenticationFactory;
+        this.jsonMapper = jsonMapper;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class OAuthDelegatingInvocationFactoryProvider implements InvocationFacto
         RequestAuthentication oAuthRequestAuthentication = oAuthRequestAuthenticationFactory.createRequestAuthentication(bridgeSettings);
         RequestAdapter requestAdapter = getRequestAdapter(bridgeSettings);
 
-        return new InvocationFactoryImpl(oAuthRequestAuthentication, callStrategyList, requestAdapter);
+        return new InvocationFactoryImpl(oAuthRequestAuthentication, requestAdapter, jsonMapper);
     }
 
     private RequestAdapter getRequestAdapter(BridgeSettings bridgeSettings) {

@@ -1,7 +1,5 @@
 package hu.psprog.leaflet.bridge.integration.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
@@ -9,19 +7,13 @@ import hu.psprog.leaflet.bridge.client.impl.InvocationFactoryImpl;
 import hu.psprog.leaflet.bridge.client.impl.ResponseReaderImpl;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
-import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.DeleteCallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.GetCallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.PostCallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.PutCallStrategy;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.util.TimeValue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Base configuration for BridgeClient.
@@ -33,42 +25,26 @@ import java.util.List;
 public class BridgeConfiguration {
 
     @Bean
-    public Client jacksonClient(ObjectMapper objectMapper) {
+    public HttpClient bridgeHttpClient() {
 
-        return ClientBuilder.newBuilder()
-                .register(new JacksonJsonProvider(objectMapper))
-                .register(MultiPartFeature.class)
+        return HttpClientBuilder.create()
+                .disableAuthCaching()
+                .disableAutomaticRetries()
+                .disableConnectionState()
+                .disableCookieManagement()
+                .disableRedirectHandling()
+                .evictIdleConnections(TimeValue.ZERO_MILLISECONDS)
                 .build();
     }
 
     @Bean
-    public CallStrategy getCallStrategy() {
-        return new GetCallStrategy();
+    public InvocationFactory invocationFactory(RequestAuthentication requestAuthentication, RequestAdapter requestAdapter, JsonMapper jsonMapper) {
+        return new InvocationFactoryImpl(requestAuthentication, requestAdapter, jsonMapper);
     }
 
     @Bean
-    public CallStrategy postCallStrategy() {
-        return new PostCallStrategy();
-    }
-
-    @Bean
-    public CallStrategy putCallStrategy() {
-        return new PutCallStrategy();
-    }
-
-    @Bean
-    public CallStrategy deleteCallStrategy() {
-        return new DeleteCallStrategy();
-    }
-
-    @Bean
-    public InvocationFactory invocationFactory(RequestAuthentication requestAuthentication, List<CallStrategy> callStrategyList, RequestAdapter requestAdapter) {
-        return new InvocationFactoryImpl(requestAuthentication, callStrategyList, requestAdapter);
-    }
-
-    @Bean
-    public ResponseReader responseReader(RequestAdapter requestAdapter) {
-        return new ResponseReaderImpl(requestAdapter);
+    public ResponseReader responseReader(RequestAdapter requestAdapter, JsonMapper jsonMapper) {
+        return new ResponseReaderImpl(requestAdapter, jsonMapper);
     }
 
     @Bean

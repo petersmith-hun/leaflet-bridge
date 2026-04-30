@@ -2,8 +2,6 @@ package hu.psprog.leaflet.bridge.client.exception;
 
 import hu.psprog.leaflet.bridge.client.domain.error.ValidationErrorMessageListResponse;
 
-import jakarta.ws.rs.core.Response;
-
 /**
  * Exception to throw when Leaflet application returns with validation failure (HTTP 400 Bad Request).
  *
@@ -15,16 +13,12 @@ public class ValidationFailureException extends RuntimeException {
 
     private final ValidationErrorMessageListResponse errorMessageList;
 
-    public ValidationFailureException(Response response) {
+    public ValidationFailureException(ValidationErrorMessageListResponse response) {
         super(VALIDATION_FAILURE);
-        this.errorMessageList = readErrorResponse(response);
+        this.errorMessageList = response;
     }
 
     public ValidationErrorMessageListResponse getErrorMessage() {
         return errorMessageList;
-    }
-
-    private ValidationErrorMessageListResponse readErrorResponse(Response response) {
-        return response.readEntity(ValidationErrorMessageListResponse.class);
     }
 }

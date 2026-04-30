@@ -1,7 +1,7 @@
 package hu.psprog.leaflet.bridge.client.handler;
 
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * Handles Jersey's response.
@@ -11,19 +11,19 @@ import jakarta.ws.rs.core.Response;
 public interface ResponseReader {
 
     /**
-     * Reads given response and parses it to the given response type of {@link GenericType}
+     * Reads given response and parses it to the given response type of {@link TypeReference}
      *
-     * @param response raw {@link Response} of Jersey client
+     * @param response raw {@link ClassicHttpResponse} of the Apache HTTP client
      * @param responseType target type of response content
      * @param <T> T type of target
      * @return response payload as T
      */
-    <T> T read(Response response, GenericType<T> responseType);
+    <T> T read(ClassicHttpResponse response, TypeReference<T> responseType);
 
     /**
      * Reads given void response.
      *
-     * @param response raw {@link Response} of Jersey client
+     * @param response raw {@link ClassicHttpResponse} of the Apache HTTP client
      */
-    void read(Response response);
+    void read(ClassicHttpResponse response);
 }

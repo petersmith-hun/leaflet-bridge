@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import jakarta.ws.rs.core.Response;
+import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
 
 /**
  * Exception to throw for HTTP 401 response.
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
  */
 public class UnauthorizedAccessException extends DefaultNonSuccessfulResponseException {
 
-    public UnauthorizedAccessException(Response response) {
-        super(response);
+    public UnauthorizedAccessException(ErrorMessageResponse response, int status) {
+        super(response, status);
     }
 }

@@ -6,12 +6,10 @@ import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactoryProvider;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.impl.BridgeClientImpl;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.WebTarget;
 
 /**
  * Factory to properly build BridgeClient instances.
@@ -21,13 +19,13 @@ import jakarta.ws.rs.client.WebTarget;
 @Component
 public class BridgeClientFactory {
 
-    private final Client client;
+    private final HttpClient bridgeHttpClient;
     private final InvocationFactoryProvider invocationFactoryProvider;
     private final ResponseReader responseReader;
 
     @Autowired
-    public BridgeClientFactory(Client client, InvocationFactoryProvider invocationFactoryProvider, ResponseReader responseReader) {
-        this.client = client;
+    public BridgeClientFactory(HttpClient bridgeHttpClient, InvocationFactoryProvider invocationFactoryProvider, ResponseReader responseReader) {
+        this.bridgeHttpClient = bridgeHttpClient;
         this.invocationFactoryProvider = invocationFactoryProvider;
         this.responseReader = responseReader;
     }
@@ -43,10 +41,6 @@ public class BridgeClientFactory {
         Assert.hasLength(bridgeSettings.getHostUrl(), "Remote service host must be specified!");
         InvocationFactory invocationFactory = invocationFactoryProvider.getInvocationFactory(bridgeSettings);
 
-        return new BridgeClientImpl(createWebTarget(bridgeSettings.getHostUrl()), invocationFactory, responseReader);
-    }
-
-    private WebTarget createWebTarget(String remoteServiceHost) {
-        return client.target(remoteServiceHost);
+        return new BridgeClientImpl(bridgeHttpClient, bridgeSettings, invocationFactory, responseReader);
     }
 }

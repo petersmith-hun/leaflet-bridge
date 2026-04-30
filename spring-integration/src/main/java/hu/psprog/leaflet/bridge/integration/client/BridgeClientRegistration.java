@@ -2,6 +2,10 @@ package hu.psprog.leaflet.bridge.integration.client;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
+import jakarta.annotation.PostConstruct;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +13,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +34,9 @@ class BridgeClientRegistration {
 
     private final BridgeClientFactory bridgeClientFactory;
     private final ConfigurableListableBeanFactory configurableListableBeanFactory;
+
+    @Getter
+    @Setter(AccessLevel.PACKAGE)
     private Map<String, BridgeSettings> clients;
 
     @Autowired
@@ -52,11 +58,4 @@ class BridgeClientRegistration {
                 });
     }
 
-    public Map<String, BridgeSettings> getClients() {
-        return clients;
-    }
-
-    void setClients(Map<String, BridgeSettings> clients) {
-        this.clients = clients;
-    }
 }

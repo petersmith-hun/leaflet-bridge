@@ -1,43 +1,43 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
+import hu.psprog.leaflet.api.rest.request.common.OrderBy;
+import hu.psprog.leaflet.api.rest.request.common.OrderDirection;
 import hu.psprog.leaflet.api.rest.request.entry.EntryCreateRequestModel;
-import hu.psprog.leaflet.bridge.client.domain.OrderBy;
-import hu.psprog.leaflet.bridge.client.domain.OrderDirection;
 import hu.psprog.leaflet.bridge.client.request.Path;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.DeleteCallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.GetCallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.PostCallStrategy;
-import hu.psprog.leaflet.bridge.client.request.strategy.impl.PutCallStrategy;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
-import org.glassfish.jersey.client.ClientRequest;
-import org.glassfish.jersey.client.JerseyInvocation;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.ProtocolException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.ReflectionUtils;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.lang.reflect.Field;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_HEADER;
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CONTENT_TYPE_HEADER;
+import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CONTENT_TYPE_JSON;
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_HEADER;
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_RESPONSE;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link InvocationFactoryImpl}.
@@ -71,31 +71,28 @@ public class InvocationFactoryImplTest {
     private static final List<String> VALUE_LIST = Arrays.asList("param1", "param2", "param3");
     private static final String GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST = "parameterList=param1,param2,param3";
     private static final String RECAPTCHA_TOKEN = "recaptcha-token";
-    private static final WebTarget WEB_TARGET = ClientBuilder.newBuilder()
-            .build()
-            .target(TARGET);
+    private static final String JSON_REQUEST_BODY = "{\"body\": true}";
 
-    @Mock(strictness = Mock.Strictness.LENIENT)
+    @Mock
     private RequestAuthentication requestAuthentication;
 
     @Mock
     private RequestAdapter requestAdapter;
 
+    @Mock
+    private JsonMapper jsonMapper;
+
+    @InjectMocks
     private InvocationFactoryImpl invocationFactory;
 
     @BeforeEach
     public void setup() {
         given(requestAdapter.provideDeviceID()).willReturn(DEVICE_ID);
         given(requestAdapter.provideClientID()).willReturn(CLIENT_ID);
-        List<CallStrategy> callStrategyList = Arrays.asList(new PostCallStrategy(), new PutCallStrategy(), new GetCallStrategy(), new DeleteCallStrategy());
-        invocationFactory = new InvocationFactoryImpl(requestAuthentication, callStrategyList, requestAdapter);
-        Map<String, String> auth = new HashMap<>();
-        auth.put(AUTHORIZATION, BEARER_TOKEN);
-        given(requestAuthentication.getAuthenticationHeader()).willReturn(auth);
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedGetWithQueryParameters() {
+    public void shouldGetInvocationForAuthenticatedGetWithQueryParameters() throws URISyntaxException, ProtocolException {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -109,44 +106,47 @@ public class InvocationFactoryImplTest {
                 .authenticated()
                 .build();
 
+        given(requestAuthentication.getAuthenticationHeader()).willReturn(Map.of(AUTHORIZATION, BEARER_TOKEN));
+
         // when
-        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
 
         // then
-        ClientRequest clientRequest = getClientRequest(result);
-        assertThat(clientRequest.getMethod(), equalTo(GET));
-        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES_2_PAGE_1));
-        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
-        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
-        assertThat(clientRequest.getUri().getQuery(), equalTo(QUERY_STRING));
-        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
-        assertThat(clientRequest.getHeaderString(CLIENT_ID_HEADER), equalTo(CLIENT_ID));
-        assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
+        assertThat(result.getMethod(), equalTo(GET));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES_2_PAGE_1));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(result.getUri().getQuery(), equalTo(QUERY_STRING));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER).getValue(), equalTo(CONTENT_TYPE_JSON));
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
+        assertThat(result.getHeader(CLIENT_ID_HEADER).getValue(), equalTo(CLIENT_ID));
+        assertThat(result.getHeader(AUTHORIZATION).getValue(), equalTo(BEARER_TOKEN));
     }
 
     @Test
-    public void shouldGetInvocationForSimpleGet() {
+    public void shouldGetInvocationForSimpleGet() throws URISyntaxException, ProtocolException {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.GET)
                 .path(TestPath.ENTRIES)
+                .multipart()
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
 
         // then
-        ClientRequest clientRequest = getClientRequest(result);
-        assertThat(clientRequest.getMethod(), equalTo(GET));
-        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES));
-        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
-        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
-        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+        assertThat(result.getMethod(), equalTo(GET));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER), nullValue());
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedAndReCaptchaValidatedPost() {
+    public void shouldGetInvocationForAuthenticatedAndReCaptchaValidatedPost() throws URISyntaxException, ProtocolException, IOException {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
@@ -158,47 +158,88 @@ public class InvocationFactoryImplTest {
                 .recaptchaResponse(RECAPTCHA_TOKEN)
                 .build();
 
+        given(requestAuthentication.getAuthenticationHeader()).willReturn(Map.of(AUTHORIZATION, BEARER_TOKEN));
+        given(jsonMapper.writeValueAsString(entryCreateRequestModel)).willReturn(JSON_REQUEST_BODY);
+
         // when
-        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
 
         // then
-        ClientRequest clientRequest = getClientRequest(result);
-        assertThat(clientRequest.getMethod(), equalTo(POST));
-        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES));
-        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
-        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
-        assertThat(clientRequest.getEntity(), equalTo(entryCreateRequestModel));
-        assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
-        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
-        assertThat(clientRequest.getHeaderString(X_CAPTCHA_RESPONSE), equalTo(RECAPTCHA_TOKEN));
+        assertThat(result.getMethod(), equalTo(POST));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(new String(result.getEntity().getContent().readAllBytes()), equalTo(JSON_REQUEST_BODY));
+        assertThat(result.getEntity().getContentType(), equalTo(ContentType.APPLICATION_JSON.toString()));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER).getValue(), equalTo(CONTENT_TYPE_JSON));
+        assertThat(result.getHeader(AUTHORIZATION).getValue(), equalTo(BEARER_TOKEN));
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
+        assertThat(result.getHeader(X_CAPTCHA_RESPONSE).getValue(), equalTo(RECAPTCHA_TOKEN));
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedDelete() {
+    public void shouldGetInvocationForPostWithPlainTextBody() throws URISyntaxException, ProtocolException, IOException {
+
+        // given
+        String requestBody = "search with conditions source = 'leaflet'";
+        RESTRequest restRequest = RESTRequest.getBuilder()
+                .method(RequestMethod.POST)
+                .path(TestPath.ENTRIES)
+                .requestBody(requestBody)
+                .addHeaderParameter("Content-Type", ContentType.TEXT_PLAIN.toString())
+                .authenticated()
+                .recaptchaResponse(RECAPTCHA_TOKEN)
+                .build();
+
+        given(requestAuthentication.getAuthenticationHeader()).willReturn(Map.of(AUTHORIZATION, BEARER_TOKEN));
+
+        // when
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
+
+        // then
+        assertThat(result.getMethod(), equalTo(POST));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(new String(result.getEntity().getContent().readAllBytes()), equalTo(requestBody));
+        assertThat(result.getEntity().getContentType(), equalTo(ContentType.TEXT_PLAIN.toString()));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER).getValue(), equalTo(ContentType.TEXT_PLAIN.toString()));
+        assertThat(result.getHeader(AUTHORIZATION).getValue(), equalTo(BEARER_TOKEN));
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
+        assertThat(result.getHeader(X_CAPTCHA_RESPONSE).getValue(), equalTo(RECAPTCHA_TOKEN));
+
+        verifyNoInteractions(jsonMapper);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TestPath.class, names = {"ENTRIES_BY_ID", "ENTRIES_BY_ID_WITHOUT_LEADING_SLASH"})
+    public void shouldGetInvocationForAuthenticatedDelete(TestPath testPath) throws URISyntaxException, ProtocolException {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
                 .method(RequestMethod.DELETE)
-                .path(TestPath.ENTRIES_BY_ID)
+                .path(testPath)
                 .addPathParameter(ID, String.valueOf(1L))
                 .authenticated()
                 .build();
 
+        given(requestAuthentication.getAuthenticationHeader()).willReturn(Map.of(AUTHORIZATION, BEARER_TOKEN));
+
         // when
-        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
 
         // then
-        ClientRequest clientRequest = getClientRequest(result);
-        assertThat(clientRequest.getMethod(), equalTo(DELETE));
-        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES_1));
-        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
-        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
-        assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
-        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+        assertThat(result.getMethod(), equalTo(DELETE));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES_1));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER).getValue(), equalTo(CONTENT_TYPE_JSON));
+        assertThat(result.getHeader(AUTHORIZATION).getValue(), equalTo(BEARER_TOKEN));
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
     }
 
     @Test
-    public void shouldGetInvocationForAuthenticatedPut() {
+    public void shouldGetInvocationForAuthenticatedPut() throws URISyntaxException, ProtocolException, IOException {
 
         // given
         EntryCreateRequestModel entryCreateRequestModel = new EntryCreateRequestModel();
@@ -210,22 +251,26 @@ public class InvocationFactoryImplTest {
                 .authenticated()
                 .build();
 
+        given(requestAuthentication.getAuthenticationHeader()).willReturn(Map.of(AUTHORIZATION, BEARER_TOKEN));
+        given(jsonMapper.writeValueAsString(entryCreateRequestModel)).willReturn(JSON_REQUEST_BODY);
+
         // when
-        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
 
         // then
-        ClientRequest clientRequest = getClientRequest(result);
-        assertThat(clientRequest.getMethod(), equalTo(PUT));
-        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES_1));
-        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
-        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
-        assertThat(clientRequest.getEntity(), equalTo(entryCreateRequestModel));
-        assertThat(clientRequest.getHeaderString(AUTHORIZATION), equalTo(BEARER_TOKEN));
-        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+        assertThat(result.getMethod(), equalTo(PUT));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES_1));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(new String(result.getEntity().getContent().readAllBytes()), equalTo(JSON_REQUEST_BODY));
+        assertThat(result.getEntity().getContentType(), equalTo(ContentType.APPLICATION_JSON.toString()));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER).getValue(), equalTo(CONTENT_TYPE_JSON));
+        assertThat(result.getHeader(AUTHORIZATION).getValue(), equalTo(BEARER_TOKEN));
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
     }
 
     @Test
-    public void shouldGetInvocationForSimpleGetWithQueryParameterList() {
+    public void shouldGetInvocationForSimpleGetWithQueryParameterList() throws URISyntaxException, ProtocolException {
 
         // given
         RESTRequest restRequest = RESTRequest.getBuilder()
@@ -235,33 +280,24 @@ public class InvocationFactoryImplTest {
                 .build();
 
         // when
-        Invocation result = invocationFactory.getInvocationFor(WEB_TARGET, restRequest);
+        ClassicHttpRequest result = invocationFactory.getInvocationFor(TARGET, restRequest);
 
         // then
-        ClientRequest clientRequest = getClientRequest(result);
-        assertThat(clientRequest.getMethod(), equalTo(GET));
-        assertThat(clientRequest.getUri().getPath(), equalTo(TEST_ENTRIES));
-        assertThat(clientRequest.getUri().getPort(), equalTo(PORT));
-        assertThat(clientRequest.getUri().getHost(), equalTo(LOCALHOST));
-        assertThat(clientRequest.getUri().getQuery(), equalTo(GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST));
-        assertThat(clientRequest.getHeaderString(DEVICE_ID_HEADER), equalTo(DEVICE_ID));
+        assertThat(result.getMethod(), equalTo(GET));
+        assertThat(result.getUri().getPath(), equalTo(TEST_ENTRIES));
+        assertThat(result.getUri().getPort(), equalTo(PORT));
+        assertThat(result.getUri().getHost(), equalTo(LOCALHOST));
+        assertThat(result.getUri().getQuery(), equalTo(GENERATED_QUERY_FOR_MULTI_PARAMETER_REQUEST));
+        assertThat(result.getHeader(CONTENT_TYPE_HEADER).getValue(), equalTo(CONTENT_TYPE_JSON));
+        assertThat(result.getHeader(DEVICE_ID_HEADER).getValue(), equalTo(DEVICE_ID));
     }
 
-    private ClientRequest getClientRequest(Invocation result) {
-        try {
-            Field requestContext = JerseyInvocation.class.getDeclaredField("requestContext");
-            requestContext.setAccessible(true);
-            return (ClientRequest) ReflectionUtils.getField(requestContext, result);
-        } catch (NoSuchFieldException e) {
-            throw new IllegalStateException("Failed to access requestContext field", e);
-        }
-    }
-
-    private enum TestPath implements Path {
+    public enum TestPath implements Path {
 
         ENTRIES_CATEGORY_PAGE("/entries/{id}/page/{page}"),
         ENTRIES("/entries"),
-        ENTRIES_BY_ID("/entries/{id}");
+        ENTRIES_BY_ID("/entries/{id}"),
+        ENTRIES_BY_ID_WITHOUT_LEADING_SLASH("entries/{id}");
 
         private final String uri;
 

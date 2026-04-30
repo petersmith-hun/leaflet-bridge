@@ -1,10 +1,7 @@
 package hu.psprog.leaflet.bridge.client.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
-
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
+import org.apache.hc.core5.http.ClassicHttpRequest;
 
 /**
  * Prepares a Jersey invocation.
@@ -14,11 +11,11 @@ import jakarta.ws.rs.client.WebTarget;
 public interface InvocationFactory {
 
     /**
-     * Creates an {@link Invocation} for given {@link RESTRequest}.
+     * Creates a {@link ClassicHttpRequest} for given {@link RESTRequest}.
      *
-     * @param webTarget initial {@link WebTarget} to send request via
-     * @param restRequest {@link RESTRequest} to build {@link Invocation} for
-     * @return built {@link Invocation}
+     * @param baseURL host base URL to prepend to each request path
+     * @param restRequest {@link RESTRequest} to build {@link ClassicHttpRequest} for
+     * @return built {@link ClassicHttpRequest}
      */
-    Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) throws JsonProcessingException;
+    ClassicHttpRequest getInvocationFor(String baseURL, RESTRequest restRequest);
 }
