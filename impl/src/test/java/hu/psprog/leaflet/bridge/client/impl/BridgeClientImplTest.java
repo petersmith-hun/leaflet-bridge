@@ -4,6 +4,7 @@ import hu.psprog.leaflet.api.rest.response.common.WrapperBodyDataModel;
 import hu.psprog.leaflet.api.rest.response.entry.EntryDataModel;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
+import hu.psprog.leaflet.bridge.client.exception.ResourceNotFoundException;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -192,6 +193,28 @@ public class BridgeClientImplTest {
 
         // when
         assertThrows(CommunicationFailureException.class, () -> {
+            bridgeClient.call(REST_REQUEST);
+            nullResponseCaptor.getValue().handleResponse(classicHttpResponse);
+        });
+
+        // then
+        // expected exception
+    }
+
+    @Test
+    public void shouldThrowKnownExceptionOnCallForWrappedResponse() throws IOException {
+
+        // given
+        given(invocationFactory.getInvocationFor(HOST_URL, REST_REQUEST)).willReturn(classicHttpRequest);
+        doThrow(ResourceNotFoundException.class).when(responseReader).read(classicHttpResponse);
+        doAnswer(invocation -> {
+            var handler = invocation.getArgument(1, HttpClientResponseHandler.class);
+            handler.handleResponse(classicHttpResponse);
+            return null;
+        }).when(httpClient).execute(eq(classicHttpRequest), nullResponseCaptor.capture());
+
+        // when
+        assertThrows(ResourceNotFoundException.class, () -> {
             bridgeClient.call(REST_REQUEST);
             nullResponseCaptor.getValue().handleResponse(classicHttpResponse);
         });

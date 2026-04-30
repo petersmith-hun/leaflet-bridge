@@ -3,6 +3,8 @@ package hu.psprog.leaflet.bridge.client.impl;
 import hu.psprog.leaflet.bridge.client.BridgeClient;
 import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
+import hu.psprog.leaflet.bridge.client.exception.DefaultNonSuccessfulResponseException;
+import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
@@ -73,6 +75,9 @@ public class BridgeClientImpl implements BridgeClient {
 
         try {
             return callSupplier.get();
+
+        } catch (ValidationFailureException | DefaultNonSuccessfulResponseException exception) {
+            throw exception;
 
         } catch (Exception exception) {
 
