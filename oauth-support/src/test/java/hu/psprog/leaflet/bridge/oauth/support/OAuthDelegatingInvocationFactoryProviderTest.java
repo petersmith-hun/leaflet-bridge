@@ -4,8 +4,6 @@ import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
-import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
 import hu.psprog.leaflet.bridge.integration.request.adapter.StaticRequestAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,9 +36,6 @@ class OAuthDelegatingInvocationFactoryProviderTest {
     @Mock
     private InvocationFactory defaultInvocationFactory;
 
-    @Mock(strictness = Mock.Strictness.LENIENT)
-    private CallStrategy callStrategy;
-
     @Mock
     private RequestAdapter defaultRequestAdapter;
 
@@ -50,15 +45,16 @@ class OAuthDelegatingInvocationFactoryProviderTest {
     @Mock
     private OAuthRequestAuthenticationFactory oAuthRequestAuthenticationFactory;
 
+    @Mock
+    private JsonMapper jsonMapper;
+
     private OAuthDelegatingInvocationFactoryProvider oAuthDelegatingInvocationFactoryProvider;
 
     @BeforeEach
     public void setup() {
 
-        given(callStrategy.forMethod()).willReturn(RequestMethod.GET);
-
         oAuthDelegatingInvocationFactoryProvider = new OAuthDelegatingInvocationFactoryProvider(defaultInvocationFactory,
-                List.of(callStrategy), defaultRequestAdapter, oAuthRequestAuthenticationFactory);
+                defaultRequestAdapter, oAuthRequestAuthenticationFactory, jsonMapper);
     }
 
     @Test
@@ -118,6 +114,7 @@ class OAuthDelegatingInvocationFactoryProviderTest {
         return extractFieldValue(invocationFactory, "requestAdapter");
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T extractFieldValue(Object targetObject, String fieldName) throws IllegalAccessException {
 
         Field field = ReflectionUtils.findField(targetObject.getClass(), fieldName);

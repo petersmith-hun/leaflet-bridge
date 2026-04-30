@@ -1,7 +1,9 @@
 package hu.psprog.leaflet.bridge.client.request;
 
 import hu.psprog.leaflet.bridge.adapter.RequestBodyAdapter;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -16,13 +18,23 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.X_CAPTCHA_R
  * @author Peter Smith
  */
 @Getter
+@EqualsAndHashCode
+@ToString(onlyExplicitlyIncluded = true)
+@SuppressWarnings({"rawtypes", "UnusedReturnValue", "unused"})
 public class RESTRequest {
 
+    @ToString.Include
     private RequestMethod method;
+
+    @ToString.Include
     private Path path;
     private boolean authenticationRequired;
     private Serializable requestBody;
+
+    @ToString.Include
     private final Map<String, Object> pathParameters = new HashMap<>();
+
+    @ToString.Include
     private final Map<String, Object> requestParameters = new HashMap<>();
     private final Map<String, Object> headerParameters = new HashMap<>();
     private boolean multipart;

@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import jakarta.ws.rs.core.Response;
+import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
 
 /**
  * Exception to throw for HTTP 403 response.
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
  */
 public class ForbiddenOperationException extends DefaultNonSuccessfulResponseException {
 
-    public ForbiddenOperationException(Response response) {
-        super(response);
+    public ForbiddenOperationException(ErrorMessageResponse response, int status) {
+        super(response, status);
     }
 }

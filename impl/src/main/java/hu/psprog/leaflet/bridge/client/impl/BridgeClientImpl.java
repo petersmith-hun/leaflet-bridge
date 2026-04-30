@@ -1,17 +1,18 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
 import hu.psprog.leaflet.bridge.client.BridgeClient;
+import hu.psprog.leaflet.bridge.client.domain.BridgeSettings;
 import hu.psprog.leaflet.bridge.client.exception.CommunicationFailureException;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.handler.ResponseReader;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.type.TypeReference;
 
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 /**
  * Implementation of {@link BridgeClient}.
@@ -22,42 +23,76 @@ public class BridgeClientImpl implements BridgeClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BridgeClientImpl.class);
 
-    private final WebTarget webTarget;
+    private final HttpClient httpClient;
+    private final String baseURL;
     private final InvocationFactory invocationFactory;
     private final ResponseReader responseReader;
 
-    public BridgeClientImpl(WebTarget webTarget, InvocationFactory invocationFactory, ResponseReader responseReader) {
-        this.webTarget = webTarget;
+    public BridgeClientImpl(HttpClient bridgeHttpClient, BridgeSettings bridgeSettings,
+                            InvocationFactory invocationFactory, ResponseReader responseReader) {
+
+        this.httpClient = bridgeHttpClient;
+        this.baseURL = normalizeBaseURL(bridgeSettings);
         this.invocationFactory = invocationFactory;
         this.responseReader = responseReader;
     }
 
     @Override
-    public <T> T call(RESTRequest request, GenericType<T> responseType) throws CommunicationFailureException {
-        Response response = doCall(request);
-        return responseReader.read(response, responseType);
+    public <T> T call(RESTRequest request, TypeReference<T> responseType) throws CommunicationFailureException {
+
+        return doCall(() -> httpClient.execute(invocationFactory.getInvocationFor(baseURL, request),
+                response -> responseReader.read(response, responseType)), request);
     }
 
     @Override
     public <T> T call(RESTRequest request, Class<T> responseType) throws CommunicationFailureException {
-        Response response = doCall(request);
-        return responseReader.read(response, new GenericType<>(responseType));
+        return call(request, asTypeReference(responseType));
     }
 
     @Override
     public void call(RESTRequest request) throws CommunicationFailureException {
-        Response response = doCall(request);
-        responseReader.read(response);
+
+        doCall(() -> {
+            httpClient.execute(invocationFactory.getInvocationFor(baseURL, request), response -> {
+                responseReader.read(response);
+                return null;
+            });
+
+            return null;
+        }, request);
     }
 
-    private Response doCall(RESTRequest request) throws CommunicationFailureException {
+    private String normalizeBaseURL(BridgeSettings bridgeSettings) {
+
+        return bridgeSettings.getHostUrl().endsWith("/")
+                ? bridgeSettings.getHostUrl().substring(0, bridgeSettings.getHostUrl().length() - 1)
+                : bridgeSettings.getHostUrl();
+    }
+
+    private <T> T doCall(HTTPCallSupplier<T> callSupplier, RESTRequest request) throws CommunicationFailureException {
+
         try {
-            return invocationFactory
-                    .getInvocationFor(webTarget, request)
-                    .invoke();
-        } catch (IOException e) {
+            return callSupplier.get();
+
+        } catch (Exception exception) {
+
             LOGGER.error("Bridge failed to process request [{}]", request);
-            throw new CommunicationFailureException(e);
+            throw new CommunicationFailureException(exception);
         }
+    }
+
+    private <T> TypeReference<T> asTypeReference(Class<T> responseType) {
+
+        return new TypeReference<>() {
+
+            @Override
+            public Type getType() {
+                return responseType;
+            }
+        };
+    }
+
+    private interface HTTPCallSupplier<T> {
+        T get() throws IOException;
     }
 }

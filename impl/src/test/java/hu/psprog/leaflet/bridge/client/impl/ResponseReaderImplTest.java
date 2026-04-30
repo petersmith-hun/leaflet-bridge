@@ -12,26 +12,28 @@ import hu.psprog.leaflet.bridge.client.exception.ResourceNotFoundException;
 import hu.psprog.leaflet.bridge.client.exception.UnauthorizedAccessException;
 import hu.psprog.leaflet.bridge.client.exception.ValidationFailureException;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ProtocolException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
 import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.AUTH_TOKEN_HEADER;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -53,48 +55,58 @@ public class ResponseReaderImplTest {
                     .withMessage("constraint violation")
                     .build()))
             .build();
-    protected static final GenericType<InputStream> INPUT_STREAM_GENERIC_TYPE = new GenericType<>() {
-    };
 
-    @Mock(strictness = Mock.Strictness.LENIENT)
-    private Response response;
+    @Mock
+    private ClassicHttpResponse response;
+
+    @Mock
+    private HttpEntity entity;
+
+    @Mock
+    private InputStream inputStream;
 
     @Mock
     private RequestAdapter requestAdapter;
 
+    @Mock
+    private JsonMapper jsonMapper;
+
+    @Mock
+    private Header authHeader;
+
     @InjectMocks
     private ResponseReaderImpl responseReader;
 
-    private final GenericType<BaseBodyDataModel> genericType = new GenericType<>() {};
+    private final TypeReference<BaseBodyDataModel> genericType = new TypeReference<>() {};
     private final BaseBodyDataModel baseBodyDataModel = EntryDataModel.getBuilder().build();
 
-    @BeforeEach
-    public void setup() {
-        given(response.readEntity(genericType)).willReturn(baseBodyDataModel);
-        given(response.getHeaderString(AUTH_TOKEN_HEADER)).willReturn(TOKEN_VALUE);
-    }
-
     @Test
-    public void shouldReadEntityForGivenType() {
+    public void shouldReadEntityForGivenType() throws IOException, ProtocolException {
 
         // given
-        given(response.getStatusInfo()).willReturn(Response.Status.OK);
+        given(response.getCode()).willReturn(HttpStatus.SC_OK);
+        given(response.getEntity()).willReturn(entity);
+        given(response.getHeader(AUTH_TOKEN_HEADER)).willReturn(authHeader);
+        given(authHeader.getValue()).willReturn(TOKEN_VALUE);
+        given(entity.getContent()).willReturn(inputStream);
+        given(jsonMapper.readValue(inputStream, genericType)).willReturn(baseBodyDataModel);
 
         // when
         BaseBodyDataModel result = responseReader.read(response, genericType);
 
         // then
         assertThat(result, equalTo(baseBodyDataModel));
-        verify(response).readEntity(genericType);
         verify(response).close();
         verify(requestAdapter).consumeAuthenticationToken(TOKEN_VALUE);
     }
 
     @Test
-    public void shouldReadEntityWithoutContent() {
+    public void shouldReadEntityWithoutContent() throws ProtocolException, IOException {
 
         // given
-        given(response.getStatusInfo()).willReturn(Response.Status.OK);
+        given(response.getCode()).willReturn(HttpStatus.SC_OK);
+        given(response.getHeader(AUTH_TOKEN_HEADER)).willReturn(authHeader);
+        given(authHeader.getValue()).willReturn(TOKEN_VALUE);
 
         // when
         responseReader.read(response);
@@ -102,195 +114,240 @@ public class ResponseReaderImplTest {
         // then
         verify(requestAdapter).consumeAuthenticationToken(TOKEN_VALUE);
         verify(response).close();
+        verifyNoInteractions(entity, inputStream, jsonMapper);
     }
 
     @Test
-    public void shouldNotSetToken() {
+    public void shouldNotSetToken() throws IOException, ProtocolException {
 
         // given
-        given(response.getHeaderString(AUTH_TOKEN_HEADER)).willReturn(null);
-        given(response.getStatusInfo()).willReturn(Response.Status.OK);
+        given(response.getCode()).willReturn(HttpStatus.SC_OK);
+        given(response.getHeader(AUTH_TOKEN_HEADER)).willReturn(null);
 
         // when
         responseReader.read(response);
 
         // then
-        verifyNoInteractions(requestAdapter);
+        verify(response).close();
+        verifyNoInteractions(entity, inputStream, jsonMapper, requestAdapter, authHeader);
+    }
+
+    @Test
+    public void shouldThrowValidationFailureExceptionWhenReadingForGivenType() throws IOException {
+
+        // given
+        given(response.getCode()).willReturn(400);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContentLength()).willReturn(128L);
+        given(entity.getContent()).willReturn(inputStream);
+        given(jsonMapper.readValue(inputStream, ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
+
+        // when
+        var exception = assertThrows(ValidationFailureException.class, () -> responseReader.read(response, genericType));
+
+        // then
+        // expected exception
+        assertThat(exception.getMessage(), equalTo("Validation failure."));
+        assertThat(exception.getErrorMessage(), equalTo(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldNotCloseResponseForCloseableResponseType() throws IOException {
+    public void shouldThrowResourceNotFoundExceptionWhenReadingForGivenType() throws IOException {
 
         // given
-        InputStream byteArrayInputStream = new ByteArrayInputStream("response".getBytes());
-        given(response.readEntity(INPUT_STREAM_GENERIC_TYPE)).willReturn(byteArrayInputStream);
-        given(response.getStatusInfo()).willReturn(Response.Status.OK);
+        given(response.getCode()).willReturn(404);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContentLength()).willReturn(128L);
+        given(entity.getContent()).willReturn(inputStream);
+        given(jsonMapper.readValue(inputStream, ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        InputStream result = responseReader.read(response, INPUT_STREAM_GENERIC_TYPE);
-
-        // then
-        assertThat(result, equalTo(byteArrayInputStream));
-        verify(response).readEntity(INPUT_STREAM_GENERIC_TYPE);
-        verify(response, never()).close();
-        verify(requestAdapter).consumeAuthenticationToken(TOKEN_VALUE);
-
-        // clean-up
-        result.close();
-        byteArrayInputStream.close();
-    }
-
-    @Test
-    public void shouldThrowValidationFailureExceptionWhenReadingForGivenType() {
-
-        // given
-        given(response.getStatus()).willReturn(400);
-        given(response.getStatusInfo()).willReturn(Response.Status.BAD_REQUEST);
-        given(response.readEntity(ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
-
-        // when
-        Assertions.assertThrows(ValidationFailureException.class, () -> responseReader.read(response, genericType));
+        var exception = assertThrows(ResourceNotFoundException.class, () -> responseReader.read(response, genericType));
 
         // then
         // expected exception
-        verify(response).readEntity(ValidationErrorMessageListResponse.class);
+        assertThat(exception.getMessage(), equalTo(ERROR_MESSAGE_RESPONSE.message()));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowResourceNotFoundExceptionWhenReadingForGivenType() {
+    public void shouldThrowRequestProcessingFailureExceptionWhenReadingForGivenType() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(404);
-        given(response.getStatusInfo()).willReturn(Response.Status.NOT_FOUND);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(500);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContentLength()).willReturn(128L);
+        given(entity.getContent()).willReturn(inputStream);
+        given(jsonMapper.readValue(inputStream, ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
 
         // when
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> responseReader.read(response, genericType));
+        var exception = assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response, genericType));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo(ERROR_MESSAGE_RESPONSE.message()));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowRequestProcessingFailureExceptionWhenReadingForGivenType() {
+    public void shouldThrowValidationFailureExceptionWhenReadingWithoutContent() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(500);
-        given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(400);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContentLength()).willReturn(128L);
+        given(entity.getContent()).willReturn(inputStream);
+        given(jsonMapper.readValue(inputStream, ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
 
         // when
-        Assertions.assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response, genericType));
+        var exception = assertThrows(ValidationFailureException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo("Validation failure."));
+        assertThat(exception.getErrorMessage(), equalTo(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowValidationFailureExceptionWhenReadingWithoutContent() {
+    public void shouldThrowResourceNotFoundExceptionWhenReadingWithoutContent() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(400);
-        given(response.getStatusInfo()).willReturn(Response.Status.BAD_REQUEST);
-        given(response.readEntity(ValidationErrorMessageListResponse.class)).willReturn(VALIDATION_ERROR_MESSAGE_LIST_RESPONSE);
+        given(response.getCode()).willReturn(404);
+        given(response.getEntity()).willReturn(null);
 
         // when
-        Assertions.assertThrows(ValidationFailureException.class, () -> responseReader.read(response, genericType));
+        var exception = assertThrows(ResourceNotFoundException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ValidationErrorMessageListResponse.class);
+        assertThat(exception.getMessage(), equalTo("Unknown error occurred."));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowResourceNotFoundExceptionWhenReadingWithoutContent() {
+    public void shouldThrowRequestProcessingFailureExceptionWhenReadingWithoutContent() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(404);
-        given(response.getStatusInfo()).willReturn(Response.Status.NOT_FOUND);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(500);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContentLength()).willReturn(0L);
 
         // when
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> responseReader.read(response));
+        var exception = assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo("Unknown error occurred."));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowRequestProcessingFailureExceptionWhenReadingWithoutContent() {
+    public void shouldThrowUnauthorizedAccessExceptionWhenReadingWithoutContent() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(500);
-        given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(401);
+        given(response.getEntity()).willReturn(null);
 
         // when
-        Assertions.assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response));
+        var exception = assertThrows(UnauthorizedAccessException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo("Unknown error occurred."));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowUnauthorizedAccessExceptionWhenReadingWithoutContent() {
+    public void shouldThrowForbiddenOperationExceptionWhenReadingWithoutContent() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(401);
-        given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(403);
+        given(response.getEntity()).willReturn(null);
 
         // when
-        Assertions.assertThrows(UnauthorizedAccessException.class, () -> responseReader.read(response));
+        var exception = assertThrows(ForbiddenOperationException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo("Unknown error occurred."));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowForbiddenOperationExceptionWhenReadingWithoutContent() {
+    public void shouldThrowConflictingRequestExceptionWhenReadingWithoutContent() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(403);
-        given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(409);
+        given(response.getEntity()).willReturn(null);
 
         // when
-        Assertions.assertThrows(ForbiddenOperationException.class, () -> responseReader.read(response));
+        var exception = assertThrows(ConflictingRequestException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo("Unknown error occurred."));
+
         verify(response).close();
     }
 
     @Test
-    public void shouldThrowConflictingRequestExceptionWhenReadingWithoutContent() {
+    public void shouldThrowRequestProcessingFailureExceptionWhenExceptionOccursWhileReadingErrorResponse() throws IOException {
 
         // given
-        given(response.getStatus()).willReturn(409);
-        given(response.getStatusInfo()).willReturn(Response.Status.INTERNAL_SERVER_ERROR);
-        given(response.readEntity(ErrorMessageResponse.class)).willReturn(ERROR_MESSAGE_RESPONSE);
+        given(response.getCode()).willReturn(500);
+        given(response.getEntity()).willReturn(entity);
+        given(entity.getContentLength()).willReturn(128L);
+        given(entity.getContent()).willThrow(new IOException("End of stream"));
 
         // when
-        Assertions.assertThrows(ConflictingRequestException.class, () -> responseReader.read(response));
+        var exception = assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response));
 
         // then
         // expected exception
-        verify(response).readEntity(ErrorMessageResponse.class);
+        assertThat(exception.getMessage(), equalTo("End of stream"));
+
+        verify(response).close();
+    }
+
+    @Test
+    public void shouldThrowRequestProcessingFailureExceptionWhenExceptionOccursWhileReadingResponseOnTypeEntryPoint() throws IOException {
+
+        // given
+        given(response.getCode()).willThrow(new RuntimeException("Something went wrong"));
+
+        // when
+        var exception = assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response, genericType));
+
+        // then
+        // expected exception
+        assertThat(exception.getMessage(), equalTo("Something went wrong"));
+
+        verify(response).close();
+    }
+
+    @Test
+    public void shouldThrowRequestProcessingFailureExceptionWhenExceptionOccursWhileReadingResponseOnVoidEntryPoint() throws IOException {
+
+        // given
+        given(response.getCode()).willThrow(new RuntimeException("Something went wrong"));
+
+        // when
+        var exception = assertThrows(RequestProcessingFailureException.class, () -> responseReader.read(response));
+
+        // then
+        // expected exception
+        assertThat(exception.getMessage(), equalTo("Something went wrong"));
+
         verify(response).close();
     }
 }

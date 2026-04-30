@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import jakarta.ws.rs.core.Response;
+import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
 
 /**
  * Exception to throw when Leaflet returns with HTTP 404.
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
  */
 public class ResourceNotFoundException extends DefaultNonSuccessfulResponseException {
 
-    public ResourceNotFoundException(Response response) {
-        super(response);
+    public ResourceNotFoundException(ErrorMessageResponse response, int status) {
+        super(response, status);
     }
 }

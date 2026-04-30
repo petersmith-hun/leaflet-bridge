@@ -1,22 +1,28 @@
 package hu.psprog.leaflet.bridge.client.impl;
 
+import hu.psprog.leaflet.bridge.client.domain.BridgeConstants;
 import hu.psprog.leaflet.bridge.client.handler.InvocationFactory;
 import hu.psprog.leaflet.bridge.client.request.RESTRequest;
 import hu.psprog.leaflet.bridge.client.request.RequestAdapter;
 import hu.psprog.leaflet.bridge.client.request.RequestAuthentication;
 import hu.psprog.leaflet.bridge.client.request.RequestMethod;
-import hu.psprog.leaflet.bridge.client.request.strategy.CallStrategy;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.MediaType;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.util.List;
+import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.CLIENT_ID_HEADER;
-import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_HEADER;
 
 /**
  * Implementation of {@link InvocationFactory}.
@@ -25,54 +31,111 @@ import static hu.psprog.leaflet.bridge.client.domain.BridgeConstants.DEVICE_ID_H
  */
 public class InvocationFactoryImpl implements InvocationFactory {
 
-    private final RequestAuthentication requestAuthentication;
-    private final Map<RequestMethod, CallStrategy> callStrategyMap;
-    private final RequestAdapter requestAdapter;
+    private static final Map<RequestMethod, Function<String, ClassicHttpRequest>> HTTP_METHOD_MAP = Map.of(
+            RequestMethod.GET, HttpGet::new,
+            RequestMethod.POST, HttpPost::new,
+            RequestMethod.PUT, HttpPut::new,
+            RequestMethod.DELETE, HttpDelete::new
+    );
 
-    public InvocationFactoryImpl(RequestAuthentication requestAuthentication, List<CallStrategy> callStrategyList, RequestAdapter requestAdapter) {
+    private final RequestAuthentication requestAuthentication;
+    private final RequestAdapter requestAdapter;
+    private final JsonMapper jsonMapper;
+
+    public InvocationFactoryImpl(RequestAuthentication requestAuthentication, RequestAdapter requestAdapter, JsonMapper jsonMapper) {
         this.requestAuthentication = requestAuthentication;
-        this.callStrategyMap = callStrategyList.stream()
-                .collect(Collectors.toMap(CallStrategy::forMethod, Function.identity()));
         this.requestAdapter = requestAdapter;
+        this.jsonMapper = jsonMapper;
     }
 
     @Override
-    public Invocation getInvocationFor(WebTarget webTarget, RESTRequest restRequest) {
-        WebTarget target = webTarget
-                .path(restRequest.getPath().getURI())
-                .resolveTemplates(restRequest.getPathParameters());
-        target = fillRequestParameters(target, restRequest);
-        Invocation.Builder builder = target
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(DEVICE_ID_HEADER, requestAdapter.provideDeviceID())
-                .header(CLIENT_ID_HEADER, requestAdapter.provideClientID());
-        addCustomHeaderParameters(builder, restRequest);
-        authenticate(builder, restRequest);
+    public ClassicHttpRequest getInvocationFor(String baseURL, RESTRequest restRequest) {
 
-        return callStrategyMap
-                .get(restRequest.getMethod())
-                .prepareInvocation(builder, restRequest);
+        ClassicHttpRequest request = HTTP_METHOD_MAP.get(restRequest.getMethod())
+                .apply(resolvePath(baseURL, restRequest));
+
+        setRequestBody(restRequest, request);
+        addCommonHeaders(restRequest, request);
+        addCustomHeaderParameters(request, restRequest);
+        authenticate(request, restRequest);
+
+        return request;
     }
 
-    private WebTarget fillRequestParameters(WebTarget webTarget, RESTRequest request) {
+    private String resolvePath(String baseURL, RESTRequest restRequest) {
 
-        WebTarget targetWithParameters = webTarget;
-        for (Map.Entry<String, Object> entry : request.getRequestParameters().entrySet()) {
-            targetWithParameters = targetWithParameters.queryParam(entry.getKey(), entry.getValue());
+        String path = normalizePath(restRequest);
+        for (Map.Entry<String, Object> pathVariable : restRequest.getPathParameters().entrySet()) {
+            path = path.replace("{%s}".formatted(pathVariable.getKey()), String.valueOf(pathVariable.getValue()));
         }
 
-        return targetWithParameters;
+        if (!restRequest.getRequestParameters().isEmpty()) {
+
+            String queryParameters = restRequest.getRequestParameters()
+                    .entrySet().stream()
+                    .map(entry -> "%s=%s".formatted(entry.getKey(), encodeQueryParameter(entry.getValue())))
+                    .collect(Collectors.joining("&"));
+
+            path = "%s?%s".formatted(path, queryParameters);
+        }
+
+        return "%s%s".formatted(baseURL, path);
     }
 
-    private void addCustomHeaderParameters(Invocation.Builder builder, RESTRequest request) {
-        request.getHeaderParameters()
-                .forEach(builder::header);
+    private String normalizePath(RESTRequest restRequest) {
+
+        return restRequest.getPath().getURI().startsWith("/")
+                ? restRequest.getPath().getURI()
+                : "/%s".formatted(restRequest.getPath().getURI());
     }
 
-    private void authenticate(Invocation.Builder builder, RESTRequest request) {
-        if (request.isAuthenticationRequired()) {
+    private String encodeQueryParameter(Object value) {
+        return URLEncoder.encode(String.valueOf(value), StandardCharsets.UTF_8);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setRequestBody(RESTRequest restRequest, ClassicHttpRequest request) {
+
+        Optional.ofNullable(restRequest.getRequestBody())
+                .map(requestBody -> Optional.ofNullable(restRequest.getAdapter())
+                        .map(adapter -> adapter.adapt(requestBody))
+                        .orElseGet(() -> createJSONRequestBody(requestBody)))
+                .ifPresent(request::setEntity);
+    }
+
+    private StringEntity createJSONRequestBody(Serializable requestBody) {
+
+        return requestBody instanceof String plainTextBody
+                ? new StringEntity(plainTextBody)
+                : new StringEntity(jsonMapper.writeValueAsString(requestBody), ContentType.APPLICATION_JSON);
+    }
+
+    private void addCommonHeaders(RESTRequest restRequest, ClassicHttpRequest request) {
+
+        if (!restRequest.isMultipart()) {
+            request.addHeader(BridgeConstants.CONTENT_TYPE_HEADER, BridgeConstants.CONTENT_TYPE_JSON);
+        }
+        request.addHeader(BridgeConstants.DEVICE_ID_HEADER, requestAdapter.provideDeviceID());
+        request.addHeader(BridgeConstants.CLIENT_ID_HEADER, requestAdapter.provideClientID());
+    }
+
+    private void addCustomHeaderParameters(ClassicHttpRequest request, RESTRequest restRequest) {
+
+        restRequest.getHeaderParameters().forEach((name, value) -> {
+
+            if (Objects.nonNull(request.getFirstHeader(name))) {
+                request.removeHeaders(name);
+            }
+
+            request.addHeader(name, value);
+        });
+    }
+
+    private void authenticate(ClassicHttpRequest request, RESTRequest restRequest) {
+
+        if (restRequest.isAuthenticationRequired()) {
             requestAuthentication.getAuthenticationHeader()
-                    .forEach(builder::header);
+                    .forEach(request::addHeader);
         }
     }
 }

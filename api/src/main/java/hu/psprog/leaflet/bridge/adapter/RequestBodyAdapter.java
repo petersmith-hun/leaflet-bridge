@@ -1,5 +1,7 @@
 package hu.psprog.leaflet.bridge.adapter;
 
+import org.apache.hc.core5.http.HttpEntity;
+
 import java.io.Serializable;
 
 /**
@@ -9,11 +11,10 @@ import java.io.Serializable;
  * which is transportable.
  *
  * @param <S> source request body type
- * @param <D> destination request body type
  * @author Peter Smith
  */
 @FunctionalInterface
-public interface RequestBodyAdapter<S extends Serializable, D> {
+public interface RequestBodyAdapter<S extends Serializable> {
 
     /**
      * Converts source object of type S to destination object of type D.
@@ -21,5 +22,5 @@ public interface RequestBodyAdapter<S extends Serializable, D> {
      * @param source source object
      * @return transformed object
      */
-    D adapt(S source);
+    HttpEntity adapt(S source);
 }

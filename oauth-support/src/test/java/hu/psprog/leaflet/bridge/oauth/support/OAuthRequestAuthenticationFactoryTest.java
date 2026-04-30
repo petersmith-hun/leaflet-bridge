@@ -117,6 +117,7 @@ class OAuthRequestAuthenticationFactoryTest {
         assertThat(request.getPrincipal().getPrincipal(), equalTo(expectedPrincipal));
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T extractFieldValue(Object targetObject, String fieldName) throws IllegalAccessException {
 
         Field field = ReflectionUtils.findField(targetObject.getClass(), fieldName);

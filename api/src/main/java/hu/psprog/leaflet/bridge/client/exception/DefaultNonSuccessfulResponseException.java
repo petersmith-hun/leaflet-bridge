@@ -1,9 +1,8 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
 import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
-
-import jakarta.ws.rs.core.Response;
 import lombok.Getter;
+import org.apache.hc.core5.http.HttpStatus;
 
 import java.util.Optional;
 
@@ -19,13 +18,19 @@ public abstract class DefaultNonSuccessfulResponseException extends RuntimeExcep
 
     private final int status;
 
-    DefaultNonSuccessfulResponseException(Response response) {
+    DefaultNonSuccessfulResponseException(ErrorMessageResponse response, int status) {
         super(readErrorResponse(response));
-        this.status = response.getStatus();
+        this.status = status;
     }
 
-    private static String readErrorResponse(Response response) {
-        return Optional.ofNullable(response.readEntity(ErrorMessageResponse.class))
+    DefaultNonSuccessfulResponseException(Throwable throwable) {
+        super(throwable.getMessage(), throwable);
+        this.status = HttpStatus.SC_INTERNAL_SERVER_ERROR;
+    }
+
+    private static String readErrorResponse(ErrorMessageResponse response) {
+
+        return Optional.ofNullable(response)
                 .map(ErrorMessageResponse::message)
                 .orElse(UNKNOWN_ERROR_OCCURRED);
     }

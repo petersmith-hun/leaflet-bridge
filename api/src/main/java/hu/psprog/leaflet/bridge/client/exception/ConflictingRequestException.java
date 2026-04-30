@@ -1,6 +1,6 @@
 package hu.psprog.leaflet.bridge.client.exception;
 
-import jakarta.ws.rs.core.Response;
+import hu.psprog.leaflet.bridge.client.domain.error.ErrorMessageResponse;
 
 /**
  * Exception to throw for HTTP 409 response.
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
  */
 public class ConflictingRequestException extends DefaultNonSuccessfulResponseException {
 
-    public ConflictingRequestException(Response response) {
-        super(response);
+    public ConflictingRequestException(ErrorMessageResponse response, int status) {
+        super(response, status);
     }
 }
