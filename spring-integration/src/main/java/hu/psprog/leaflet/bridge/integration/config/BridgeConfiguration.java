@@ -24,6 +24,8 @@ import tools.jackson.databind.json.JsonMapper;
 @ComponentScan("hu.psprog.leaflet.bridge")
 public class BridgeConfiguration {
 
+    private static final TimeValue MAX_IDLE_TIME = TimeValue.ofSeconds(30L);
+
     @Bean
     public HttpClient bridgeHttpClient() {
 
@@ -33,7 +35,7 @@ public class BridgeConfiguration {
                 .disableConnectionState()
                 .disableCookieManagement()
                 .disableRedirectHandling()
-                .evictIdleConnections(TimeValue.ZERO_MILLISECONDS)
+                .evictIdleConnections(MAX_IDLE_TIME)
                 .build();
     }
 
